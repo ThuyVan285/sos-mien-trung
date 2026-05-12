@@ -1,0 +1,21 @@
+/* src/assets/styles/variables.css */
+
+:root {
+    --bg: #050816;
+    --card: #101726;
+    --border: rgba(255,255,255,0.08);
+
+    --text: #FFFFFF;
+    --secondary: #B8C1D9;
+
+    --blue: #1D9BF0;
+    --cyan: #37E2D5;
+    --red: #FF4D4F;
+    --green: #22C55E;
+    --yellow: #FACC15;
+
+    --radius: 18px;
+
+    --shadow-blue:
+            0 0 20px rgba(29,155,240,0.35);
+}
