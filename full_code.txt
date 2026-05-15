@@ -1,0 +1,2603 @@
+﻿=== C:\Users\Admin\sos-mien-trung\src\App.jsx ===
+// src/App.jsx
+
+import 'leaflet/dist/leaflet.css';
+import "./assets/styles/global.css";
+import { SOSProvider } from "./store/SOSContext";
+import MainLayout from "./layouts/MainLayout";
+import MapPage from "./pages/MapPage";
+
+export default function App() {
+    return (
+        <SOSProvider>
+            <div className="app dark-theme">
+                <MainLayout>
+                    <MapPage />
+                </MainLayout>
+            </div>
+        </SOSProvider>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\assets\styles\App.css ===
+
+=== C:\Users\Admin\sos-mien-trung\src\assets\styles\global.css ===
+/* src/assets/styles/global.css */
+
+@import "./variables.css";
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;500;600;700&display=swap");
+
+/* =========================
+   RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: #050816;
+    color: white;
+    font-family: "Inter", sans-serif;
+    overflow: hidden;
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+.main-layout {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.layout-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.layout-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(5, 8, 22, 0.95);
+    backdrop-filter: blur(18px);
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
+    box-shadow: 0 0 16px rgba(255,77,79,0.5);
+    font-size: 18px;
+}
+
+.logo {
+    font-family: "Orbitron", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #FF4D4F;
+}
+
+.logo-sub {
+    margin-top: 3px;
+    font-size: 11px;
+    color: #8b96ad;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-item {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #b0bcd4;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.2s;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: white;
+}
+
+.nav-item.active {
+    background: rgba(29,155,240,0.12);
+    border-color: rgba(29,155,240,0.35);
+    color: #4db8ff;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-box {
+    width: 300px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #B8C1D9;
+}
+
+.search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 13px;
+}
+
+.search-box input::placeholder { color: #7f8ba3; }
+
+.sos-btn {
+    height: 38px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,77,79,0.45);
+    transition: 0.2s;
+}
+
+.sos-btn:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 30px rgba(255,77,79,0.7);
+}
+
+/* =========================
+   MAP PAGE â€” 3 Cá»˜T CHÃNH
+========================= */
+.map-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Cá»™t trÃ¡i */
+.left-panel {
+    width: 280px;
+    min-width: 280px;
+    height: 100%;
+    overflow-y: auto;
+    padding: 12px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(7,12,26,0.99), rgba(5,8,22,0.99));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.left-panel::-webkit-scrollbar { width: 3px; }
+.left-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+
+/* Cá»™t giá»¯a */
+.map-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Cá»™t pháº£i */
+.ai-panel {
+    width: 280px;
+    min-width: 280px;
+    height: 100%;
+    padding: 12px;
+    border-left: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(7,12,26,0.99), rgba(5,8,22,0.99));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+/* =========================
+   FILTER BAR
+========================= */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(7, 12, 26, 0.92);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.filter-group label {
+    font-size: 10px;
+    color: #8b96ad;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-group select {
+    height: 34px;
+    padding: 0 28px 0 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b96ad' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    min-width: 150px;
+}
+
+.filter-group select:focus {
+    border-color: rgba(29,155,240,0.4);
+}
+
+.filter-advanced-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #b0bcd4;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 13px;
+}
+
+.filter-advanced-btn:hover {
+    border-color: rgba(29,155,240,0.4);
+    color: #4db8ff;
+}
+
+/* =========================
+   MAP WRAPPER
+========================= */
+.map-wrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    background: #0d1117;
+}
+
+/* =========================
+   MAP â€” LEGEND
+========================= */
+.map-legend {
+    position: absolute;
+    bottom: 40px;
+    left: 14px;
+    z-index: 999;
+    background: rgba(7, 12, 26, 0.88);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+    backdrop-filter: blur(12px);
+}
+
+.legend-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b96ad;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #d7deed;
+    padding: 3px 0;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-ring {
+    background: transparent !important;
+    border: 2px solid #37E2D5;
+}
+
+/* =========================
+   MAP â€” CUSTOM CONTROLS
+========================= */
+.map-controls {
+    position: absolute;
+    bottom: 40px;
+    right: 14px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.map-ctrl-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(7,12,26,0.9);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.map-ctrl-btn:hover {
+    background: rgba(29,155,240,0.2);
+    border-color: rgba(29,155,240,0.4);
+}
+
+/* =========================
+   MAP â€” POPUP
+========================= */
+.leaflet-popup-content-wrapper {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.leaflet-popup-tip-container { display: none; }
+.leaflet-popup-content { margin: 0 !important; }
+
+.popup-card {
+    background: rgba(10, 15, 30, 0.97);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 14px;
+    width: 260px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.popup-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.popup-header strong {
+    flex: 1;
+    font-size: 14px;
+    color: white;
+}
+
+.popup-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+.popup-close {
+    background: transparent;
+    border: none;
+    color: #8b96ad;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px;
+}
+
+.popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.popup-body p {
+    font-size: 12px;
+    color: #b0bcd4;
+}
+
+.popup-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.popup-btn {
+    flex: 1;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.popup-btn.accept { background: #1D9BF0; color: white; }
+.popup-btn.done { background: #22C55E; color: white; }
+.popup-btn.cancel { background: rgba(255,77,79,0.15); color: #FF4D4F; border: 1px solid rgba(255,77,79,0.3); }
+
+/* =========================
+   CUSTOM MARKER
+========================= */
+.custom-marker-wrapper {
+    background: transparent;
+    border: none;
+}
+
+.marker-glow {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: relative;
+    animation: markerFloat 2s ease-in-out infinite;
+}
+
+.marker-pulse {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    animation: markerPulse 2s infinite;
+    opacity: 0.8;
+}
+
+@keyframes markerPulse {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    70% { transform: scale(2); opacity: 0; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+@keyframes markerFloat {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+    100% { transform: translateY(0px); }
+}
+
+/* =========================
+   LEFT PANEL SECTIONS
+========================= */
+.sidebar-section {
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(16,23,38,0.7);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.section-header h3 {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4db8ff;
+    letter-spacing: 0.5px;
+}
+
+.section-header button {
+    background: transparent;
+    border: none;
+    color: #4db8ff;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.live-dot {
+    font-size: 11px;
+    color: #22C55E;
+    font-weight: 700;
+    animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* =========================
+   STATS GRID
+========================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-card {
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+    transition: 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-2px); }
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.stat-top p {
+    font-size: 10px;
+    font-weight: 700;
+    color: #8b96ad;
+    letter-spacing: 0.3px;
+}
+
+.stat-card h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-card small { font-size: 11px; color: #8b96ad; }
+
+.stat-card.danger  { border-color: rgba(255,77,79,0.4);   box-shadow: 0 0 16px rgba(255,77,79,0.1); }
+.stat-card.warning { border-color: rgba(250,204,21,0.4);  box-shadow: 0 0 16px rgba(250,204,21,0.1); }
+.stat-card.success { border-color: rgba(34,197,94,0.4);   box-shadow: 0 0 16px rgba(34,197,94,0.1); }
+.stat-card.primary { border-color: rgba(29,155,240,0.4);  box-shadow: 0 0 16px rgba(29,155,240,0.1); }
+
+.stat-card.danger h1  { color: #FF4D4F; }
+.stat-card.warning h1 { color: #FACC15; }
+.stat-card.success h1 { color: #22C55E; }
+.stat-card.primary h1 { color: #1D9BF0; }
+
+/* =========================
+   SOS LIST
+========================= */
+.sos-list { display: flex; flex-direction: column; gap: 8px; }
+
+.sos-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.sos-item:last-child { border-bottom: none; }
+
+.sos-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sos-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sos-dot.danger  { background: #FF4D4F; box-shadow: 0 0 6px rgba(255,77,79,0.8); }
+.sos-dot.warning { background: #FACC15; box-shadow: 0 0 6px rgba(250,204,21,0.8); }
+.sos-dot.primary { background: #1D9BF0; box-shadow: 0 0 6px rgba(29,155,240,0.8); }
+.sos-dot.success { background: #22C55E; box-shadow: 0 0 6px rgba(34,197,94,0.8); }
+
+.sos-left h4 { font-size: 12px; font-weight: 600; }
+.sos-left p  { font-size: 11px; color: #8b96ad; margin-top: 1px; }
+
+.badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+}
+
+.badge.danger  { background: rgba(255,77,79,0.15);  color: #FF4D4F;  border: 1px solid rgba(255,77,79,0.3); }
+.badge.warning { background: rgba(250,204,21,0.12); color: #FACC15;  border: 1px solid rgba(250,204,21,0.3); }
+.badge.primary { background: rgba(29,155,240,0.12); color: #4db8ff;  border: 1px solid rgba(29,155,240,0.3); }
+.badge.success { background: rgba(34,197,94,0.12);  color: #22C55E;  border: 1px solid rgba(34,197,94,0.3); }
+
+/* =========================
+   HOTSPOT LIST
+========================= */
+.hotspot-list { display: flex; flex-direction: column; gap: 8px; }
+
+.hotspot-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.hotspot-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.hotspot-count {
+    background: rgba(255,77,79,0.15);
+    color: #FF4D4F;
+    border: 1px solid rgba(255,77,79,0.3);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* =========================
+   SIDEBAR FOOTER
+========================= */
+.sidebar-footer {
+    font-size: 10px;
+    color: #4a5568;
+    text-align: center;
+    padding: 8px 0;
+    margin-top: auto;
+}
+
+/* =========================
+   AI PANEL
+========================= */
+.ai-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+}
+
+.ai-panel-header span:first-child {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4db8ff;
+    letter-spacing: 0.5px;
+}
+
+.ai-badge {
+    background: linear-gradient(135deg, #1D9BF0, #0A84FF);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: white;
+}
+
+.ai-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ai-card {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid;
+}
+
+.ai-card-danger {
+    background: rgba(255,77,79,0.08);
+    border-color: rgba(255,77,79,0.25);
+}
+
+.ai-card-info {
+    background: rgba(29,155,240,0.08);
+    border-color: rgba(29,155,240,0.25);
+}
+
+.ai-card-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+
+.ai-card-desc {
+    font-size: 11px;
+    color: #8b96ad;
+    line-height: 1.5;
+    padding-left: 24px;
+}
+
+.ai-detail-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(29,155,240,0.25);
+    background: rgba(29,155,240,0.06);
+    color: #4db8ff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.ai-detail-btn:hover {
+    background: rgba(29,155,240,0.14);
+}
+
+/* =========================
+   FLOAT ACTION BUTTONS
+========================= */
+.float-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.float-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 14px;
+    border: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+}
+
+.float-action-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.float-action-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.float-action-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* =========================
+   GLASS
+========================= */
+.glass {
+    background: rgba(16, 23, 38, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px rgba(255,255,255,0.05);
+    border-radius: 18px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1100px) {
+    .left-panel { width: 240px; min-width: 240px; }
+    .ai-panel { width: 240px; min-width: 240px; }
+}
+
+@media (max-width: 768px) {
+    .left-panel { display: none; }
+    .ai-panel { display: none; }
+    .header { padding: 0 12px; }
+    .nav-menu { display: none; }
+    .search-box { width: 160px; }
+    .filter-bar { overflow-x: auto; }
+}
+
+/* =========================
+   SOS FORM MODAL
+========================= */
+.sos-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.sos-modal {
+    width: 100%;
+    max-width: 600px;
+    background: rgba(10, 15, 30, 0.98);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,77,79,0.15);
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.sos-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,77,79,0.05);
+    flex-shrink: 0;
+}
+
+.sos-modal-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sos-modal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
+    box-shadow: 0 0 20px rgba(255,77,79,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.sos-modal-title h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.sos-modal-title p {
+    font-size: 12px;
+    color: #8b96ad;
+    margin-top: 2px;
+}
+
+.sos-close-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #8b96ad;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.sos-close-btn:hover {
+    background: rgba(255,77,79,0.15);
+    border-color: rgba(255,77,79,0.3);
+    color: #FF4D4F;
+}
+
+.sos-modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.sos-modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    flex-shrink: 0;
+}
+
+/* Form elements */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #b0bcd4;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: white;
+    font-size: 13px;
+    outline: none;
+    transition: 0.2s;
+    font-family: "Inter", sans-serif;
+}
+
+.form-input:focus {
+    border-color: rgba(29,155,240,0.5);
+    background: rgba(29,155,240,0.04);
+    box-shadow: 0 0 0 3px rgba(29,155,240,0.1);
+}
+
+.form-input.error {
+    border-color: rgba(255,77,79,0.5);
+    box-shadow: 0 0 0 3px rgba(255,77,79,0.1);
+}
+
+.form-input::placeholder { color: #4a5568; }
+
+.form-textarea {
+    height: auto !important;
+    padding: 10px 14px;
+    resize: none;
+    line-height: 1.5;
+}
+
+.form-select-wrap {
+    position: relative;
+}
+
+.form-select {
+    appearance: none;
+    cursor: pointer;
+}
+
+.form-select option {
+    background: #0d1117;
+    color: white;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8b96ad;
+    pointer-events: none;
+}
+
+.form-error {
+    font-size: 11px;
+    color: #FF4D4F;
+    margin-top: 2px;
+}
+
+/* Má»©c Ä‘á»™ kháº©n cáº¥p */
+.level-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.level-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #b0bcd4;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.level-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: white;
+}
+
+.level-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Submit + Cancel buttons */
+.sos-submit-btn {
+    flex: 1;
+    height: 46px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 0 20px rgba(255,77,79,0.4);
+    transition: 0.2s;
+}
+
+.sos-submit-btn:hover:not(:disabled) {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(255,77,79,0.6);
+}
+
+.sos-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.sos-cancel-btn {
+    height: 46px;
+    padding: 0 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #b0bcd4;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sos-cancel-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: white;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Success screen */
+.sos-success {
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(34,197,94,0.1);
+    border: 2px solid rgba(34,197,94,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sos-success h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+}
+
+.sos-success p {
+    font-size: 14px;
+    color: #8b96ad;
+    line-height: 1.6;
+}
+
+.success-info {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.success-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.success-info-row span { color: #8b96ad; }
+.success-info-row strong { color: white; }
+
+=== C:\Users\Admin\sos-mien-trung\src\assets\styles\variables.css ===
+/* src/assets/styles/variables.css */
+
+:root {
+    --bg: #050816;
+    --card: #101726;
+    --border: rgba(255,255,255,0.08);
+
+    --text: #FFFFFF;
+    --secondary: #B8C1D9;
+
+    --blue: #1D9BF0;
+    --cyan: #37E2D5;
+    --red: #FF4D4F;
+    --green: #22C55E;
+    --yellow: #FACC15;
+
+    --radius: 18px;
+
+    --shadow-blue:
+            0 0 20px rgba(29,155,240,0.35);
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\common\Button.jsx ===
+
+=== C:\Users\Admin\sos-mien-trung\src\components\common\Input.jsx ===
+
+=== C:\Users\Admin\sos-mien-trung\src\components\common\Modal.jsx ===
+
+=== C:\Users\Admin\sos-mien-trung\src\components\map\Heatmap.jsx ===
+// src/components/map/Heatmap.jsx
+
+export default function Heatmap() {
+    return (
+        <div className="heatmap-layer">
+            <div className="heat-circle"></div>
+            <div className="heat-circle delay"></div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\map\MapView.jsx ===
+// src/components/map/MapView.jsx
+
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    Polyline,
+    Circle,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useSOS } from "../../store/SOSContext";
+
+const createCustomIcon = (status) => {
+    const colors = {
+        urgent:  "#FF4D4F",
+        pending: "#FACC15",
+        helping: "#1D9BF0",
+        done:    "#22C55E",
+    };
+    const color = colors[status] || "#FF4D4F";
+    return L.divIcon({
+        className: "custom-marker-wrapper",
+        html: `
+            <div class="marker-glow" style="
+                background: ${color};
+                box-shadow: 0 0 10px ${color}, 0 0 20px ${color}, 0 0 40px ${color};
+            ">
+                <div class="marker-pulse" style="border-color: ${color};"></div>
+            </div>
+        `,
+        iconSize:   [20, 20],
+        iconAnchor: [10, 10],
+    });
+};
+
+const STATUS_LABEL = { urgent:"URGENT", pending:"PENDING", helping:"HELPING", done:"DONE" };
+const STATUS_COLOR = { urgent:"#FF4D4F", pending:"#FACC15", helping:"#1D9BF0", done:"#22C55E" };
+
+export default function MapView() {
+    const { sosRequests, updateStatus } = useSOS();
+    const center = [16.2, 107.9];
+
+    return (
+        <MapContainer
+            center={center}
+            zoom={6}
+            style={{ width: "100%", height: "100%" }}
+            zoomControl={false}
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
+
+            <Polyline
+                positions={[[19.8,105.8],[18.7,105.7],[18.3,105.9],[17.5,106.3],
+                    [16.7,107.2],[16.4,107.6],[16.05,108.2],[15.6,108.0],
+                    [15.1,108.8],[14.2,109.0],[13.1,109.3],[12.2,109.2],
+                    [11.9,108.4]]}
+                color="#37E2D5"
+                weight={2}
+                opacity={0.5}
+                dashArray="6,6"
+            />
+
+            {sosRequests.map((item) => (
+                <Marker
+                    key={item.id}
+                    position={[item.lat, item.lng]}
+                    icon={createCustomIcon(item.status)}
+                >
+                    <Popup className="dark-popup" closeButton={false}>
+                        <div className="popup-card">
+                            <div className="popup-header">
+                                <strong>{item.name}</strong>
+                                <span className="popup-badge" style={{ background: STATUS_COLOR[item.status] }}>
+                                    {STATUS_LABEL[item.status]}
+                                </span>
+                            </div>
+                            <div className="popup-body">
+                                <p>ðŸ“ž {item.phone}</p>
+                                <p>ðŸ“ {item.address}</p>
+                                <p>ðŸ  Há»— trá»£: {item.supportType}</p>
+                                <p>âš¡ Má»©c Ä‘á»™: <span style={{ color: STATUS_COLOR[item.status], fontWeight: 700 }}>{item.priority?.toUpperCase()}</span></p>
+                                {item.note && <p>ðŸ“ {item.note}</p>}
+                            </div>
+                            <div className="popup-actions">
+                                <button className="popup-btn accept" onClick={() => updateStatus(item.id, "helping")}>Nháº­n há»— trá»£</button>
+                                <button className="popup-btn done"   onClick={() => updateStatus(item.id, "done")}>HoÃ n thÃ nh</button>
+                                <button className="popup-btn cancel" onClick={() => updateStatus(item.id, "urgent")}>Kháº©n cáº¥p</button>
+                            </div>
+                        </div>
+                    </Popup>
+                    <Circle
+                        center={[item.lat, item.lng]}
+                        radius={5000}
+                        pathOptions={{ color: STATUS_COLOR[item.status], fillColor: STATUS_COLOR[item.status], fillOpacity: 0.1, weight: 1 }}
+                    />
+                </Marker>
+            ))}
+
+            <div className="map-legend">
+                <div className="legend-title">CHÃš THÃCH</div>
+                {[
+                    { color:"#FF4D4F", label:"Cáº§n giÃºp kháº©n cáº¥p" },
+                    { color:"#FACC15", label:"Chá» xá»­ lÃ½" },
+                    { color:"#1D9BF0", label:"Äang há»— trá»£" },
+                    { color:"#22C55E", label:"ÄÃ£ hoÃ n thÃ nh" },
+                ].map((item) => (
+                    <div key={item.label} className="legend-item">
+                        <span className="legend-dot" style={{ background: item.color }}></span>
+                        {item.label}
+                    </div>
+                ))}
+                <div className="legend-item">
+                    <span className="legend-dot legend-ring"></span>
+                    Äiá»ƒm cá»©u trá»£
+                </div>
+            </div>
+
+            <div className="map-controls">
+                <button className="map-ctrl-btn">ï¼‹</button>
+                <button className="map-ctrl-btn">ï¼</button>
+                <button className="map-ctrl-btn">âŠ™</button>
+            </div>
+        </MapContainer>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\map\Marker.jsx ===
+// src/components/map/Marker.jsx
+
+export default function CustomMarker({ type, priority, status }) {
+    const getColor = () => {
+        if (status === "urgent") return "#FF4D4F";
+        if (status === "pending") return "#FACC15";
+        if (status === "helping") return "#1D9BF0";
+
+        return "#22C55E";
+    };
+
+    return (
+        <div
+            className="custom-marker pulse"
+            style={{
+                background: getColor(),
+            }}
+        >
+            {priority}
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\map\Popup.jsx ===
+// src/components/map/Popup.jsx
+
+export default function RequestPopup({ request }) {
+    return (
+        <div className="request-popup">
+            <h3>{request.name}</h3>
+
+            <p>SÄT: {request.phone}</p>
+            <p>Äá»‹a chá»‰: {request.address}</p>
+            <p>Há»— trá»£: {request.supportType}</p>
+            <p>Tráº¡ng thÃ¡i: {request.status}</p>
+
+            <div className="popup-actions">
+                <button>Nháº­n há»— trá»£</button>
+                <button>HoÃ n thÃ nh</button>
+                <button>Huá»· yÃªu cáº§u</button>
+            </div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\panels\AIPanel.jsx ===
+// src/components/panels/AIPanel.jsx
+
+import { ArrowRight, AlertTriangle, Bot } from "lucide-react";
+
+export default function AIPanel() {
+    const suggestions = [
+        {
+            icon: <AlertTriangle size={16} color="#FF4D4F" />,
+            title: "Quáº£ng NgÃ£i Ä‘ang quÃ¡ táº£i cá»©u trá»£",
+            desc: "Sá»‘ lÆ°á»£ng yÃªu cáº§u vÆ°á»£t quÃ¡ kháº£ nÄƒng tiáº¿p nháº­n hiá»‡n táº¡i.",
+            type: "danger",
+        },
+        {
+            icon: <Bot size={16} color="#1D9BF0" />,
+            title: "Äá» xuáº¥t Ä‘iá»u thÃªm 2 TNV Ä‘áº¿n khu vá»±c Quáº£ng NgÃ£i",
+            desc: "Äá»ƒ há»— trá»£ nhanh hÆ¡n",
+            type: "info",
+        },
+    ];
+
+    const floatBtns = [
+        { label: "Gá»¬I SOS", icon: "ðŸš¨", color: "#FF4D4F", shadow: "rgba(255,77,79,0.5)" },
+        { label: "QUYÃŠN GÃ“P", icon: "ðŸŽ", color: "#7C3AED", shadow: "rgba(124,58,237,0.5)" },
+        { label: "TÃŒNH NGUYá»†N VIÃŠN", icon: "ðŸ‘¨â€ðŸš’", color: "#D97706", shadow: "rgba(217,119,6,0.5)" },
+        { label: "Äá»ŠNH Vá»Š TÃ”I", icon: "ðŸ“", color: "#22C55E", shadow: "rgba(34,197,94,0.5)" },
+    ];
+
+    return (
+        <div className="ai-panel">
+            {/* AI Suggestions */}
+            <div className="ai-panel-header">
+                <span>AI SUGGESTION</span>
+                <span className="ai-badge">AI</span>
+            </div>
+
+            <div className="ai-suggestions">
+                {suggestions.map((s, i) => (
+                    <div key={i} className={`ai-card ai-card-${s.type}`}>
+                        <div className="ai-card-title">
+                            {s.icon}
+                            <strong>{s.title}</strong>
+                        </div>
+                        {s.desc && <p className="ai-card-desc">{s.desc}</p>}
+                    </div>
+                ))}
+
+                <button className="ai-detail-btn">
+                    Xem phÃ¢n tÃ­ch chi tiáº¿t
+                    <ArrowRight size={14} />
+                </button>
+            </div>
+
+            {/* Float Action Buttons */}
+            <div className="float-actions">
+                {floatBtns.map((btn, i) => (
+                    <button key={i} className="float-action-btn">
+                        <span
+                            className="float-action-icon"
+                            style={{
+                                background: btn.color,
+                                boxShadow: `0 0 12px ${btn.shadow}`,
+                            }}
+                        >
+                            {btn.icon}
+                        </span>
+                        <span className="float-action-label">{btn.label}</span>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\panels\FilterPanel.jsx ===
+// src/components/panels/FilterPanel.jsx
+
+import { useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+
+const provinces = [
+    "Táº¥t cáº£ tá»‰nh/thÃ nh",
+    "Thanh HÃ³a", "Nghá»‡ An", "HÃ  TÄ©nh",
+    "Quáº£ng Trá»‹", "Quáº£ng NgÃ£i", "Gia Lai",
+    "Äáº¯k Láº¯k", "KhÃ¡nh HÃ²a", "LÃ¢m Äá»“ng",
+    "ÄÃ  Náºµng", "Huáº¿",
+];
+
+export default function FilterPanel() {
+    const [province, setProvince] = useState("");
+    const [status, setStatus] = useState("");
+    const [supportType, setSupportType] = useState("");
+
+    return (
+        <div className="filter-bar">
+            <div className="filter-group">
+                <label>Tá»‰nh/ThÃ nh</label>
+                <select value={province} onChange={(e) => setProvince(e.target.value)}>
+                    {provinces.map((p) => (
+                        <option key={p}>{p}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="filter-group">
+                <label>Tráº¡ng thÃ¡i</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option>Táº¥t cáº£ tráº¡ng thÃ¡i</option>
+                    <option value="urgent">Kháº©n cáº¥p</option>
+                    <option value="pending">Chá» xá»­ lÃ½</option>
+                    <option value="helping">Äang há»— trá»£</option>
+                    <option value="done">HoÃ n thÃ nh</option>
+                </select>
+            </div>
+
+            <div className="filter-group">
+                <label>Loáº¡i há»— trá»£</label>
+                <select value={supportType} onChange={(e) => setSupportType(e.target.value)}>
+                    <option>Táº¥t cáº£ loáº¡i há»— trá»£</option>
+                    <option>Y táº¿</option>
+                    <option>LÆ°Æ¡ng thá»±c</option>
+                    <option>Di táº£n</option>
+                    <option>NÆ°á»›c uá»‘ng</option>
+                </select>
+            </div>
+
+            <button className="filter-advanced-btn">
+                <SlidersHorizontal size={15} />
+                Bá»™ lá»c nÃ¢ng cao
+            </button>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\panels\LeftPanel.jsx ===
+// src/components/panels/LeftPanel.jsx
+
+import mockData from "../../mock/mockData";
+
+const stats = [
+    { title: "Cáº¦N GIÃšP", value: 128, sub: "+12 hÃ´m nay", className: "danger", icon: "ðŸ†˜" },
+    { title: "ÄANG Xá»¬ LÃ", value: 56, sub: "+5 hÃ´m nay", className: "warning", icon: "ðŸŸ¡" },
+    { title: "ÄÃƒ Há»– TRá»¢", value: 320, sub: "+25 hÃ´m nay", className: "success", icon: "âœ…" },
+    { title: "ÄIá»‚M Cá»¨U TRá»¢", value: 24, sub: "+2 hÃ´m nay", className: "primary", icon: "ðŸ“" },
+];
+
+const sosList = [
+    { name: "Nguyá»…n VÄƒn A", time: "2 phÃºt trÆ°á»›c", status: "URGENT", className: "danger" },
+    { name: "Tráº§n Thá»‹ B", time: "9 Huáº¿", status: "PENDING", className: "warning" },
+    { name: "LÃª VÄƒn C", time: "8 phÃºt trÆ°á»›c", status: "HELPING", className: "primary" },
+    { name: "Pháº¡m Thá»‹ D", time: "Quáº£ng Trá»‹", status: "PENDING", className: "warning" },
+    { name: "HoÃ ng VÄƒn E", time: "15 phÃºt trÆ°á»›c", status: "DONE", className: "success" },
+];
+
+const hotspots = [
+    { name: "Quáº£ng NgÃ£i", value: 48 },
+    { name: "Huáº¿", value: 36 },
+    { name: "ÄÃ  Náºµng", value: 28 },
+    { name: "KhÃ¡nh HÃ²a", value: 16 },
+];
+
+export default function LeftPanel() {
+    return (
+        <aside className="left-panel">
+            {/* THá»NG KÃŠ REALTIME */}
+            <div className="sidebar-section">
+                <div className="section-header">
+                    <h3>THá»NG KÃŠ REALTIME</h3>
+                    <span className="live-dot">â— LIVE</span>
+                </div>
+                <div className="stats-grid">
+                    {stats.map((item, i) => (
+                        <div key={i} className={`stat-card ${item.className}`}>
+                            <div className="stat-top">
+                                <span>{item.icon}</span>
+                                <p>{item.title}</p>
+                            </div>
+                            <h1>{item.value}</h1>
+                            <small>{item.sub}</small>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* DANH SÃCH SOS */}
+            <div className="sidebar-section">
+                <div className="section-header">
+                    <h3>DANH SÃCH SOS Gáº¦N ÄÃ‚Y</h3>
+                    <button>Xem táº¥t cáº£</button>
+                </div>
+                <div className="sos-list">
+                    {sosList.map((item, i) => (
+                        <div key={i} className="sos-item">
+                            <div className="sos-left">
+                                <div className={`sos-dot ${item.className}`}></div>
+                                <div>
+                                    <h4>{item.name}</h4>
+                                    <p>{item.time}</p>
+                                </div>
+                            </div>
+                            <span className={`badge ${item.className}`}>{item.status}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* KHU Vá»°C Ná»”I Báº¬T */}
+            <div className="sidebar-section">
+                <div className="section-header">
+                    <h3>KHU Vá»°C Ná»”I Báº¬T</h3>
+                </div>
+                <div className="hotspot-list">
+                    {hotspots.map((item, i) => (
+                        <div key={i} className="hotspot-item">
+                            <div className="hotspot-left">
+                                ðŸ”¥ <span>{item.name}</span>
+                            </div>
+                            <div className="hotspot-count">{item.value}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="sidebar-footer">Â© 2024 SOS Miá»n Trung â€“ Äiá»ƒm Cá»©u Trá»£</div>
+        </aside>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\analytics\Dashboard.jsx ===
+// src/features/analytics/Dashboard.jsx
+
+export default function Dashboard() {
+    return (
+        <div className="dashboard-grid">
+            {[
+                "Cáº§n giÃºp",
+                "Äang xá»­ lÃ½",
+                "ÄÃ£ há»— trá»£",
+                "Äiá»ƒm cá»©u trá»£",
+            ].map((item) => (
+                <div key={item} className="dashboard-card glass">
+                    <h2>{Math.floor(Math.random() * 500)}</h2>
+                    <p>{item}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\donation\DonationForm.jsx ===
+// src/features/donation/DonationForm.jsx
+
+export default function DonationForm() {
+    return (
+        <form className="glass form-box">
+            <input placeholder="TÃªn" />
+            <input placeholder="SÄT" />
+            <input placeholder="Loáº¡i há»— trá»£" />
+            <input placeholder="Khu vá»±c" />
+
+            <button>QuyÃªn gÃ³p</button>
+        </form>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\sos\CancelModal.jsx ===
+// src/features/sos/CancelModal.jsx
+
+export default function CancelModal() {
+    return (
+        <div className="modal glass">
+            <h2>Báº¡n Ä‘Ã£ Ä‘Æ°á»£c há»— trá»£ chÆ°a?</h2>
+
+            <div className="modal-actions">
+                <button>XÃ¡c nháº­n</button>
+                <button>Quay láº¡i</button>
+            </div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\sos\Marker.js ===
+
+=== C:\Users\Admin\sos-mien-trung\src\features\sos\SOSContext.jsx ===
+// src/store/SOSContext.jsx
+
+import { createContext, useContext, useState } from "react";
+import mockData from "../mock/mockData";
+
+const SOSContext = createContext(null);
+
+export function SOSProvider({ children }) {
+    const [sosRequests, setSosRequests] = useState(mockData.sosRequests);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+
+    const addSOSRequest = (newRequest) => {
+        const request = {
+            ...newRequest,
+            id: Date.now(),
+            status: "urgent",
+            priority: newRequest.level,
+            createdAt: new Date(),
+        };
+        setSosRequests((prev) => [request, ...prev]);
+        return request;
+    };
+
+    const updateStatus = (id, status) => {
+        setSosRequests((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, status } : r))
+        );
+    };
+
+    return (
+        <SOSContext.Provider
+            value={{
+                sosRequests,
+                isFormOpen,
+                setIsFormOpen,
+                selectedRequest,
+                setSelectedRequest,
+                addSOSRequest,
+                updateStatus,
+            }}
+        >
+            {children}
+        </SOSContext.Provider>
+    );
+}
+
+export function useSOS() {
+    return useContext(SOSContext);
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\sos\SOSForm.jsx ===
+// src/features/sos/SOSForm.jsx
+
+import { useState } from "react";
+import { X, AlertTriangle, User, Phone, MapPin, Heart, ChevronDown, CheckCircle } from "lucide-react";
+import { validatePhone, required } from "../../utils/validators";
+import { useSOS } from "../../store/SOSContext";
+
+const SUPPORT_TYPES = ["LÆ°Æ¡ng thá»±c", "Y táº¿", "Di táº£n", "NÆ°á»›c uá»‘ng", "Chá»— á»Ÿ", "KhÃ¡c"];
+const LEVELS = [
+    { value: "high",   label: "Kháº©n cáº¥p - Nguy hiá»ƒm tÃ­nh máº¡ng", color: "#FF4D4F" },
+    { value: "medium", label: "Trung bÃ¬nh - Cáº§n há»— trá»£ sá»›m",    color: "#FACC15" },
+    { value: "low",    label: "Tháº¥p - CÃ³ thá»ƒ chá»",               color: "#22C55E" },
+];
+
+const PROVINCES = [
+    "Thanh HÃ³a","Nghá»‡ An","HÃ  TÄ©nh","Quáº£ng BÃ¬nh","Quáº£ng Trá»‹",
+    "Thá»«a ThiÃªn Huáº¿","ÄÃ  Náºµng","Quáº£ng Nam","Quáº£ng NgÃ£i","BÃ¬nh Äá»‹nh",
+    "PhÃº YÃªn","KhÃ¡nh HÃ²a","Ninh Thuáº­n","BÃ¬nh Thuáº­n","Gia Lai",
+    "Kon Tum","Äáº¯k Láº¯k","Äáº¯k NÃ´ng","LÃ¢m Äá»“ng",
+];
+
+// Toáº¡ Ä‘á»™ gáº§n Ä‘Ãºng theo tá»‰nh
+const PROVINCE_COORDS = {
+    "Thanh HÃ³a":        [19.8, 105.8],
+    "Nghá»‡ An":          [18.7, 105.7],
+    "HÃ  TÄ©nh":          [18.3, 105.9],
+    "Quáº£ng BÃ¬nh":       [17.5, 106.3],
+    "Quáº£ng Trá»‹":        [16.7, 107.2],
+    "Thá»«a ThiÃªn Huáº¿":   [16.4, 107.6],
+    "ÄÃ  Náºµng":          [16.05, 108.2],
+    "Quáº£ng Nam":        [15.6, 108.0],
+    "Quáº£ng NgÃ£i":       [15.1, 108.8],
+    "BÃ¬nh Äá»‹nh":        [14.2, 109.0],
+    "PhÃº YÃªn":          [13.1, 109.3],
+    "KhÃ¡nh HÃ²a":        [12.2, 109.2],
+    "Ninh Thuáº­n":       [11.6, 108.9],
+    "BÃ¬nh Thuáº­n":       [11.1, 108.1],
+    "Gia Lai":          [13.8, 108.1],
+    "Kon Tum":          [14.4, 108.0],
+    "Äáº¯k Láº¯k":         [12.7, 108.1],
+    "Äáº¯k NÃ´ng":         [12.0, 107.7],
+    "LÃ¢m Äá»“ng":         [11.9, 108.4],
+};
+
+const initialForm = {
+    name: "", phone: "", province: "", address: "",
+    supportType: "", level: "high", note: "",
+};
+
+export default function SOSForm() {
+    const { setIsFormOpen, addSOSRequest } = useSOS();
+    const [form, setForm]     = useState(initialForm);
+    const [errors, setErrors] = useState({});
+    const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading]     = useState(false);
+
+    const set = (field, value) => {
+        setForm((prev) => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: "" }));
+    };
+
+    const validate = () => {
+        const e = {};
+        if (!required(form.name))        e.name        = "Vui lÃ²ng nháº­p há» tÃªn";
+        if (!validatePhone(form.phone))  e.phone       = "Sá»‘ Ä‘iá»‡n thoáº¡i khÃ´ng há»£p lá»‡ (VD: 0901234567)";
+        if (!form.province)              e.province    = "Vui lÃ²ng chá»n tá»‰nh/thÃ nh";
+        if (!required(form.address))     e.address     = "Vui lÃ²ng nháº­p Ä‘á»‹a chá»‰ cá»¥ thá»ƒ";
+        if (!form.supportType)           e.supportType = "Vui lÃ²ng chá»n loáº¡i há»— trá»£";
+        if (!form.level)                 e.level       = "Vui lÃ²ng chá»n má»©c Ä‘á»™ kháº©n cáº¥p";
+        return e;
+    };
+
+    const handleSubmit = async () => {
+        const e = validate();
+        if (Object.keys(e).length > 0) {
+            setErrors(e);
+            return;
+        }
+
+        setLoading(true);
+        // Giáº£ láº­p gá»i API (thay báº±ng axios khi cÃ³ backend)
+        await new Promise((r) => setTimeout(r, 800));
+
+        const coords = PROVINCE_COORDS[form.province] || [16.0, 108.0];
+        addSOSRequest({
+            name:        form.name,
+            phone:       form.phone,
+            province:    form.province,
+            address:     `${form.address}, ${form.province}`,
+            supportType: form.supportType,
+            level:       form.level,
+            note:        form.note,
+            lat:         coords[0] + (Math.random() - 0.5) * 0.3,
+            lng:         coords[1] + (Math.random() - 0.5) * 0.3,
+        });
+
+        setLoading(false);
+        setSubmitted(true);
+    };
+
+    const handleClose = () => {
+        setIsFormOpen(false);
+        setForm(initialForm);
+        setErrors({});
+        setSubmitted(false);
+    };
+
+    // --- SUCCESS SCREEN ---
+    if (submitted) {
+        return (
+            <div className="sos-overlay" onClick={handleClose}>
+                <div className="sos-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="sos-success">
+                        <div className="success-icon">
+                            <CheckCircle size={48} color="#22C55E" />
+                        </div>
+                        <h2>ÄÃ£ gá»­i SOS thÃ nh cÃ´ng!</h2>
+                        <p>YÃªu cáº§u cá»§a báº¡n Ä‘Ã£ Ä‘Æ°á»£c ghi nháº­n vÃ  hiá»ƒn thá»‹ trÃªn báº£n Ä‘á»“.<br />Äá»™i cá»©u trá»£ sáº½ liÃªn há»‡ sá»›m nháº¥t cÃ³ thá»ƒ.</p>
+                        <div className="success-info">
+                            <div className="success-info-row">
+                                <span>Há» tÃªn:</span>
+                                <strong>{form.name}</strong>
+                            </div>
+                            <div className="success-info-row">
+                                <span>Khu vá»±c:</span>
+                                <strong>{form.province}</strong>
+                            </div>
+                            <div className="success-info-row">
+                                <span>Há»— trá»£:</span>
+                                <strong>{form.supportType}</strong>
+                            </div>
+                        </div>
+                        <button className="sos-submit-btn" onClick={handleClose}>
+                            ÄÃ³ng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // --- FORM SCREEN ---
+    return (
+        <div className="sos-overlay" onClick={handleClose}>
+            <div className="sos-modal" onClick={(e) => e.stopPropagation()}>
+                {/* Header */}
+                <div className="sos-modal-header">
+                    <div className="sos-modal-title">
+                        <div className="sos-modal-icon">ðŸš¨</div>
+                        <div>
+                            <h2>Gá»­i tÃ­n hiá»‡u SOS</h2>
+                            <p>Äiá»n thÃ´ng tin Ä‘á»ƒ Ä‘Æ°á»£c há»— trá»£ nhanh nháº¥t</p>
+                        </div>
+                    </div>
+                    <button className="sos-close-btn" onClick={handleClose}>
+                        <X size={20} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="sos-modal-body">
+                    {/* Má»©c Ä‘á»™ kháº©n cáº¥p - chá»n Ä‘áº§u tiÃªn */}
+                    <div className="form-group">
+                        <label className="form-label">
+                            <AlertTriangle size={13} /> Má»©c Ä‘á»™ kháº©n cáº¥p
+                        </label>
+                        <div className="level-options">
+                            {LEVELS.map((lv) => (
+                                <button
+                                    key={lv.value}
+                                    type="button"
+                                    className={`level-btn ${form.level === lv.value ? "active" : ""}`}
+                                    style={form.level === lv.value
+                                        ? { borderColor: lv.color, background: `${lv.color}18`, color: lv.color }
+                                        : {}}
+                                    onClick={() => set("level", lv.value)}
+                                >
+                                    <span className="level-dot" style={{ background: lv.color }}></span>
+                                    {lv.label}
+                                </button>
+                            ))}
+                        </div>
+                        {errors.level && <p className="form-error">{errors.level}</p>}
+                    </div>
+
+                    {/* Há» tÃªn + SÄT */}
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label"><User size={13} /> Há» vÃ  tÃªn</label>
+                            <input
+                                className={`form-input ${errors.name ? "error" : ""}`}
+                                placeholder="Nguyá»…n VÄƒn A"
+                                value={form.name}
+                                onChange={(e) => set("name", e.target.value)}
+                            />
+                            {errors.name && <p className="form-error">{errors.name}</p>}
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label"><Phone size={13} /> Sá»‘ Ä‘iá»‡n thoáº¡i</label>
+                            <input
+                                className={`form-input ${errors.phone ? "error" : ""}`}
+                                placeholder="0901 234 567"
+                                value={form.phone}
+                                onChange={(e) => set("phone", e.target.value)}
+                            />
+                            {errors.phone && <p className="form-error">{errors.phone}</p>}
+                        </div>
+                    </div>
+
+                    {/* Tá»‰nh + Loáº¡i há»— trá»£ */}
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label"><MapPin size={13} /> Tá»‰nh/ThÃ nh phá»‘</label>
+                            <div className="form-select-wrap">
+                                <select
+                                    className={`form-input form-select ${errors.province ? "error" : ""}`}
+                                    value={form.province}
+                                    onChange={(e) => set("province", e.target.value)}
+                                >
+                                    <option value="">-- Chá»n tá»‰nh/thÃ nh --</option>
+                                    {PROVINCES.map((p) => (
+                                        <option key={p}>{p}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="select-arrow" />
+                            </div>
+                            {errors.province && <p className="form-error">{errors.province}</p>}
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label"><Heart size={13} /> Loáº¡i há»— trá»£ cáº§n</label>
+                            <div className="form-select-wrap">
+                                <select
+                                    className={`form-input form-select ${errors.supportType ? "error" : ""}`}
+                                    value={form.supportType}
+                                    onChange={(e) => set("supportType", e.target.value)}
+                                >
+                                    <option value="">-- Chá»n loáº¡i há»— trá»£ --</option>
+                                    {SUPPORT_TYPES.map((s) => (
+                                        <option key={s}>{s}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="select-arrow" />
+                            </div>
+                            {errors.supportType && <p className="form-error">{errors.supportType}</p>}
+                        </div>
+                    </div>
+
+                    {/* Äá»‹a chá»‰ cá»¥ thá»ƒ */}
+                    <div className="form-group">
+                        <label className="form-label"><MapPin size={13} /> Äá»‹a chá»‰ cá»¥ thá»ƒ</label>
+                        <input
+                            className={`form-input ${errors.address ? "error" : ""}`}
+                            placeholder="Sá»‘ nhÃ , thÃ´n/xÃ³m, xÃ£/phÆ°á»ng..."
+                            value={form.address}
+                            onChange={(e) => set("address", e.target.value)}
+                        />
+                        {errors.address && <p className="form-error">{errors.address}</p>}
+                    </div>
+
+                    {/* Ghi chÃº */}
+                    <div className="form-group">
+                        <label className="form-label">Ghi chÃº thÃªm (tuá»³ chá»n)</label>
+                        <textarea
+                            className="form-input form-textarea"
+                            placeholder="MÃ´ táº£ tÃ¬nh tráº¡ng hiá»‡n táº¡i, sá»‘ ngÆ°á»i cáº§n há»— trá»£..."
+                            value={form.note}
+                            onChange={(e) => set("note", e.target.value)}
+                            rows={3}
+                        />
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="sos-modal-footer">
+                    <button className="sos-cancel-btn" onClick={handleClose}>
+                        Huá»·
+                    </button>
+                    <button
+                        className="sos-submit-btn"
+                        onClick={handleSubmit}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <span className="loading-spinner"></span>
+                        ) : (
+                            <>ðŸš¨ Gá»­i SOS ngay</>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\features\sos\sosService.js ===
+
+=== C:\Users\Admin\sos-mien-trung\src\features\volunteer\TaskList.jsx ===
+// src/features/volunteer/TaskList.jsx
+
+export default function TaskList() {
+    return (
+        <div className="task-list glass">
+            <h2>Nhiá»‡m vá»¥ TNV</h2>
+
+            <div className="task-item">ðŸš¨ Request Pending</div>
+            <div className="task-item">ðŸš‘ Request Helping</div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\layouts\FloatMenu.jsx ===
+// src/layouts/FloatMenu.jsx
+
+export default function FloatMenu() {
+    return (
+        <div className="float-menu">
+            <button className="float-btn pulse-red">ðŸš¨</button>
+            <button className="float-btn">ðŸŽ</button>
+            <button className="float-btn">ðŸ§‘â€ðŸš’</button>
+            <button className="float-btn">ðŸ“</button>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\layouts\Header.jsx ===
+// src/layouts/Header.jsx
+
+import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react";
+import { useSOS } from "../store/SOSContext";
+import SOSForm from "../features/sos/SOSForm";
+
+export default function Header() {
+    const { isFormOpen, setIsFormOpen } = useSOS();
+
+    return (
+        <>
+            <header className="header">
+                {/* LEFT */}
+                <div className="header-left">
+                    <div className="logo-wrap">
+                        <div className="logo-icon">ðŸš¨</div>
+                        <div>
+                            <h1 className="logo">
+                                <span>SOS</span> MIá»€N TRUNG
+                            </h1>
+                            <p className="logo-sub">Káº¿t ná»‘i nhanh â€“ Cá»©u trá»£ ká»‹p thá»i</p>
+                        </div>
+                    </div>
+
+                    <nav className="nav-menu">
+                        <a href="#" className="nav-item"><Home size={15} />Trang chá»§</a>
+                        <a href="#" className="nav-item active"><Map size={15} />Báº£n Ä‘á»“</a>
+                        <a href="#" className="nav-item"><Gift size={15} />QuyÃªn gÃ³p</a>
+                        <a href="#" className="nav-item"><User size={15} />TNV</a>
+                        <a href="#" className="nav-item"><Mail size={15} />LiÃªn há»‡</a>
+                    </nav>
+                </div>
+
+                {/* RIGHT */}
+                <div className="header-right">
+                    <div className="search-box">
+                        <Search size={15} />
+                        <input placeholder="TÃ¬m kiáº¿m khu vá»±c, Ä‘á»‹a Ä‘iá»ƒm..." />
+                    </div>
+
+                    <button
+                        className="sos-btn"
+                        onClick={() => setIsFormOpen(true)}
+                    >
+                        <AlertTriangle size={15} />
+                        SOS
+                    </button>
+                </div>
+            </header>
+
+            {/* Modal form SOS */}
+            {isFormOpen && <SOSForm />}
+        </>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\layouts\MainLayout.jsx ===
+// src/layouts/MainLayout.jsx
+
+import Header from "./Header";
+
+
+// FloatMenu Ä‘Ã£ Ä‘Æ°á»£c tÃ­ch há»£p vÃ o AIPanel trong MapPage
+// Sidebar (drawer bÃªn trÃ¡i) giá» lÃ  LeftPanel náº±m trong MapPage
+// nÃªn MainLayout chá»‰ cáº§n Header + content
+
+export default function MainLayout({ children }) {
+    return (
+        <div className="main-layout">
+            <Header />
+            <div className="layout-body">
+                <main className="layout-content">{children}</main>
+            </div>
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\layouts\Sidebar.jsx ===
+// src/layouts/Sidebar.jsx
+
+export default function Sidebar() {
+    const stats = [
+        {
+            title: "Cáº¦N GIÃšP",
+            value: 128,
+            sub: "+12 hÃ´m nay",
+            className: "danger",
+            icon: "ðŸ†˜",
+        },
+        {
+            title: "ÄANG Xá»¬ LÃ",
+            value: 56,
+            sub: "+5 hÃ´m nay",
+            className: "warning",
+            icon: "ðŸŸ¡",
+        },
+        {
+            title: "ÄÃƒ Há»– TRá»¢",
+            value: 320,
+            sub: "+25 hÃ´m nay",
+            className: "success",
+            icon: "âœ…",
+        },
+        {
+            title: "ÄIá»‚M Cá»¨U TRá»¢",
+            value: 24,
+            sub: "+2 hÃ´m nay",
+            className: "primary",
+            icon: "ðŸ“",
+        },
+    ];
+
+    const sosList = [
+        {
+            name: "Nguyá»…n VÄƒn A",
+            time: "2 phÃºt trÆ°á»›c",
+            status: "URGENT",
+            className: "danger",
+        },
+        {
+            name: "Tráº§n Thá»‹ B",
+            time: "9 Huáº¿",
+            status: "PENDING",
+            className: "warning",
+        },
+        {
+            name: "LÃª VÄƒn C",
+            time: "8 phÃºt trÆ°á»›c",
+            status: "HELPING",
+            className: "primary",
+        },
+        {
+            name: "Pháº¡m Thá»‹ D",
+            time: "Quáº£ng Trá»‹",
+            status: "PENDING",
+            className: "warning",
+        },
+        {
+            name: "HoÃ ng VÄƒn E",
+            time: "15 phÃºt trÆ°á»›c",
+            status: "DONE",
+            className: "success",
+        },
+    ];
+
+    const hotspots = [
+        {
+            name: "Quáº£ng NgÃ£i",
+            value: 48,
+        },
+        {
+            name: "Huáº¿",
+            value: 36,
+        },
+        {
+            name: "ÄÃ  Náºµng",
+            value: 28,
+        },
+        {
+            name: "KhÃ¡nh HÃ²a",
+            value: 16,
+        },
+    ];
+
+    return (
+        <aside className="sidebar glass">
+            {/* HEADER */}
+            <div className="sidebar-brand">
+                <div className="sidebar-logo">ðŸš¨</div>
+
+                <div>
+                    <h2>SOS MIá»€N TRUNG</h2>
+
+                    <p>Káº¿t ná»‘i nhanh â€” Cá»©u trá»£ ká»‹p thá»i</p>
+                </div>
+            </div>
+
+            {/* REALTIME */}
+            <div className="sidebar-section glass">
+                <div className="section-header">
+                    <h3>THá»NG KÃŠ REALTIME</h3>
+
+                    <span className="live-dot">â— LIVE</span>
+                </div>
+
+                <div className="stats-grid">
+                    {stats.map((item, index) => (
+                        <div
+                            key={index}
+                            className={`stat-card ${item.className}`}
+                        >
+                            <div className="stat-top">
+                                <span>{item.icon}</span>
+
+                                <p>{item.title}</p>
+                            </div>
+
+                            <h1>{item.value}</h1>
+
+                            <small>{item.sub}</small>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* SOS LIST */}
+            <div className="sidebar-section glass">
+                <div className="section-header">
+                    <h3>DANH SÃCH SOS Gáº¦N ÄÃ‚Y</h3>
+
+                    <button>Xem táº¥t cáº£</button>
+                </div>
+
+                <div className="sos-list">
+                    {sosList.map((item, index) => (
+                        <div key={index} className="sos-item">
+                            <div className="sos-left">
+                                <div className={`sos-dot ${item.className}`}></div>
+
+                                <div>
+                                    <h4>{item.name}</h4>
+
+                                    <p>{item.time}</p>
+                                </div>
+                            </div>
+
+                            <span className={`badge ${item.className}`}>
+                {item.status}
+              </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* HOTSPOTS */}
+            <div className="sidebar-section glass">
+                <div className="section-header">
+                    <h3>KHU Vá»°C Ná»”I Báº¬T</h3>
+                </div>
+
+                <div className="hotspot-list">
+                    {hotspots.map((item, index) => (
+                        <div key={index} className="hotspot-item">
+                            <div className="hotspot-left">
+                                ðŸ”¥
+
+                                <span>{item.name}</span>
+                            </div>
+
+                            <div className="hotspot-count">
+                                {item.value}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* FOOTER */}
+            <div className="sidebar-footer">
+                Â© 2024 SOS Miá»n Trung â€“ Äiá»ƒm Cá»©u Trá»£
+            </div>
+        </aside>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\main.jsx ===
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./assets/styles/global.css";
+import "leaflet/dist/leaflet.css";
+
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+    <StrictMode>
+        <App />
+    </StrictMode>
+);
+
+=== C:\Users\Admin\sos-mien-trung\src\MapComponent.jsx ===
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+const MapComponent = () => {
+    // Tá»a Ä‘á»™ trung tÃ¢m Miá»n Trung
+    const position = [16.4637, 107.5908];
+
+    return (
+        <div style={{ height: "100vh", width: "100%" }}>
+            <MapContainer
+                center={position}
+                zoom={7}
+                scrollWheelZoom={true}
+                style={{ height: "100%", width: "100%", background: "#1a1a1a" }}
+            >
+                {/* Layer báº£n Ä‘á»“ mÃ u tá»‘i (Dark Mode) giá»‘ng áº£nh máº«u */}
+                <TileLayer
+                    attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                />
+
+                {/* VÃ­ dá»¥ má»™t Ä‘iá»ƒm cá»©u trá»£ */}
+                <Marker position={[16.047, 108.206]}>
+                    <Popup>
+                        <b>Nguyá»…n VÄƒn A</b> <br /> Cáº§n há»— trá»£ thá»±c pháº©m.
+                    </Popup>
+                </Marker>
+            </MapContainer>
+        </div>
+    );
+};
+
+export default MapComponent;
+
+=== C:\Users\Admin\sos-mien-trung\src\mock\mockData.js ===
+// src/mock/mockData.js
+
+const mockData = {
+    sosRequests: [
+        {
+            id: 1,
+            name: "Nguyá»…n VÄƒn A",
+            phone: "0901234567",
+            address: "Quáº£ng NgÃ£i",
+            province: "Quáº£ng NgÃ£i",
+            supportType: "LÆ°Æ¡ng thá»±c",
+            status: "urgent",
+            priority: "high",
+            lat: 15.1205,
+            lng: 108.7923,
+        },
+
+        {
+            id: 2,
+            name: "Tráº§n Thá»‹ B",
+            phone: "0911222333",
+            address: "Huáº¿",
+            province: "Huáº¿",
+            supportType: "Y táº¿",
+            status: "pending",
+            priority: "medium",
+            lat: 16.4637,
+            lng: 107.5909,
+        },
+
+        {
+            id: 3,
+            name: "LÃª VÄƒn C",
+            phone: "0988777666",
+            address: "ÄÃ  Náºµng",
+            province: "ÄÃ  Náºµng",
+            supportType: "Di táº£n",
+            status: "helping",
+            priority: "high",
+            lat: 16.0544,
+            lng: 108.2022,
+        },
+    ],
+
+    volunteers: [
+        {
+            id: 1,
+            name: "TNV 01",
+        },
+    ],
+
+    supportPoints: [
+        {
+            id: 1,
+            name: "Äiá»ƒm cá»©u trá»£ ÄÃ  Náºµng",
+            lat: 16.0544,
+            lng: 108.2022,
+        },
+    ],
+};
+
+export default mockData;
+
+=== C:\Users\Admin\sos-mien-trung\src\pages\MapPage.jsx ===
+// src/pages/MapPage.jsx
+
+import LeftPanel from "../components/panels/LeftPanel";
+import FilterPanel from "../components/panels/FilterPanel";
+import AIPanel from "../components/panels/AIPanel";
+import MapView from "../components/map/MapView";
+
+export default function MapPage() {
+    return (
+        <div className="map-page">
+            {/* Cá»™t bÃªn trÃ¡i - Thá»‘ng kÃª + Danh sÃ¡ch SOS */}
+            <LeftPanel />
+
+            {/* Khu vá»±c giá»¯a - Filter + Báº£n Ä‘á»“ */}
+            <div className="map-center">
+                <FilterPanel />
+                <div className="map-wrapper">
+                    <MapView />
+                </div>
+            </div>
+
+            {/* Cá»™t bÃªn pháº£i - AI Suggestion + Float buttons */}
+            <AIPanel />
+        </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\services\api.js ===
+// src/services/api.js
+
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: "http://localhost:5000/api",
+});
+
+export default api;
+
+=== C:\Users\Admin\sos-mien-trung\src\store\dataStore.js ===
+// src/store/dataStore.js
+
+const dataStore = {
+    realtime: true,
+    updatedAt: new Date(),
+};
+
+export default dataStore;
+
+=== C:\Users\Admin\sos-mien-trung\src\store\mapStore.js ===
+// src/store/mapStore.js
+
+const mapStore = {
+    markers: [],
+    selectedRequest: null,
+    filters: {},
+};
+
+export default mapStore;
+
+=== C:\Users\Admin\sos-mien-trung\src\utils\geoHelpers.js ===
+// src/utils/geoHelpers.js
+
+export const calculateDistance = () => {
+    return "12km";
+};
+
+export const mapCenter = [16.2, 107.9];
+
+export const regionCoordinates = {
+    daNang: [16.0544, 108.2022],
+    hue: [16.4637, 107.5909],
+};
+
+=== C:\Users\Admin\sos-mien-trung\src\utils\validators.js ===
+// src/utils/validators.js
+
+export const validatePhone = (phone) => {
+    return /^(0|\+84)[0-9]{9}$/.test(phone);
+};
+
+export const required = (value) => {
+    return value && value.trim() !== "";
+};
+
+export const validateEmergency = (level) => {
+    return ["low", "medium", "high"].includes(level);
+};
+
