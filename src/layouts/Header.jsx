@@ -16,28 +16,24 @@ export default function Header() {
             <header className="header">
                 {/* LEFT */}
                 <div className="header-left">
-                    <Link to="/" className="logo-wrap" style={{ textDecoration: 'none' }}>
+                    <Link to="/" className="logo-wrap" style={{ textDecoration: 'none', height: '100%', alignItems: 'center' }}>
                         <div className="logo-icon">🚨</div>
-                        <div>
-                            <h1 className="logo">
+                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '2px' }}>
+                            <h1 className="logo" style={{ lineHeight: '1.1', marginBottom: '2px' }}>
                                 <span>SOS</span> MIỀN TRUNG
                             </h1>
-                            <p className="logo-sub">Kết nối nhanh – Cứu trợ kịp thời</p>
+                            <p className="logo-sub" style={{ margin: 0 }}>Kết nối nhanh – Cứu trợ kịp thời</p>
                         </div>
                     </Link>
 
                     <nav className="nav-menu">
                         <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-                            <Home size={30} />Trang chủ
+                            <Home size={15} />Trang chủ
                         </Link>
                         <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
-                            <Map size={30} />Bản đồ
+                            <Map size={15} />Bản đồ
                         </Link>
-
-                        <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); alert("Tính năng Liên hệ đang được phát triển."); }}><Mail size={15} />Liên hệ</a>
-
-                        <a href="#lien-he" className="nav-item"><Mail size={30} />Liên hệ</a>
-
+                        <a href="#lien-he" className="nav-item"><Mail size={15} />Liên hệ</a>
                     </nav>
                 </div>
 
