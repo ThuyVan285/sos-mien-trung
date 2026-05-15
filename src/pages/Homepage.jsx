@@ -143,7 +143,7 @@ export default function Homepage() {
                             ))}
                         </ul>
 
-                        <button 
+                        <button
                             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 transition-all group shadow-lg shadow-blue-900/20"
                             onClick={() => navigate("/map")}
                         >
