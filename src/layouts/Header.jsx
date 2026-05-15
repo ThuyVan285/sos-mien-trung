@@ -1,10 +1,11 @@
 // src/layouts/Header.jsx
 
-import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react";
+import { Search, AlertTriangle, Home, Map, Mail } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useSOS } from "../store/SOSContext";
 import SOSForm from "../features/sos/SOSForm";
 import "./Header.css";
+
 export default function Header() {
     const { isFormOpen, setIsFormOpen } = useSOS();
     const location = useLocation();
@@ -16,38 +17,22 @@ export default function Header() {
                 <div className="header-left">
                     <Link to="/" className="logo-wrap" style={{ textDecoration: 'none', height: '100%', alignItems: 'center' }}>
                         <div className="logo-icon">🚨</div>
-
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '2px' }}>
                             <h1 className="logo" style={{ lineHeight: '1.1', marginBottom: '2px' }}>
                                 <span>SOS</span> MIỀN TRUNG
                             </h1>
                             <p className="logo-sub" style={{ margin: 0 }}>Kết nối nhanh – Cứu trợ kịp thời</p>
-
-                        <div>
-                            <h2 className="logo">
-                                <span>SOS</span> MIỀN TRUNG
-                            </h2>
-                            <p className="logo-sub">Kết nối nhanh – Cứu trợ kịp thời</p>
-
                         </div>
                     </Link>
 
                     <nav className="nav-menu">
                         <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-
                             <Home size={15} />Trang chủ
                         </Link>
                         <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
                             <Map size={15} />Bản đồ
                         </Link>
                         <a href="#lien-he" className="nav-item"><Mail size={15} />Liên hệ</a>
-
-                            <Home size={18} />Trang chủ
-                        </Link><Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
-                            <Map size={18} />Bản đồ
-                        </Link>
-                        <a href="#lien-he" className="nav-item"><Mail size={18} />Liên hệ</a>
-
                     </nav>
                 </div>
 
@@ -68,8 +53,7 @@ export default function Header() {
                 </div>
             </header>
 
-            {/* Modal form SOS */}
-            {isFormOpen && <SOSForm />}
+                {isFormOpen && <SOSForm />}
         </>
     );
 }
