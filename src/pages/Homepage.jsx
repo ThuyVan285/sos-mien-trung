@@ -4,6 +4,7 @@ import { Search, AlertTriangle, Home, Map, Mail } from "lucide-react";
 import { useSOS } from "../store/SOSContext";
 import MiniMap from "../components/map/MiniMap";
 import SOSForm from "../features/sos/SOSForm";
+import Header from "../layouts/Header.jsx";
 
 export default function Homepage() {
     const { isFormOpen, setIsFormOpen } = useSOS();
@@ -13,83 +14,7 @@ export default function Homepage() {
         <div className="min-h-screen bg-[#020817] text-[#f8fafc] font-sans w-full flex flex-col items-center overflow-x-hidden">
 
             {/* HEADER */}
-            <header className="w-full flex justify-center bg-[#020817]/95 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
-                <div className="w-full max-w-[1400px] px-8 lg:px-16 h-24 flex items-center justify-between">
-
-                    <div className="flex items-center gap-14">
-                        <Link to="/" className="flex items-center gap-4 no-underline group">
-                            <div className="text-3xl drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] group-hover:scale-110 transition-transform">
-                                🚨
-                            </div>
-
-                            <div className="space-y-1">
-                                <h2 className="text-xl font-black tracking-tight leading-none text-white">
-                                    <span className="text-blue-500">SOS</span> MIỀN TRUNG
-                                </h2>
-
-                                <p className="text-[11px] text-gray-400 font-medium tracking-[0.2em] uppercase">
-                                    Cứu trợ kịp thời
-                                </p>
-                            </div>
-                        </Link>
-
-                        <nav className="hidden md:flex items-center gap-12 text-sm font-bold">
-                            <Link
-                                to="/"
-                                className={`flex items-center gap-2 transition-colors ${
-                                    location.pathname === "/"
-                                        ? "text-cyan-400"
-                                        : "text-gray-400 hover:text-white"
-                                }`}
-                            >
-                                <Home size={17} />
-                                Trang chủ
-                            </Link>
-
-                            <Link
-                                to="/map"
-                                className={`flex items-center gap-2 transition-colors ${
-                                    location.pathname === "/map"
-                                        ? "text-cyan-400"
-                                        : "text-gray-400 hover:text-white"
-                                }`}
-                            >
-                                <Map size={17} />
-                                Bản đồ
-                            </Link>
-
-                            <a
-                                href="#lien-he"
-                                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                            >
-                                <Mail size={17} />
-                                Liên hệ
-                            </a>
-                        </nav>
-                    </div>
-
-                    <div className="flex items-center gap-5">
-                        <div className="hidden lg:flex items-center gap-3 bg-[#0f172a] border border-white/10 rounded-full px-5 py-3 transition-all">
-                            <Search size={16} className="text-gray-500" />
-
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm..."
-                                className="bg-transparent border-none text-sm text-white focus:outline-none w-36 focus:w-52 transition-all"
-                            />
-                        </div>
-
-                        <button
-                            className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white px-7 py-3 rounded-full font-bold text-sm transition-all"
-                            onClick={() => setIsFormOpen(true)}
-                        >
-                            <AlertTriangle size={16} />
-                            SOS
-                        </button>
-                    </div>
-                </div>
-            </header>
-
+            <Header />
             {/* HERO */}
             <section className="w-full flex justify-center pt-36 pb-36">
                 <div className="w-full max-w-[1400px] px-8 lg:px-16">
