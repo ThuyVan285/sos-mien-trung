@@ -28,12 +28,16 @@ export default function Header() {
 
                     <nav className="nav-menu">
                         <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-                            <Home size={15} />Trang chủ
+                            <Home size={30} />Trang chủ
                         </Link>
                         <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
-                            <Map size={15} />Bản đồ
+                            <Map size={30} />Bản đồ
                         </Link>
+<<<<<<< HEAD
                         <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); alert("Tính năng Liên hệ đang được phát triển."); }}><Mail size={15} />Liên hệ</a>
+=======
+                        <a href="#lien-he" className="nav-item"><Mail size={30} />Liên hệ</a>
+>>>>>>> 66a5d866cc843524fbf17ce6ca11638806e8ff65
                     </nav>
                 </div>
 

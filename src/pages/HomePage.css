@@ -1,0 +1,176 @@
+/* 1. Luôn đưa @import lên đầu file */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;500;600;700&display=swap");
+
+.home-page {
+    color: #ffffff;
+    background-color: #0a0a0a;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Tách biệt các section bằng khoảng cách lớn */
+section {
+    padding: 100px 0;      /* Tăng khoảng cách trên và dưới bên trong mỗi khối */
+    margin-bottom: 40px;   /* Tạo khoảng cách trống giữa khối trên và khối dưới */
+    clear: both;           /* Đảm bảo không có thành phần nào bị tràn/đè lên nhau */
+    display: block;
+    width: 100%;
+}
+
+/* Hero Section: Phần đầu trang */
+.hero-section {
+    text-align: center;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    z-index: 1;
+    overflow: hidden;
+}
+
+.hero-content h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    color: #a1a1aa;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+}
+
+/* Stats Section: Khu vực số liệu - Tách biệt bằng khung */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    background: rgba(255, 255, 255, 0.03); /* Nền hơi xám nhẹ để tách khối */
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 60px;
+    margin-top: -100px; /* Đẩy lên một chút để gối vào phần Hero */
+    position: relative;
+    z-index: 10;
+    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    z-index: 1;
+    overflow: hidden;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #3b82f6;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+/* Features Section: Các tính năng - Tách thành các card riêng biệt */
+.features-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    z-index: 1;
+    overflow: hidden;
+}
+
+.feature-card {
+    padding: 40px;
+    background: #111111;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    border-color: #3b82f6;
+}
+
+.feature-icon {
+    margin-bottom: 20px;
+    width: 48px;
+    height: 48px;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
+
+.feature-card p {
+    color: #a1a1aa;
+    line-height: 1.6;
+}
+
+/* CTA Section: Phần cuối trang - Màu sắc khác biệt để kết thúc */
+.cta-section {
+    text-align: center;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1e3a8a 100%);
+    border-radius: 32px;
+    margin-bottom: 80px;
+    padding: 100px 40px;
+    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    z-index: 1;
+    overflow: hidden;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Nút bấm dùng chung */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+h1, h2, h3 {
+    margin-bottom: 24px;   /* Khoảng cách từ tiêu đề xuống nội dung bên dưới */
+}
+
+p {
+    margin-bottom: 30px;   /* Khoảng cách từ đoạn văn xuống nút bấm hoặc phần tiếp theo */
+    line-height: 1.8;      /* Giúp các dòng chữ cách nhau ra dễ đọc hơn */
+}
+.stats-container, .features-grid {
+    display: flex;
+    gap: 50px;             /* Tăng khoảng cách giữa các cột lên 50px */
+    flex-wrap: wrap;       /* Đảm bảo nếu màn hình nhỏ nó sẽ tự xuống dòng chứ không ép vào nhau */
+}
+.btn-primary { background: #3b82f6; color: white; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-outline { border: 1px solid #3f3f46; color: white; }
+
+.btn:hover { opacity: 0.9; transform: scale(1.05); }

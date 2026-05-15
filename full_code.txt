@@ -1,1285 +1,108 @@
-﻿=== C:\Users\Admin\sos-mien-trung\src\App.jsx ===
-// src/App.jsx
+﻿=== C:\Users\Admin\sos-mien-trung\src\components\common\Button.jsx ===
+// src/components/common/Button.jsx
 
-import 'leaflet/dist/leaflet.css';
-import "./assets/styles/global.css";
-import { SOSProvider } from "./store/SOSContext";
-import MainLayout from "./layouts/MainLayout";
-import MapPage from "./pages/MapPage";
+import React from 'react';
+import './Button.css'; // Náº¿u báº¡n cÃ³ file CSS riÃªng
 
-export default function App() {
+const Button = ({ 
+    children, 
+    onClick, 
+    type = 'button', 
+    variant = 'primary', // primary, secondary, danger, success, warning
+    size = 'medium',    // small, medium, large
+    disabled = false,
+    className = '',
+    icon: Icon,
+    ...props 
+}) => {
     return (
-        <SOSProvider>
-            <div className="app dark-theme">
-                <MainLayout>
-                    <MapPage />
-                </MainLayout>
-            </div>
-        </SOSProvider>
+        <button
+            type={type}
+            className={`btn btn-${variant} btn-${size} ${className} ${disabled ? 'btn-disabled' : ''}`}
+            onClick={!disabled ? onClick : undefined}
+            disabled={disabled}
+            {...props}
+        >
+            {Icon && <span className="btn-icon">{Icon}</span>}
+            {children}
+        </button>
     );
-}
+};
 
-=== C:\Users\Admin\sos-mien-trung\src\assets\styles\App.css ===
-
-=== C:\Users\Admin\sos-mien-trung\src\assets\styles\global.css ===
-/* src/assets/styles/global.css */
-
-@import "./variables.css";
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;500;600;700&display=swap");
-
-/* =========================
-   RESET
-========================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html, body, #root {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    background: #050816;
-    color: white;
-    font-family: "Inter", sans-serif;
-    overflow: hidden;
-}
-
-/* =========================
-   MAIN LAYOUT
-========================= */
-.main-layout {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.layout-body {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-}
-
-.layout-content {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-}
-
-/* =========================
-   HEADER
-========================= */
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-    width: 100%;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: rgba(5, 8, 22, 0.95);
-    backdrop-filter: blur(18px);
-    flex-shrink: 0;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
-.logo-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
-    box-shadow: 0 0 16px rgba(255,77,79,0.5);
-    font-size: 18px;
-}
-
-.logo {
-    font-family: "Orbitron", sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: white;
-    line-height: 1;
-    letter-spacing: 1px;
-}
-
-.logo span {
-    color: #FF4D4F;
-}
-
-.logo-sub {
-    margin-top: 3px;
-    font-size: 11px;
-    color: #8b96ad;
-}
-
-.nav-menu {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.nav-item {
-    height: 36px;
-    padding: 0 14px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #b0bcd4;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: 0.2s;
-    border: 1px solid transparent;
-}
-
-.nav-item:hover {
-    background: rgba(255,255,255,0.06);
-    color: white;
-}
-
-.nav-item.active {
-    background: rgba(29,155,240,0.12);
-    border-color: rgba(29,155,240,0.35);
-    color: #4db8ff;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-box {
-    width: 300px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: #B8C1D9;
-}
-
-.search-box input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: white;
-    font-size: 13px;
-}
-
-.search-box input::placeholder { color: #7f8ba3; }
-
-.sos-btn {
-    height: 38px;
-    padding: 0 20px;
-    border: none;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
-    color: white;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(255,77,79,0.45);
-    transition: 0.2s;
-}
-
-.sos-btn:hover {
-    transform: scale(1.04);
-    box-shadow: 0 0 30px rgba(255,77,79,0.7);
-}
-
-/* =========================
-   MAP PAGE â€” 3 Cá»˜T CHÃNH
-========================= */
-.map-page {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-}
-
-/* Cá»™t trÃ¡i */
-.left-panel {
-    width: 280px;
-    min-width: 280px;
-    height: 100%;
-    overflow-y: auto;
-    padding: 12px;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    background: linear-gradient(180deg, rgba(7,12,26,0.99), rgba(5,8,22,0.99));
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.1) transparent;
-}
-
-.left-panel::-webkit-scrollbar { width: 3px; }
-.left-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-
-/* Cá»™t giá»¯a */
-.map-center {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-}
-
-/* Cá»™t pháº£i */
-.ai-panel {
-    width: 280px;
-    min-width: 280px;
-    height: 100%;
-    padding: 12px;
-    border-left: 1px solid rgba(255,255,255,0.06);
-    background: linear-gradient(180deg, rgba(7,12,26,0.99), rgba(5,8,22,0.99));
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.1) transparent;
-}
-
-/* =========================
-   FILTER BAR
-========================= */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    background: rgba(7, 12, 26, 0.92);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    flex-shrink: 0;
-    z-index: 10;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.filter-group label {
-    font-size: 10px;
-    color: #8b96ad;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.filter-group select {
-    height: 34px;
-    padding: 0 28px 0 10px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: white;
-    font-size: 12px;
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b96ad' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    min-width: 150px;
-}
-
-.filter-group select:focus {
-    border-color: rgba(29,155,240,0.4);
-}
-
-.filter-advanced-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 34px;
-    padding: 0 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: #b0bcd4;
-    font-size: 12px;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-top: 13px;
-}
-
-.filter-advanced-btn:hover {
-    border-color: rgba(29,155,240,0.4);
-    color: #4db8ff;
-}
-
-/* =========================
-   MAP WRAPPER
-========================= */
-.map-wrapper {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-}
-
-.leaflet-container {
-    width: 100%;
-    height: 100%;
-    background: #0d1117;
-}
-
-/* =========================
-   MAP â€” LEGEND
-========================= */
-.map-legend {
-    position: absolute;
-    bottom: 40px;
-    left: 14px;
-    z-index: 999;
-    background: rgba(7, 12, 26, 0.88);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 12px 14px;
-    backdrop-filter: blur(12px);
-}
-
-.legend-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #8b96ad;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #d7deed;
-    padding: 3px 0;
-}
-
-.legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.legend-ring {
-    background: transparent !important;
-    border: 2px solid #37E2D5;
-}
-
-/* =========================
-   MAP â€” CUSTOM CONTROLS
-========================= */
-.map-controls {
-    position: absolute;
-    bottom: 40px;
-    right: 14px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.map-ctrl-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(7,12,26,0.9);
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.map-ctrl-btn:hover {
-    background: rgba(29,155,240,0.2);
-    border-color: rgba(29,155,240,0.4);
-}
-
-/* =========================
-   MAP â€” POPUP
-========================= */
-.leaflet-popup-content-wrapper {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
-
-.leaflet-popup-tip-container { display: none; }
-.leaflet-popup-content { margin: 0 !important; }
-
-.popup-card {
-    background: rgba(10, 15, 30, 0.97);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-    padding: 14px;
-    width: 260px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-}
-
-.popup-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.popup-header strong {
-    flex: 1;
-    font-size: 14px;
-    color: white;
-}
-
-.popup-badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-    color: white;
-    letter-spacing: 0.5px;
-}
-
-.popup-close {
-    background: transparent;
-    border: none;
-    color: #8b96ad;
-    cursor: pointer;
-    font-size: 12px;
-    padding: 2px;
-}
-
-.popup-body {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 12px;
-}
-
-.popup-body p {
-    font-size: 12px;
-    color: #b0bcd4;
-}
-
-.popup-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.popup-btn {
-    flex: 1;
-    height: 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.popup-btn.accept { background: #1D9BF0; color: white; }
-.popup-btn.done { background: #22C55E; color: white; }
-.popup-btn.cancel { background: rgba(255,77,79,0.15); color: #FF4D4F; border: 1px solid rgba(255,77,79,0.3); }
-
-/* =========================
-   CUSTOM MARKER
-========================= */
-.custom-marker-wrapper {
-    background: transparent;
-    border: none;
-}
-
-.marker-glow {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    position: relative;
-    animation: markerFloat 2s ease-in-out infinite;
-}
-
-.marker-pulse {
-    position: absolute;
-    inset: -8px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-    animation: markerPulse 2s infinite;
-    opacity: 0.8;
-}
-
-@keyframes markerPulse {
-    0% { transform: scale(0.8); opacity: 0.8; }
-    70% { transform: scale(2); opacity: 0; }
-    100% { transform: scale(0.8); opacity: 0; }
-}
-
-@keyframes markerFloat {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-3px); }
-    100% { transform: translateY(0px); }
-}
-
-/* =========================
-   LEFT PANEL SECTIONS
-========================= */
-.sidebar-section {
-    padding: 14px;
-    border-radius: 16px;
-    background: rgba(16,23,38,0.7);
-    border: 1px solid rgba(255,255,255,0.06);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.section-header h3 {
-    font-size: 11px;
-    font-weight: 700;
-    color: #4db8ff;
-    letter-spacing: 0.5px;
-}
-
-.section-header button {
-    background: transparent;
-    border: none;
-    color: #4db8ff;
-    cursor: pointer;
-    font-size: 11px;
-}
-
-.live-dot {
-    font-size: 11px;
-    color: #22C55E;
-    font-weight: 700;
-    animation: livePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes livePulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
-/* =========================
-   STATS GRID
-========================= */
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.stat-card {
-    padding: 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.02);
-    transition: 0.2s;
-}
-
-.stat-card:hover { transform: translateY(-2px); }
-
-.stat-top {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-}
-
-.stat-top p {
-    font-size: 10px;
-    font-weight: 700;
-    color: #8b96ad;
-    letter-spacing: 0.3px;
-}
-
-.stat-card h1 {
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 4px;
-}
-
-.stat-card small { font-size: 11px; color: #8b96ad; }
-
-.stat-card.danger  { border-color: rgba(255,77,79,0.4);   box-shadow: 0 0 16px rgba(255,77,79,0.1); }
-.stat-card.warning { border-color: rgba(250,204,21,0.4);  box-shadow: 0 0 16px rgba(250,204,21,0.1); }
-.stat-card.success { border-color: rgba(34,197,94,0.4);   box-shadow: 0 0 16px rgba(34,197,94,0.1); }
-.stat-card.primary { border-color: rgba(29,155,240,0.4);  box-shadow: 0 0 16px rgba(29,155,240,0.1); }
-
-.stat-card.danger h1  { color: #FF4D4F; }
-.stat-card.warning h1 { color: #FACC15; }
-.stat-card.success h1 { color: #22C55E; }
-.stat-card.primary h1 { color: #1D9BF0; }
-
-/* =========================
-   SOS LIST
-========================= */
-.sos-list { display: flex; flex-direction: column; gap: 8px; }
-
-.sos-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-
-.sos-item:last-child { border-bottom: none; }
-
-.sos-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sos-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.sos-dot.danger  { background: #FF4D4F; box-shadow: 0 0 6px rgba(255,77,79,0.8); }
-.sos-dot.warning { background: #FACC15; box-shadow: 0 0 6px rgba(250,204,21,0.8); }
-.sos-dot.primary { background: #1D9BF0; box-shadow: 0 0 6px rgba(29,155,240,0.8); }
-.sos-dot.success { background: #22C55E; box-shadow: 0 0 6px rgba(34,197,94,0.8); }
-
-.sos-left h4 { font-size: 12px; font-weight: 600; }
-.sos-left p  { font-size: 11px; color: #8b96ad; margin-top: 1px; }
-
-.badge {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.3px;
-}
-
-.badge.danger  { background: rgba(255,77,79,0.15);  color: #FF4D4F;  border: 1px solid rgba(255,77,79,0.3); }
-.badge.warning { background: rgba(250,204,21,0.12); color: #FACC15;  border: 1px solid rgba(250,204,21,0.3); }
-.badge.primary { background: rgba(29,155,240,0.12); color: #4db8ff;  border: 1px solid rgba(29,155,240,0.3); }
-.badge.success { background: rgba(34,197,94,0.12);  color: #22C55E;  border: 1px solid rgba(34,197,94,0.3); }
-
-/* =========================
-   HOTSPOT LIST
-========================= */
-.hotspot-list { display: flex; flex-direction: column; gap: 8px; }
-
-.hotspot-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-.hotspot-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-}
-
-.hotspot-count {
-    background: rgba(255,77,79,0.15);
-    color: #FF4D4F;
-    border: 1px solid rgba(255,77,79,0.3);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-}
-
-/* =========================
-   SIDEBAR FOOTER
-========================= */
-.sidebar-footer {
-    font-size: 10px;
-    color: #4a5568;
-    text-align: center;
-    padding: 8px 0;
-    margin-top: auto;
-}
-
-/* =========================
-   AI PANEL
-========================= */
-.ai-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-}
-
-.ai-panel-header span:first-child {
-    font-size: 11px;
-    font-weight: 700;
-    color: #4db8ff;
-    letter-spacing: 0.5px;
-}
-
-.ai-badge {
-    background: linear-gradient(135deg, #1D9BF0, #0A84FF);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-    color: white;
-}
-
-.ai-suggestions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ai-card {
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid;
-}
-
-.ai-card-danger {
-    background: rgba(255,77,79,0.08);
-    border-color: rgba(255,77,79,0.25);
-}
-
-.ai-card-info {
-    background: rgba(29,155,240,0.08);
-    border-color: rgba(29,155,240,0.25);
-}
-
-.ai-card-title {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    line-height: 1.4;
-    margin-bottom: 6px;
-}
-
-.ai-card-desc {
-    font-size: 11px;
-    color: #8b96ad;
-    line-height: 1.5;
-    padding-left: 24px;
-}
-
-.ai-detail-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(29,155,240,0.25);
-    background: rgba(29,155,240,0.06);
-    color: #4db8ff;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.ai-detail-btn:hover {
-    background: rgba(29,155,240,0.14);
-}
-
-/* =========================
-   FLOAT ACTION BUTTONS
-========================= */
-.float-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: auto;
-    padding-top: 8px;
-}
-
-.float-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    height: 52px;
-    padding: 0 16px;
-    border-radius: 14px;
-    border: none;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    cursor: pointer;
-    transition: 0.2s;
-    color: white;
-}
-
-.float-action-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.2);
-}
-
-.float-action-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.float-action-label {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-/* =========================
-   GLASS
-========================= */
-.glass {
-    background: rgba(16, 23, 38, 0.55);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px rgba(255,255,255,0.05);
-    border-radius: 18px;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 1100px) {
-    .left-panel { width: 240px; min-width: 240px; }
-    .ai-panel { width: 240px; min-width: 240px; }
-}
-
-@media (max-width: 768px) {
-    .left-panel { display: none; }
-    .ai-panel { display: none; }
-    .header { padding: 0 12px; }
-    .nav-menu { display: none; }
-    .search-box { width: 160px; }
-    .filter-bar { overflow-x: auto; }
-}
-
-/* =========================
-   SOS FORM MODAL
-========================= */
-.sos-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(6px);
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.sos-modal {
-    width: 100%;
-    max-width: 600px;
-    background: rgba(10, 15, 30, 0.98);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,77,79,0.15);
-    overflow: hidden;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-}
-
-.sos-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,77,79,0.05);
-    flex-shrink: 0;
-}
-
-.sos-modal-title {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.sos-modal-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
-    box-shadow: 0 0 20px rgba(255,77,79,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-}
-
-.sos-modal-title h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-}
-
-.sos-modal-title p {
-    font-size: 12px;
-    color: #8b96ad;
-    margin-top: 2px;
-}
-
-.sos-close-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: #8b96ad;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.sos-close-btn:hover {
-    background: rgba(255,77,79,0.15);
-    border-color: rgba(255,77,79,0.3);
-    color: #FF4D4F;
-}
-
-.sos-modal-body {
-    padding: 20px 24px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.1) transparent;
-}
-
-.sos-modal-footer {
-    display: flex;
-    gap: 10px;
-    padding: 16px 24px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    flex-shrink: 0;
-}
-
-/* Form elements */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-
-.form-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #b0bcd4;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.form-input {
-    width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: white;
-    font-size: 13px;
-    outline: none;
-    transition: 0.2s;
-    font-family: "Inter", sans-serif;
-}
-
-.form-input:focus {
-    border-color: rgba(29,155,240,0.5);
-    background: rgba(29,155,240,0.04);
-    box-shadow: 0 0 0 3px rgba(29,155,240,0.1);
-}
-
-.form-input.error {
-    border-color: rgba(255,77,79,0.5);
-    box-shadow: 0 0 0 3px rgba(255,77,79,0.1);
-}
-
-.form-input::placeholder { color: #4a5568; }
-
-.form-textarea {
-    height: auto !important;
-    padding: 10px 14px;
-    resize: none;
-    line-height: 1.5;
-}
-
-.form-select-wrap {
-    position: relative;
-}
-
-.form-select {
-    appearance: none;
-    cursor: pointer;
-}
-
-.form-select option {
-    background: #0d1117;
-    color: white;
-}
-
-.select-arrow {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #8b96ad;
-    pointer-events: none;
-}
-
-.form-error {
-    font-size: 11px;
-    color: #FF4D4F;
-    margin-top: 2px;
-}
-
-/* Má»©c Ä‘á»™ kháº©n cáº¥p */
-.level-options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.level-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
-    color: #b0bcd4;
-    font-size: 13px;
-    cursor: pointer;
-    text-align: left;
-    transition: 0.2s;
-}
-
-.level-btn:hover {
-    background: rgba(255,255,255,0.06);
-    color: white;
-}
-
-.level-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* Submit + Cancel buttons */
-.sos-submit-btn {
-    flex: 1;
-    height: 46px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ff4d4f, #ff1f1f);
-    color: white;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 0 20px rgba(255,77,79,0.4);
-    transition: 0.2s;
-}
-
-.sos-submit-btn:hover:not(:disabled) {
-    transform: scale(1.02);
-    box-shadow: 0 0 30px rgba(255,77,79,0.6);
-}
-
-.sos-submit-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.sos-cancel-btn {
-    height: 46px;
-    padding: 0 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: #b0bcd4;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.sos-cancel-btn:hover {
-    background: rgba(255,255,255,0.08);
-    color: white;
-}
-
-/* Loading spinner */
-.loading-spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Success screen */
-.sos-success {
-    padding: 40px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 16px;
-}
-
-.success-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(34,197,94,0.1);
-    border: 2px solid rgba(34,197,94,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sos-success h2 {
-    font-size: 22px;
-    font-weight: 700;
-    color: white;
-}
-
-.sos-success p {
-    font-size: 14px;
-    color: #8b96ad;
-    line-height: 1.6;
-}
-
-.success-info {
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.success-info-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-}
-
-.success-info-row span { color: #8b96ad; }
-.success-info-row strong { color: white; }
-
-=== C:\Users\Admin\sos-mien-trung\src\assets\styles\variables.css ===
-/* src/assets/styles/variables.css */
-
-:root {
-    --bg: #050816;
-    --card: #101726;
-    --border: rgba(255,255,255,0.08);
-
-    --text: #FFFFFF;
-    --secondary: #B8C1D9;
-
-    --blue: #1D9BF0;
-    --cyan: #37E2D5;
-    --red: #FF4D4F;
-    --green: #22C55E;
-    --yellow: #FACC15;
-
-    --radius: 18px;
-
-    --shadow-blue:
-            0 0 20px rgba(29,155,240,0.35);
-}
-
-=== C:\Users\Admin\sos-mien-trung\src\components\common\Button.jsx ===
+export default Button;
 
 === C:\Users\Admin\sos-mien-trung\src\components\common\Input.jsx ===
+// src/components/common/Input.jsx
+
+import React from 'react';
+
+const Input = ({ 
+    label, 
+    error, 
+    type = 'text', 
+    className = '', 
+    ...props 
+}) => {
+    return (
+        <div className={`form-group ${className}`}>
+            {label && <label className="form-label">{label}</label>}
+            <input 
+                type={type} 
+                className={`form-input ${error ? 'error' : ''}`} 
+                {...props} 
+            />
+            {error && <p className="form-error">{error}</p>}
+        </div>
+    );
+};
+
+export default Input;
 
 === C:\Users\Admin\sos-mien-trung\src\components\common\Modal.jsx ===
+// src/components/common/Modal.jsx
+
+import React from 'react';
+import { X } from 'lucide-react';
+
+const Modal = ({ 
+    isOpen, 
+    onClose, 
+    title, 
+    children, 
+    footer,
+    maxWidth = '600px'
+}) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="sos-overlay" onClick={onClose}>
+            <div 
+                className="sos-modal" 
+                style={{ maxWidth }} 
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="sos-modal-header">
+                    <div className="sos-modal-title">
+                        <h2>{title}</h2>
+                    </div>
+                    <button className="sos-close-btn" onClick={onClose}>
+                        <X size={20} />
+                    </button>
+                </div>
+                <div className="sos-modal-body">
+                    {children}
+                </div>
+                {footer && (
+                    <div className="sos-modal-footer">
+                        {footer}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default Modal;
 
 === C:\Users\Admin\sos-mien-trung\src\components\map\Heatmap.jsx ===
 // src/components/map/Heatmap.jsx
@@ -1303,6 +126,7 @@ import {
     Popup,
     Polyline,
     Circle,
+    useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -1334,6 +158,25 @@ const createCustomIcon = (status) => {
 const STATUS_LABEL = { urgent:"URGENT", pending:"PENDING", helping:"HELPING", done:"DONE" };
 const STATUS_COLOR = { urgent:"#FF4D4F", pending:"#FACC15", helping:"#1D9BF0", done:"#22C55E" };
 
+// Component con Ä‘á»ƒ truy cáº­p map instance qua useMap
+function MapControls() {
+    const map = useMap();
+
+    const handleZoomIn = () => map.zoomIn();
+    const handleZoomOut = () => map.zoomOut();
+    const handleLocate = () => {
+        map.locate({ setView: true, maxZoom: 16 });
+    };
+
+    return (
+        <div className="map-controls">
+            <button className="map-ctrl-btn" onClick={handleZoomIn} title="PhÃ³ng to">ï¼‹</button>
+            <button className="map-ctrl-btn" onClick={handleZoomOut} title="Thu nhá»">ï¼</button>
+            <button className="map-ctrl-btn" onClick={handleLocate} title="Äá»‹nh vá»‹ cá»§a tÃ´i">âŠ™</button>
+        </div>
+    );
+}
+
 export default function MapView() {
     const { sosRequests, updateStatus } = useSOS();
     const center = [16.2, 107.9];
@@ -1346,8 +189,8 @@ export default function MapView() {
             zoomControl={false}
         >
             <TileLayer
-                attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                attribution="&copy; VietMap"
+                url="https://maps.vietmap.vn/api/tm/{z}/{x}/{y}.png?apikey=1581064bec7437481b89c58cd3bfeada9ba10b0dbed1cd4c"
             />
 
             <Polyline
@@ -1416,11 +259,7 @@ export default function MapView() {
                 </div>
             </div>
 
-            <div className="map-controls">
-                <button className="map-ctrl-btn">ï¼‹</button>
-                <button className="map-ctrl-btn">ï¼</button>
-                <button className="map-ctrl-btn">âŠ™</button>
-            </div>
+            <MapControls />
         </MapContainer>
     );
 }
@@ -1446,6 +285,59 @@ export default function CustomMarker({ type, priority, status }) {
         >
             {priority}
         </div>
+    );
+}
+
+=== C:\Users\Admin\sos-mien-trung\src\components\map\MiniMap.jsx ===
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Khá»Ÿi táº¡o cÃ¡c Icon náº¿u cáº§n (trÃ¡nh lá»—i hiá»ƒn thá»‹ icon máº·c Ä‘á»‹nh cá»§a Leaflet)
+import L from 'leaflet';
+const redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+});
+
+export default function MiniMap({ interactive = false, dataSOS = [] }) {
+    // Tá»a Ä‘á»™ trung tÃ¢m miá»n Trung (ÄÃ  Náºµng)
+    const center = [16.0544, 108.2022];
+
+    return (
+        <MapContainer
+            center={center}
+            zoom={7}
+            style={{ width: '100%', height: '100%' }}
+            // VÃ´ hiá»‡u hÃ³a tÆ°Æ¡ng tÃ¡c náº¿u lÃ  MiniMap á»Ÿ trang chá»§
+            dragging={interactive}
+            touchZoom={interactive}
+            doubleClickZoom={interactive}
+            scrollWheelZoom={interactive}
+            zoomControl={interactive}
+            attributionControl={false}
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://vietmap.vn/">VietMap</a>'
+                url="https://maps.vietmap.vn/api/tm/{z}/{x}/{y}.png?apikey=1581064bec7437481b89c58cd3bfeada9ba10b0dbed1cd4c"
+            />
+
+            {/* Hiá»ƒn thá»‹ cÃ¡c Ä‘iá»ƒm SOS thá»±c táº¿ tá»« dá»¯ liá»‡u */}
+            {dataSOS.map((item, index) => (
+                <Marker
+                    key={index}
+                    position={[item.lat, item.lng]}
+                    icon={redIcon}
+                >
+                    {interactive && (
+                        <Popup>
+                            <p className="font-bold">{item.name}</p>
+                            <p className="text-xs">{item.message}</p>
+                        </Popup>
+                    )}
+                </Marker>
+            ))}
+        </MapContainer>
     );
 }
 
@@ -1475,8 +367,11 @@ export default function RequestPopup({ request }) {
 // src/components/panels/AIPanel.jsx
 
 import { ArrowRight, AlertTriangle, Bot } from "lucide-react";
+import { useSOS } from "../../store/SOSContext";
 
 export default function AIPanel() {
+    const { setIsFormOpen } = useSOS();
+
     const suggestions = [
         {
             icon: <AlertTriangle size={16} color="#FF4D4F" />,
@@ -1492,11 +387,51 @@ export default function AIPanel() {
         },
     ];
 
+    const handleLocateMe = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    alert(`Vá»‹ trÃ­ cá»§a báº¡n: ${latitude}, ${longitude}. Báº£n Ä‘á»“ sáº½ tá»± Ä‘á»™ng di chuyá»ƒn Ä‘áº¿n Ä‘Ã¢y.`);
+                },
+                (error) => {
+                    alert("KhÃ´ng thá»ƒ láº¥y vá»‹ trÃ­: " + error.message);
+                }
+            );
+        } else {
+            alert("TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ Ä‘á»‹nh vá»‹.");
+        }
+    };
+
     const floatBtns = [
-        { label: "Gá»¬I SOS", icon: "ðŸš¨", color: "#FF4D4F", shadow: "rgba(255,77,79,0.5)" },
-        { label: "QUYÃŠN GÃ“P", icon: "ðŸŽ", color: "#7C3AED", shadow: "rgba(124,58,237,0.5)" },
-        { label: "TÃŒNH NGUYá»†N VIÃŠN", icon: "ðŸ‘¨â€ðŸš’", color: "#D97706", shadow: "rgba(217,119,6,0.5)" },
-        { label: "Äá»ŠNH Vá»Š TÃ”I", icon: "ðŸ“", color: "#22C55E", shadow: "rgba(34,197,94,0.5)" },
+        { 
+            label: "Gá»¬I SOS", 
+            icon: "ðŸš¨", 
+            color: "#FF4D4F", 
+            shadow: "rgba(255,77,79,0.5)",
+            onClick: () => setIsFormOpen(true)
+        },
+        { 
+            label: "QUYÃŠN GÃ“P", 
+            icon: "ðŸŽ", 
+            color: "#7C3AED", 
+            shadow: "rgba(124,58,237,0.5)",
+            onClick: () => alert("Chá»©c nÄƒng quyÃªn gÃ³p Ä‘ang Ä‘Æ°á»£c phÃ¡t triá»ƒn!")
+        },
+        { 
+            label: "TÃŒNH NGUYá»†N VIÃŠN", 
+            icon: "ðŸ‘¨â€ðŸš’", 
+            color: "#D97706", 
+            shadow: "rgba(217,119,6,0.5)",
+            onClick: () => alert("ÄÄƒng kÃ½ tÃ¬nh nguyá»‡n viÃªn Ä‘ang Ä‘Æ°á»£c xá»­ lÃ½!")
+        },
+        { 
+            label: "Äá»ŠNH Vá»Š TÃ”I", 
+            icon: "ðŸ“", 
+            color: "#22C55E", 
+            shadow: "rgba(34,197,94,0.5)",
+            onClick: handleLocateMe
+        },
     ];
 
     return (
@@ -1518,7 +453,7 @@ export default function AIPanel() {
                     </div>
                 ))}
 
-                <button className="ai-detail-btn">
+                <button className="ai-detail-btn" onClick={() => alert("Äang phÃ¢n tÃ­ch dá»¯ liá»‡u AI...")}>
                     Xem phÃ¢n tÃ­ch chi tiáº¿t
                     <ArrowRight size={14} />
                 </button>
@@ -1527,7 +462,11 @@ export default function AIPanel() {
             {/* Float Action Buttons */}
             <div className="float-actions">
                 {floatBtns.map((btn, i) => (
-                    <button key={i} className="float-action-btn">
+                    <button 
+                        key={i} 
+                        className="float-action-btn"
+                        onClick={btn.onClick}
+                    >
                         <span
                             className="float-action-icon"
                             style={{
@@ -1597,7 +536,7 @@ export default function FilterPanel() {
                 </select>
             </div>
 
-            <button className="filter-advanced-btn">
+            <button className="filter-advanced-btn" onClick={() => alert("Chá»©c nÄƒng bá»™ lá»c nÃ¢ng cao sáº½ Ä‘Æ°á»£c cáº­p nháº­t sá»›m!")}>
                 <SlidersHorizontal size={15} />
                 Bá»™ lá»c nÃ¢ng cao
             </button>
@@ -1606,9 +545,7 @@ export default function FilterPanel() {
 }
 
 === C:\Users\Admin\sos-mien-trung\src\components\panels\LeftPanel.jsx ===
-// src/components/panels/LeftPanel.jsx
 
-import mockData from "../../mock/mockData";
 
 const stats = [
     { title: "Cáº¦N GIÃšP", value: 128, sub: "+12 hÃ´m nay", className: "danger", icon: "ðŸ†˜" },
@@ -1659,7 +596,7 @@ export default function LeftPanel() {
             <div className="sidebar-section">
                 <div className="section-header">
                     <h3>DANH SÃCH SOS Gáº¦N ÄÃ‚Y</h3>
-                    <button>Xem táº¥t cáº£</button>
+                    <button onClick={() => alert("Chuyá»ƒn Ä‘áº¿n trang danh sÃ¡ch chi tiáº¿t...")}>Xem táº¥t cáº£</button>
                 </div>
                 <div className="sos-list">
                     {sosList.map((item, i) => (
@@ -1753,58 +690,6 @@ export default function CancelModal() {
 }
 
 === C:\Users\Admin\sos-mien-trung\src\features\sos\Marker.js ===
-
-=== C:\Users\Admin\sos-mien-trung\src\features\sos\SOSContext.jsx ===
-// src/store/SOSContext.jsx
-
-import { createContext, useContext, useState } from "react";
-import mockData from "../mock/mockData";
-
-const SOSContext = createContext(null);
-
-export function SOSProvider({ children }) {
-    const [sosRequests, setSosRequests] = useState(mockData.sosRequests);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [selectedRequest, setSelectedRequest] = useState(null);
-
-    const addSOSRequest = (newRequest) => {
-        const request = {
-            ...newRequest,
-            id: Date.now(),
-            status: "urgent",
-            priority: newRequest.level,
-            createdAt: new Date(),
-        };
-        setSosRequests((prev) => [request, ...prev]);
-        return request;
-    };
-
-    const updateStatus = (id, status) => {
-        setSosRequests((prev) =>
-            prev.map((r) => (r.id === id ? { ...r, status } : r))
-        );
-    };
-
-    return (
-        <SOSContext.Provider
-            value={{
-                sosRequests,
-                isFormOpen,
-                setIsFormOpen,
-                selectedRequest,
-                setSelectedRequest,
-                addSOSRequest,
-                updateStatus,
-            }}
-        >
-            {children}
-        </SOSContext.Provider>
-    );
-}
-
-export function useSOS() {
-    return useContext(SOSContext);
-}
 
 === C:\Users\Admin\sos-mien-trung\src\features\sos\SOSForm.jsx ===
 // src/features/sos/SOSForm.jsx
@@ -2137,18 +1022,20 @@ export default function FloatMenu() {
 // src/layouts/Header.jsx
 
 import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useSOS } from "../store/SOSContext";
 import SOSForm from "../features/sos/SOSForm";
 
 export default function Header() {
     const { isFormOpen, setIsFormOpen } = useSOS();
+    const location = useLocation();
 
     return (
         <>
             <header className="header">
                 {/* LEFT */}
                 <div className="header-left">
-                    <div className="logo-wrap">
+                    <Link to="/" className="logo-wrap" style={{ textDecoration: 'none' }}>
                         <div className="logo-icon">ðŸš¨</div>
                         <div>
                             <h1 className="logo">
@@ -2156,14 +1043,16 @@ export default function Header() {
                             </h1>
                             <p className="logo-sub">Káº¿t ná»‘i nhanh â€“ Cá»©u trá»£ ká»‹p thá»i</p>
                         </div>
-                    </div>
+                    </Link>
 
                     <nav className="nav-menu">
-                        <a href="#" className="nav-item"><Home size={15} />Trang chá»§</a>
-                        <a href="#" className="nav-item active"><Map size={15} />Báº£n Ä‘á»“</a>
-                        <a href="#" className="nav-item"><Gift size={15} />QuyÃªn gÃ³p</a>
-                        <a href="#" className="nav-item"><User size={15} />TNV</a>
-                        <a href="#" className="nav-item"><Mail size={15} />LiÃªn há»‡</a>
+                        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+                            <Home size={30} />Trang chá»§
+                        </Link>
+                        <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
+                            <Map size={30} />Báº£n Ä‘á»“
+                        </Link>
+                        <a href="#lien-he" className="nav-item"><Mail size={30} />LiÃªn há»‡</a>
                     </nav>
                 </div>
 
@@ -2393,60 +1282,11 @@ export default function Sidebar() {
 
             {/* FOOTER */}
             <div className="sidebar-footer">
-                Â© 2024 SOS Miá»n Trung â€“ Äiá»ƒm Cá»©u Trá»£
+                Â© 2026 SOS Miá»n Trung â€“ Äiá»ƒm Cá»©u Trá»£
             </div>
         </aside>
     );
 }
-
-=== C:\Users\Admin\sos-mien-trung\src\main.jsx ===
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./assets/styles/global.css";
-import "leaflet/dist/leaflet.css";
-
-import App from "./App.jsx";
-
-createRoot(document.getElementById("root")).render(
-    <StrictMode>
-        <App />
-    </StrictMode>
-);
-
-=== C:\Users\Admin\sos-mien-trung\src\MapComponent.jsx ===
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-
-const MapComponent = () => {
-    // Tá»a Ä‘á»™ trung tÃ¢m Miá»n Trung
-    const position = [16.4637, 107.5908];
-
-    return (
-        <div style={{ height: "100vh", width: "100%" }}>
-            <MapContainer
-                center={position}
-                zoom={7}
-                scrollWheelZoom={true}
-                style={{ height: "100%", width: "100%", background: "#1a1a1a" }}
-            >
-                {/* Layer báº£n Ä‘á»“ mÃ u tá»‘i (Dark Mode) giá»‘ng áº£nh máº«u */}
-                <TileLayer
-                    attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                />
-
-                {/* VÃ­ dá»¥ má»™t Ä‘iá»ƒm cá»©u trá»£ */}
-                <Marker position={[16.047, 108.206]}>
-                    <Popup>
-                        <b>Nguyá»…n VÄƒn A</b> <br /> Cáº§n há»— trá»£ thá»±c pháº©m.
-                    </Popup>
-                </Marker>
-            </MapContainer>
-        </div>
-    );
-};
-
-export default MapComponent;
 
 === C:\Users\Admin\sos-mien-trung\src\mock\mockData.js ===
 // src/mock/mockData.js
@@ -2512,6 +1352,531 @@ const mockData = {
 
 export default mockData;
 
+=== C:\Users\Admin\sos-mien-trung\src\pages\Homepage.jsx ===
+import { Link } from "react-router-dom";
+import Header from "../layouts/Header.jsx";
+import { useSOS } from "../store/SOSContext";
+import MiniMap from "../components/map/MiniMap";
+
+export default function Homepage() {
+    const { setIsFormOpen } = useSOS();
+
+    return (
+        <div className="Homepage min-h-screen bg-[#020817] text-[#f8fafc] font-sans">
+            <Header />
+
+            {/* HERO SECTION */}
+            <section className="relative grid lg:grid-cols-2 grid-cols-1 gap-12 px-6 lg:px-20 py-20 items-center">
+                <div className="z-10">
+                    <span className="inline-flex items-center gap-2 bg-cyan-950/30 px-4 py-1.5 rounded-full text-xs font-medium text-cyan-400 border border-cyan-800/50 uppercase tracking-wider">
+                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        Há»‡ thá»‘ng há»— trá»£ thiÃªn tai miá»n Trung
+                    </span>
+
+                    <h1 className="text-5xl lg:text-7xl font-extrabold mt-8 tracking-tight">
+                        <span className="text-blue-500">SOS</span> MIá»€N TRUNG
+                    </h1>
+                    <h2 className="text-4xl lg:text-6xl font-bold mt-2 text-white/90 leading-[1.1]">
+                        Báº£n Ä‘á»“ cá»©u trá»£ <br />
+                        <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                            thá»i gian thá»±c
+                        </span>
+                    </h2>
+
+                    <p className="text-gray-400 mt-8 text-lg max-w-lg leading-relaxed">
+                        Ná»n táº£ng há»— trá»£ káº¿t ná»‘i ngÆ°á»i dÃ¢n, tÃ¬nh nguyá»‡n viÃªn vÃ  lá»±c lÆ°á»£ng cá»©u trá»£ trong cÃ¡c tÃ¬nh huá»‘ng thiÃªn tai táº¡i miá»n Trung Viá»‡t Nam.
+                    </p>
+
+                    <div className="flex flex-wrap gap-4 mt-10">
+                        <button
+                            className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-red-900/20"
+                            onClick={() => setIsFormOpen(true)}
+                        >
+                            ðŸ”´ Gá»­i yÃªu cáº§u SOS
+                        </button>
+                        <Link
+                            to="/map"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg shadow-blue-900/20 flex items-center gap-2"
+                        >
+                            ðŸ—ºï¸ Má»Ÿ báº£n Ä‘á»“ cá»©u trá»£
+                        </Link>
+                    </div>
+
+                    {/* Quick Stats Mini */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
+                        {[
+                            ["11", "Khu vá»±c"],
+                            ["120+", "YÃªu cáº§u"],
+                            ["50+", "TÃ¬nh nguyá»‡n"],
+                            ["30", "Äiá»ƒm há»— trá»£"],
+                        ].map(([val, label], i) => (
+                            <div key={i} className="bg-[#0f172a]/50 border border-white/5 p-4 rounded-2xl">
+                                <div className="text-2xl font-bold text-cyan-400">{val}</div>
+                                <div className="text-xs text-gray-500 uppercase tracking-widest mt-1">{label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Map Preview Image */}
+                {/* MAP PREVIEW - Sá»­ dá»¥ng MiniMap Component thá»±c táº¿ */}
+                <div className="relative group h-[500px]">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                    <div className="relative h-full bg-[#071122] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+                        <MiniMap interactive={false} />
+                    </div>
+                </div>
+            </section>
+
+            {/* LIVE STATS BAR (DÃ²ng sá»‘ liá»‡u mÃ u cam/xanh trong hÃ¬nh) */}
+            <section className="px-6 lg:px-20 py-10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 bg-[#0f172a]/40 p-8 rounded-[2rem] border border-white/5">
+                    {[
+                        { label: "Cáº¦N GIÃšP", count: "128", color: "text-red-500", sub: "+12 hÃ´m nay" },
+                        { label: "ÄANG Xá»¬ LÃ", count: "56", color: "text-orange-400", sub: "+5 hÃ´m nay" },
+                        { label: "ÄÃƒ Há»– TRá»¢", count: "320", color: "text-green-400", sub: "+25 hÃ´m nay" },
+                        { label: "ÄIá»‚M Cá»¨U TRá»¢", count: "24", color: "text-blue-400", sub: "+2 hÃ´m nay" },
+                    ].map((s, i) => (
+                        <div key={i} className="text-center border-r border-white/5 last:border-0">
+                            <p className="text-xs font-bold text-gray-500 tracking-tighter mb-1">{s.label}</p>
+                            <p className={`text-4xl font-black ${s.color}`}>{s.count}</p>
+                            <p className="text-[10px] text-gray-600 mt-1 uppercase font-medium">{s.sub}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* GOALS SECTION */}
+            <section className="px-6 lg:px-20 py-24">
+                <h2 className="text-3xl font-black text-center mb-16 tracking-widest uppercase">Má»¥c tiÃªu cá»§a chÃºng tÃ´i</h2>
+                <div className="grid md:grid-cols-3 gap-8">
+                    {[
+                        { title: "Káº¿t ná»‘i nhanh chÃ³ng", desc: "Káº¿t ná»‘i ngÆ°á»i dÃ¢n, tÃ¬nh nguyá»‡n viÃªn vÃ  lá»±c lÆ°á»£ng cá»©u trá»£ má»™t cÃ¡ch nhanh nháº¥t.", icon: "ðŸš€" },
+                        { title: "Äiá»u phá»‘i hiá»‡u quáº£", desc: "Äiá»u phá»‘i nguá»“n lá»±c cá»©u trá»£ thÃ´ng minh: Ä‘Ãºng nÆ¡i - Ä‘Ãºng thá»i Ä‘iá»ƒm - Ä‘Ãºng nhu cáº§u.", icon: "ðŸŽ¯" },
+                        { title: "Minh báº¡ch & ChÃ­nh xÃ¡c", desc: "Dá»¯ liá»‡u thá»i gian thá»±c giÃºp cÃ¡c Ä‘Æ¡n vá»‹ ra quyáº¿t Ä‘á»‹nh nhanh chÃ³ng vÃ  tin cáº­y.", icon: "ðŸ’Ž" },
+                    ].map((goal, i) => (
+                        <div key={i} className="bg-gradient-to-b from-[#0f172a] to-transparent p-10 rounded-[2.5rem] border border-white/5 hover:border-cyan-500/30 transition-colors group">
+                            <div className="text-4xl mb-6">{goal.icon}</div>
+                            <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">{goal.title}</h3>
+                            <p className="text-gray-400 mt-4 leading-relaxed text-sm">{goal.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Há»† THá»NG Báº¢N Äá»’ TRá»°C QUAN */}
+            <section className="py-24 px-6 lg:px-20 bg-[#020817]">
+                <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+                    {/* Ná»™i dung bÃªn trÃ¡i */}
+                    <div className="space-y-8">
+                        <h2 className="text-3xl lg:text-4xl font-black tracking-tight uppercase leading-tight">
+                            Há»† THá»NG Báº¢N Äá»’ <br />
+                            <span className="text-blue-500">TRá»°C QUAN</span>
+                        </h2>
+                        <p className="text-gray-400 text-lg leading-relaxed">
+                            Theo dÃµi tÃ¬nh hÃ¬nh cá»©u trá»£ theo thá»i gian thá»±c trÃªn báº£n Ä‘á»“ tÆ°Æ¡ng tÃ¡c.
+                            Dá»… dÃ ng lá»c theo khu vá»±c, tráº¡ng thÃ¡i, loáº¡i há»— trá»£ vÃ  má»©c Ä‘á»™ kháº©n cáº¥p.
+                        </p>
+
+                        <ul className="space-y-4">
+                            {[
+                                "Cáº­p nháº­t realtime 24/7",
+                                "Äá»‹nh vá»‹ chÃ­nh xÃ¡c",
+                                "Hiá»ƒn thá»‹ heatmap",
+                                "Tuyáº¿n Ä‘Æ°á»ng cá»©u trá»£",
+                                "Cáº£nh bÃ¡o quÃ¡ táº£i"
+                            ].map((item, i) => (
+                                <li key={i} className="flex items-center gap-3 text-gray-300 font-medium">
+                                    <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center text-[10px] text-blue-400">
+                                        âœ”
+                                    </div>
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 transition-all group shadow-lg shadow-blue-900/20">
+                            Tráº£i nghiá»‡m báº£n Ä‘á»“ ngay
+                            <span className="group-hover:translate-x-1 transition-transform">â†’</span>
+                        </button>
+                    </div>
+
+                    {/* Khá»‘i mÃ´ phá»ng báº£n Ä‘á»“ bÃªn pháº£i */}
+                    {/* Khá»‘i giao diá»‡n báº£n Ä‘á»“ HUD */}
+                    <div className="relative bg-[#020817] rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden group h-[550px]">
+
+                        {/* 1. LÃ•I Báº¢N Äá»’: ThÃªm Filter Ä‘á»ƒ lÃ m báº£n Ä‘á»“ tá»‘i vÃ  "ngáº§u" hÆ¡n */}
+                        <div className="absolute inset-0 z-0 grayscale-[0.4] brightness-[0.6] contrast-[1.2]">
+                            <MiniMap interactive={false} />
+                        </div>
+
+                        {/* 2. Lá»šP PHá»¦ CHIá»€U SÃ‚U: Táº¡o hiá»‡u á»©ng tá»‘i dáº§n á»Ÿ cÃ¡c gÃ³c Ä‘á»ƒ ná»•i báº­t UI */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-transparent to-[#020817]/40 z-10 pointer-events-none"></div>
+
+                        {/* 3. Ná»˜I DUNG HUD (Z-20) */}
+                        <div className="relative z-20 h-full p-6 flex flex-col justify-between">
+
+                            {/* Header nhá» phÃ­a trÃªn báº£n Ä‘á»“ */}
+                            <div className="flex justify-between items-start">
+                                <div className="bg-[#020817]/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                                    <span className="text-[10px] font-black tracking-[0.2em] text-white/80 uppercase">Live Tracking</span>
+                                </div>
+                            </div>
+
+                            {/* Khu vá»±c chÃ­nh: Báº£ng tin vÃ  NÃºt báº¥m */}
+                            <div className="grid grid-cols-12 gap-4 items-end">
+
+                                {/* Báº¢NG TIN BÃŠN TRÃI: Thiáº¿t káº¿ tá»‘i giáº£n, hiá»‡n Ä‘áº¡i */}
+                                <div className="col-span-7 space-y-3">
+                                    <div className="bg-[#071122]/80 backdrop-blur-xl border border-white/10 rounded-[1.5rem] p-5 shadow-2xl">
+                                        <h4 className="text-[11px] font-black text-cyan-400 tracking-[0.15em] uppercase mb-4 flex items-center gap-2">
+                                            <div className="w-1 h-3 bg-cyan-500 rounded-full"></div>
+                                            YÃªu cáº§u gáº§n Ä‘Ã¢y
+                                        </h4>
+
+                                        <div className="space-y-2">
+                                            {[
+                                                { loc: "Quáº£ng NgÃ£i", status: "KHáº¨N Cáº¤P", color: "text-red-500", bg: "bg-red-500/10", pulse: true },
+                                                { loc: "ÄÃ  Náºµng", status: "ÄANG Xá»¬ LÃ", color: "text-orange-500", bg: "bg-orange-500/10" },
+                                                { loc: "Huáº¿", status: "ÄANG Xá»¬ LÃ", color: "text-orange-500", bg: "bg-orange-500/10" },
+                                                { loc: "Nghá»‡ An", status: "ÄÃƒ Há»– TRá»¢", color: "text-green-500", bg: "bg-green-500/10" }
+                                            ].map((item, i) => (
+                                                <div key={i} className="flex justify-between items-center group/item cursor-default">
+                                                    <div className="flex items-center gap-3">
+                                                        {item.pulse && <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>}
+                                                        <span className="text-xs font-semibold text-white/90 group-hover/item:text-white transition-colors">{item.loc}</span>
+                                                    </div>
+                                                    <div className={`text-[9px] px-2.5 py-1 rounded-lg font-black border border-white/5 ${item.color} ${item.bg} tracking-tighter`}>
+                                                        {item.status}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CÃC NÃšT ÄIá»€U KHIá»‚N BÃŠN PHáº¢I: Táº¡o khá»‘i vÃ  Ä‘á»• bÃ³ng neon */}
+                                <div className="col-span-5 space-y-3">
+                                    <button className="w-full bg-red-600 hover:bg-red-500 text-white p-3.5 rounded-2xl flex items-center justify-center gap-3 text-xs font-black shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all active:scale-95 group">
+                                        <span className="text-lg group-hover:rotate-12 transition-transform">ðŸš¨</span> SOS
+                                    </button>
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {[
+                                            { label: "QUYÃŠN GÃ“P", icon: "ðŸŽ", color: "bg-blue-600/90 hover:bg-blue-500" },
+                                            { label: "TÃŒNH NGUYá»†N", icon: "ðŸ‘¥", color: "bg-[#1e293b]/90 hover:bg-[#334155]" },
+                                            { label: "Äá»ŠNH Vá»Š", icon: "ðŸ“", color: "bg-[#1e293b]/90 hover:bg-[#334155]" }
+                                        ].map((btn, i) => (
+                                            <button key={i} className={`w-full ${btn.color} backdrop-blur-md text-white p-3 rounded-xl flex items-center gap-3 text-[10px] font-bold border border-white/5 transition-all shadow-lg`}>
+                                                <span className="opacity-80">{btn.icon}</span>
+                                                <span className="tracking-widest">{btn.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 4. HIá»†U á»¨NG QUÃ‰T RADAR (Optional - táº¡o cáº£m giÃ¡c cÃ´ng nghá»‡ cao) */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0%,rgba(6,182,212,0.05)_50%,transparent_100%)] animate-[spin_10s_linear_infinite] z-[5] pointer-events-none"></div>
+                    </div>
+
+                </div>
+            </section>
+
+            {/* QUY TRÃŒNH HOáº T Äá»˜NG */}
+            <section className="px-6 lg:px-20 py-24 bg-[#010409]">
+                <h2 className="text-3xl font-black text-center mb-20 tracking-widest uppercase">
+                    QUY TRÃŒNH HOáº T Äá»˜NG
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
+                    {/* ÄÆ°á»ng káº» ná»‘i giá»¯a cÃ¡c bÆ°á»›c (chá»‰ hiá»‡n trÃªn desktop) */}
+                    <div className="hidden md:block absolute top-8 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-blue-500/20 via-cyan-500 to-blue-500/20 z-0"></div>
+
+                    {[
+                        {
+                            title: "NgÆ°á»i dÃ¢n gá»­i SOS",
+                            desc: "NgÆ°á»i dÃ¢n gá»­i yÃªu cáº§u cá»©u trá»£ báº±ng form SOS trÃªn há»‡ thá»‘ng."
+                        },
+                        {
+                            title: "Há»‡ thá»‘ng Ä‘á»‹nh vá»‹",
+                            desc: "Há»‡ thá»‘ng xÃ¡c Ä‘á»‹nh vá»‹ trÃ­ chÃ­nh xÃ¡c vÃ  phÃ¢n loáº¡i má»©c Ä‘á»™ kháº©n cáº¥p."
+                        },
+                        {
+                            title: "TNV nháº­n há»— trá»£",
+                            desc: "TÃ¬nh nguyá»‡n viÃªn gáº§n nháº¥t nháº­n thÃ´ng bÃ¡o vÃ  xÃ¡c nháº­n há»— trá»£."
+                        },
+                        {
+                            title: "Äiá»u phá»‘i cá»©u trá»£",
+                            desc: "Lá»±c lÆ°á»£ng cá»©u trá»£ Ä‘Æ°á»£c Ä‘iá»u phá»‘i Ä‘áº¿n Ä‘Ãºng vá»‹ trÃ­ cáº§n há»— trá»£."
+                        },
+                        {
+                            title: "HoÃ n thÃ nh & cáº­p nháº­t",
+                            desc: "Cáº­p nháº­t tráº¡ng thÃ¡i hoÃ n thÃ nh, há»— trá»£ vÃ  bÃ¡o cÃ¡o minh báº¡ch."
+                        }
+                    ].map((step, i) => (
+                        <div key={i} className="relative text-center group z-10">
+                            {/* VÃ²ng trÃ²n sá»‘ thá»© tá»± */}
+                            <div className="w-16 h-16 rounded-full bg-[#020817] border-2 border-cyan-500 flex items-center justify-center mx-auto text-xl font-black shadow-[0_0_15px_rgba(6,182,212,0.4)] group-hover:scale-110 transition-transform duration-300">
+                                {i + 1}
+                            </div>
+
+                            {/* TiÃªu Ä‘á» bÆ°á»›c */}
+                            <h3 className="mt-6 font-bold text-base text-white group-hover:text-cyan-400 transition-colors">
+                                {step.title}
+                            </h3>
+
+                            {/* Ná»™i dung mÃ´ táº£ (Pháº§n bá»‹ thiáº¿u trÆ°á»›c Ä‘Ã³) */}
+                            <p className="mt-3 text-xs text-gray-400 leading-relaxed px-2">
+                                {step.desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* THá»NG KÃŠ Ná»”I Báº¬T & AI SUGGESTIONS */}
+            <section className="px-6 lg:px-20 py-16">
+                <h2 className="text-2xl font-black text-center mb-10 tracking-[0.2em] uppercase text-white/90">
+                    THá»NG KÃŠ Ná»”I Báº¬T
+                </h2>
+
+                <div className="grid lg:grid-cols-3 gap-6">
+                    {/* NhÃ³m tháº» thá»‘ng kÃª bÃªn trÃ¡i */}
+                    <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 bg-[#071122]/60 border border-white/5 p-6 rounded-[2rem]">
+                        {[
+                            { label: "Tá»•ng SOS", count: "120+", sub: "+18 hÃ´m nay", color: "text-blue-400", icon: "ðŸ‘¥" },
+                            { label: "Äang xá»­ lÃ½", count: "50+", sub: "+5 hÃ´m nay", color: "text-orange-400", icon: "ðŸ•’" },
+                            { label: "ÄÃ£ há»— trá»£", count: "500+", sub: "+35 hÃ´m nay", color: "text-green-400", icon: "ðŸ›¡ï¸" },
+                            { label: "Äiá»ƒm cá»©u trá»£", count: "30+", sub: "+4 hÃ´m nay", color: "text-cyan-400", icon: "ðŸ“" },
+                        ].map((item, i) => (
+                            <div key={i} className="bg-[#0f172a] border border-white/5 p-5 rounded-2xl flex flex-col items-center justify-center text-center">
+                                <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                    <span>{item.icon}</span> {item.label}
+                                </div>
+                                <div className={`text-3xl font-black ${item.color}`}>{item.count}</div>
+                                <div className={`text-[10px] mt-2 font-bold ${item.color} opacity-80`}>{item.sub}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Tháº» AI-LITE gá»£i Ã½ bÃªn pháº£i */}
+                    <div className="bg-[#071122]/80 border border-cyan-500/30 p-6 rounded-[2rem] relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-20 text-4xl">ðŸ§ </div>
+                        <h3 className="text-blue-400 text-xs font-black tracking-widest mb-6 uppercase flex items-center gap-2">
+                            AI-LITE Gá»¢I Ã
+                        </h3>
+
+                        <div className="space-y-4">
+                            <div className="flex gap-3 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
+                                <span className="text-orange-500">âš ï¸</span>
+                                <p className="text-xs text-gray-300">
+                                    <span className="text-white font-bold">Quáº£ng NgÃ£i</span> cÃ³ 15 yÃªu cáº§u chÆ°a Ä‘Æ°á»£c xá»­ lÃ½
+                                </p>
+                            </div>
+                            <div className="flex gap-3 bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl">
+                                <span className="text-blue-400">ðŸŒ</span>
+                                <p className="text-xs text-gray-300">
+                                    Äá» xuáº¥t Ä‘iá»u thÃªm <span className="text-white font-bold">2 TNV</span> tá»« ÄÃ  Náºµng
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Sáº´N SÃ€NG Há»– TRá»¢ Cá»˜NG Äá»’NG */}
+            <section className="relative px-6 py-24 text-center overflow-hidden">
+                {/* áº¢nh ná»n má» phÃ­a sau */}
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src="https://images.unsplash.com/photo-1504150559411-a9d80de6622e"
+                        alt="Relief Work"
+                        className="w-full h-full object-cover opacity-20 grayscale"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#020817] via-transparent to-[#020817]"></div>
+                </div>
+
+                <div className="relative z-10">
+                    <h2 className="text-3xl lg:text-4xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                        Sáº´N SÃ€NG Há»– TRá»¢ Cá»˜NG Äá»’NG?
+                    </h2>
+                    <p className="text-gray-400 mb-10 max-w-2xl mx-auto text-sm lg:text-base">
+                        HÃ£y cÃ¹ng chung tay xÃ¢y dá»±ng há»‡ thá»‘ng cá»©u trá»£ hiá»‡u quáº£ cho miá»n Trung.
+                    </p>
+
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <button
+                            onClick={() => setIsFormOpen(true)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95"
+                        >
+                            ðŸš¨ Gá»­i SOS ngay
+                        </button>
+                        <Link
+                            to="/map"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95"
+                        >
+                            ðŸ“– Truy cáº­p báº£n Ä‘á»“
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Há»– TRá»¢ THÃŠM THÃ”NG TIN */}
+            <section id="lien-he" className="px-6 lg:px-20 py-24 bg-[#020817] scroll-mt-20">
+                <div className="max-w-4xl mx-auto">
+                    {/* TiÃªu Ä‘á» Form */}
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl lg:text-4xl font-black mb-4 text-white">
+                            Há»— trá»£ thÃªm thÃ´ng tin
+                        </h2>
+                        <p className="text-gray-400">
+                            Báº¡n cÃ³ cÃ¢u há»i hoáº·c cáº§n há»— trá»£? HÃ£y liÃªn há»‡ vá»›i chÃºng tÃ´i.
+                        </p>
+                    </div>
+
+                    {/* Form Container */}
+                    <form className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Há» vÃ  tÃªn */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-300 ml-1">Há» vÃ  tÃªn</label>
+                                <input
+                                    type="text"
+                                    placeholder="Nháº­p há» vÃ  tÃªn cá»§a báº¡n"
+                                    className="w-full bg-[#1c222d] border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all text-white"
+                                />
+                            </div>
+                            {/* Sá»‘ Ä‘iá»‡n thoáº¡i */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-300 ml-1">Sá»‘ Ä‘iá»‡n thoáº¡i</label>
+                                <input
+                                    type="tel"
+                                    placeholder="Nháº­p sá»‘ Ä‘iá»‡n thoáº¡i cá»§a báº¡n"
+                                    className="w-full bg-[#1c222d] border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all text-white"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Email */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
+                            <input
+                                type="email"
+                                placeholder="Nháº­p Ä‘á»‹a chá»‰ email cá»§a báº¡n"
+                                className="w-full bg-[#1c222d] border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all text-white"
+                            />
+                        </div>
+
+                        {/* Ná»™i dung */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-300 ml-1">Ná»™i dung</label>
+                            <textarea
+                                rows="5"
+                                placeholder="Nháº­p ná»™i dung tin nháº¯n cá»§a báº¡n"
+                                className="w-full bg-[#1c222d] border border-white/10 rounded-xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all text-white resize-none"
+                            ></textarea>
+                        </div>
+
+                        {/* NÃºt gá»­i */}
+                        <div className="text-center pt-4">
+                            <button
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95 inline-flex items-center gap-2"
+                            >
+                                âš ï¸ Gá»­i tin nháº¯n
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            {/* FOOTER */}
+            <footer className="bg-[#020817] border-t border-white/5 px-6 lg:px-20 py-16">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-sm">
+                    <div className="col-span-1 md:col-span-1">
+                        <h2 className="text-xl font-black text-blue-500 tracking-tighter">SOS MIá»€N TRUNG</h2>
+                        <p className="text-gray-500 mt-4 leading-relaxed">
+                            Cung cáº¥p giáº£i phÃ¡p cÃ´ng nghá»‡ vÃ¬ cá»™ng Ä‘á»“ng, giÃºp giáº£m thiá»ƒu rá»§i ro thiÃªn tai.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Äiá»u hÆ°á»›ng</h4>
+                        <ul className="space-y-4 text-gray-500">
+                            <li className="hover:text-cyan-400 cursor-pointer transition-colors">Trang chá»§</li>
+                            <li className="hover:text-cyan-400 cursor-pointer transition-colors">Báº£n Ä‘á»“ cá»©u trá»£</li>
+                            <li className="hover:text-cyan-400 cursor-pointer transition-colors">Quy trÃ¬nh</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">
+                            Khu vá»±c há»— trá»£
+                        </h4>
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-gray-500 text-[13px]">
+                            {/* Cá»™t 1: ThÃ nh phá»‘ & CÃ¡c tá»‰nh miá»n trÃªn */}
+                            <div className="space-y-2">
+                                <p className="text-cyan-400/80 font-semibold text-[11px] uppercase tracking-tighter mb-1">ThÃ nh phá»‘</p>
+                                <li className="list-none hover:text-white transition-colors cursor-default">TP. ÄÃ  Náºµng</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">TP. Huáº¿</li>
+
+                                <p className="text-cyan-400/80 font-semibold text-[11px] uppercase tracking-tighter mb-1 mt-4">Tá»‰nh thÃ nh</p>
+                                <li className="list-none hover:text-white transition-colors cursor-default">Thanh HÃ³a</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">Nghá»‡ An</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">HÃ  TÄ©nh</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">Quáº£ng Trá»‹</li>
+                            </div>
+
+                            {/* Cá»™t 2: CÃ¡c tá»‰nh cÃ²n láº¡i & TÃ¢y NguyÃªn */}
+                            <div className="space-y-2 flex flex-col justify-end">
+                                <li className="list-none hover:text-white transition-colors cursor-default">Quáº£ng NgÃ£i</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">KhÃ¡nh HÃ²a</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">Gia Lai</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">Äáº¯k Láº¯k</li>
+                                <li className="list-none hover:text-white transition-colors cursor-default">LÃ¢m Äá»“ng</li>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="lg:col-span-1">
+                        <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">
+                            ThÃ´ng tin liÃªn há»‡
+                        </h4>
+                        <ul className="space-y-4 text-gray-400 text-[13px]">
+                            <li className="flex items-center gap-3">
+                                <span className="w-5 h-5 flex items-center justify-center border border-gray-600 rounded-full text-[10px]">ðŸ“ž</span>
+                                <p>Hotline: <span className="text-blue-400 font-bold">1900 1234</span></p>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="w-5 h-5 flex items-center justify-center border border-gray-600 rounded-full text-[10px]">âœ‰ï¸</span>
+                                <p>Email: <span className="hover:text-white cursor-pointer transition-colors">contact@sosmientrung.vn</span></p>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="w-5 h-5 flex items-center justify-center border border-gray-600 rounded-full text-[10px]">ðŸŒ</span>
+                                <p>Fanpage: <span className="hover:text-white cursor-pointer transition-colors">fb.com/sosmientrung.vn</span></p>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="w-5 h-5 flex items-center justify-center border border-gray-600 rounded-full text-[10px]">ðŸ“</span>
+                                <p>Äá»‹a chá»‰: <span className="text-gray-300">TP. ÄÃ  Náºµng, Viá»‡t Nam</span></p>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="w-5 h-5 flex items-center justify-center border border-gray-600 rounded-full text-[10px]">ðŸ•’</span>
+                                <p>Hoáº¡t Ä‘á»™ng <span className="text-white">24/7</span> - <span className="text-green-500 font-medium">Miá»…n phÃ­</span></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="mt-16 pt-8 border-t border-white/5 text-center text-gray-600 text-xs">
+                    Â© 2026 SOS Miá»n Trung. Ná»n táº£ng vÃ¬ cá»™ng Ä‘á»“ng. All rights reserved.
+                </div>
+            </footer>
+        </div>
+    );
+}
+
 === C:\Users\Admin\sos-mien-trung\src\pages\MapPage.jsx ===
 // src/pages/MapPage.jsx
 
@@ -2571,6 +1936,58 @@ const mapStore = {
 };
 
 export default mapStore;
+
+=== C:\Users\Admin\sos-mien-trung\src\store\SOSContext.jsx ===
+// src/store/SOSContext.jsx
+
+import { createContext, useContext, useState } from "react";
+import mockData from "../mock/mockData";
+
+const SOSContext = createContext(null);
+
+export function SOSProvider({ children }) {
+    const [sosRequests, setSosRequests] = useState(mockData.sosRequests);
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+
+    const addSOSRequest = (newRequest) => {
+        const request = {
+            ...newRequest,
+            id: Date.now(),
+            status: "urgent",
+            priority: newRequest.level,
+            createdAt: new Date(),
+        };
+        setSosRequests((prev) => [request, ...prev]);
+        return request;
+    };
+
+    const updateStatus = (id, status) => {
+        setSosRequests((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, status } : r))
+        );
+    };
+
+    return (
+        <SOSContext.Provider
+            value={{
+                sosRequests,
+                isFormOpen,
+                setIsFormOpen,
+                selectedRequest,
+                setSelectedRequest,
+                addSOSRequest,
+                updateStatus,
+            }}
+        >
+            {children}
+        </SOSContext.Provider>
+    );
+}
+
+export function useSOS() {
+    return useContext(SOSContext);
+}
 
 === C:\Users\Admin\sos-mien-trung\src\utils\geoHelpers.js ===
 // src/utils/geoHelpers.js

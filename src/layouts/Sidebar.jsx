@@ -179,7 +179,7 @@ export default function Sidebar() {
 
             {/* FOOTER */}
             <div className="sidebar-footer">
-                © 2024 SOS Miền Trung – Điểm Cứu Trợ
+                © 2026 SOS Miền Trung – Điểm Cứu Trợ
             </div>
         </aside>
     );

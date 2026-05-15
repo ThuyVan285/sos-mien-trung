@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Header from "../layouts/Header.jsx";
 import { useSOS } from "../store/SOSContext";
 import MiniMap from "../components/map/MiniMap";
+import './HomePage.css'; // <--- ĐÂY LÀ DÒNG QUAN TRỌNG ĐỂ LIÊN KẾT CSS
 
 export default function Homepage() {
     const { setIsFormOpen, setIsDonationOpen } = useSOS();
