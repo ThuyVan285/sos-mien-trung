@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../layouts/Header.jsx";
 import { useSOS } from "../store/SOSContext";
 import MiniMap from "../components/map/MiniMap";
 
 export default function Homepage() {
-    const { setIsFormOpen } = useSOS();
+    const { setIsFormOpen, setIsDonationOpen } = useSOS();
+    const navigate = useNavigate();
 
     return (
         <div className="Homepage min-h-screen bg-[#020817] text-[#f8fafc] font-sans">
@@ -141,7 +142,10 @@ export default function Homepage() {
                             ))}
                         </ul>
 
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 transition-all group shadow-lg shadow-blue-900/20">
+                        <button 
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 transition-all group shadow-lg shadow-blue-900/20"
+                            onClick={() => navigate("/map")}
+                        >
                             Trải nghiệm bản đồ ngay
                             <span className="group-hover:translate-x-1 transition-transform">→</span>
                         </button>
@@ -212,16 +216,18 @@ export default function Homepage() {
                                     </button>
 
                                     <div className="grid grid-cols-1 gap-2">
-                                        {[
-                                            { label: "QUYÊN GÓP", icon: "🎁", color: "bg-blue-600/90 hover:bg-blue-500" },
-                                            { label: "TÌNH NGUYỆN", icon: "👥", color: "bg-[#1e293b]/90 hover:bg-[#334155]" },
-                                            { label: "ĐỊNH VỊ", icon: "📍", color: "bg-[#1e293b]/90 hover:bg-[#334155]" }
-                                        ].map((btn, i) => (
-                                            <button key={i} className={`w-full ${btn.color} backdrop-blur-md text-white p-3 rounded-xl flex items-center gap-3 text-[10px] font-bold border border-white/5 transition-all shadow-lg`}>
-                                                <span className="opacity-80">{btn.icon}</span>
-                                                <span className="tracking-widest">{btn.label}</span>
-                                            </button>
-                                        ))}
+                                        <button onClick={() => setIsDonationOpen(true)} className="w-full bg-blue-600/90 hover:bg-blue-500 backdrop-blur-md text-white p-3 rounded-xl flex items-center gap-3 text-[10px] font-bold border border-white/5 transition-all shadow-lg">
+                                            <span className="opacity-80">🎁</span>
+                                            <span className="tracking-widest">QUYÊN GÓP</span>
+                                        </button>
+                                        <button onClick={() => alert("Tính năng đăng ký Tình Nguyện Viên đang được phát triển.")} className="w-full bg-[#1e293b]/90 hover:bg-[#334155] backdrop-blur-md text-white p-3 rounded-xl flex items-center gap-3 text-[10px] font-bold border border-white/5 transition-all shadow-lg">
+                                            <span className="opacity-80">👥</span>
+                                            <span className="tracking-widest">TÌNH NGUYỆN</span>
+                                        </button>
+                                        <button onClick={() => navigate("/map")} className="w-full bg-[#1e293b]/90 hover:bg-[#334155] backdrop-blur-md text-white p-3 rounded-xl flex items-center gap-3 text-[10px] font-bold border border-white/5 transition-all shadow-lg">
+                                            <span className="opacity-80">📍</span>
+                                            <span className="tracking-widest">ĐỊNH VỊ</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -387,7 +393,7 @@ export default function Homepage() {
                     </div>
 
                     {/* Form Container */}
-                    <form className="space-y-6">
+                    <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.'); e.target.reset(); }}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Họ và tên */}
                             <div className="space-y-2">

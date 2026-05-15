@@ -4,9 +4,11 @@ import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react
 import { Link, useLocation } from "react-router-dom";
 import { useSOS } from "../store/SOSContext";
 import SOSForm from "../features/sos/SOSForm";
+import DonationForm from "../features/donation/DonationForm";
+import VolunteerForm from "../features/volunteer/VolunteerForm";
 
 export default function Header() {
-    const { isFormOpen, setIsFormOpen } = useSOS();
+    const { isFormOpen, setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen } = useSOS();
     const location = useLocation();
 
     return (
@@ -31,7 +33,7 @@ export default function Header() {
                         <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
                             <Map size={15} />Bản đồ
                         </Link>
-                        <a href="#lien-he" className="nav-item"><Mail size={15} />Liên hệ</a>
+                        <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); alert("Tính năng Liên hệ đang được phát triển."); }}><Mail size={15} />Liên hệ</a>
                     </nav>
                 </div>
 
@@ -54,6 +56,12 @@ export default function Header() {
 
             {/* Modal form SOS */}
             {isFormOpen && <SOSForm />}
+            
+            {/* Modal form Donation */}
+            <DonationForm />
+
+            {/* Modal form Volunteer */}
+            <VolunteerForm />
         </>
     );
 }

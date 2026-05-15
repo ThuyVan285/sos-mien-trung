@@ -130,7 +130,7 @@ export default function Sidebar() {
                 <div className="section-header">
                     <h3>DANH SÁCH SOS GẦN ĐÂY</h3>
 
-                    <button>Xem tất cả</button>
+                    <button onClick={() => alert("Tính năng xem danh sách chi tiết đang được phát triển.")}>Xem tất cả</button>
                 </div>
 
                 <div className="sos-list">
