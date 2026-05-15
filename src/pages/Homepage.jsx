@@ -6,109 +6,160 @@ export default function Homepage() {
     const { setIsFormOpen } = useSOS();
 
     return (
-        <div className="min-h-screen bg-[#020612] text-white font-sans">
+        <div className="min-h-screen bg-[#020817] text-white">
 
             <Header />
 
-            <div className="max-w-[1280px] mx-auto px-8 py-10">
+            <section className="max-w-[1400px] mx-auto px-8 py-14 grid lg:grid-cols-2 gap-10 items-center">
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <div>
 
-                    <div>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-800 bg-[#071122] mb-8">
+                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
 
-                        <div className="inline-flex items-center gap-2 bg-[#08152e] border border-[#182c51] px-4 py-2 rounded-full mb-6">
-                            <span className="text-xs font-bold text-cyan-300 tracking-wider">
-                                HỆ THỐNG HỖ TRỢ THIÊN TAI MIỀN TRUNG
-                            </span>
-                        </div>
+                        <span className="text-xs tracking-wider text-cyan-300 font-semibold">
+                            HỆ THỐNG HỖ TRỢ THIÊN TAI MIỀN TRUNG
+                        </span>
+                    </div>
 
-                        <h1 className="text-6xl font-bold mb-3">
-                            <span className="text-blue-500">
-                                SOS
-                            </span>{" "}
-                            MIỀN TRUNG
-                        </h1>
+                    <h1 className="text-6xl font-black leading-tight mb-4">
+                        <span className="text-cyan-400">
+                            SOS
+                        </span>{" "}
+                        MIỀN TRUNG
+                    </h1>
 
-                        <h2 className="text-5xl font-bold leading-tight mb-6">
-                            Bản đồ cứu trợ
-                            <br />
-                            <span className="text-cyan-400">
-                                thời gian thực
-                            </span>
-                        </h2>
+                    <h2 className="text-5xl font-bold leading-tight mb-8">
+                        Bản đồ cứu trợ
+                        <br />
 
-                        <p className="text-gray-400 leading-8 max-w-[520px] mb-10">
-                            Nền tảng hỗ trợ kết nối người dân, tình nguyện viên
-                            và lực lượng cứu trợ trong các tình huống thiên tai
-                            tại miền Trung Việt Nam.
-                        </p>
+                        <span className="text-blue-400">
+                            thời gian thực
+                        </span>
+                    </h2>
 
-                        <div className="flex flex-wrap gap-5 mb-12">
+                    <p className="text-gray-400 text-lg leading-8 max-w-[580px] mb-10">
+                        Nền tảng hỗ trợ kết nối người dân, tình nguyện viên
+                        và lực lượng cứu trợ trong các tình huống thiên tai
+                        tại miền Trung Việt Nam.
+                    </p>
 
-                            <button
-                                onClick={() => setIsFormOpen(true)}
-                                className="bg-red-600 hover:bg-red-700 transition-all px-7 py-3 rounded-xl font-semibold shadow-lg"
-                            >
-                                Gửi yêu cầu SOS
-                            </button>
+                    <div className="flex gap-5 mb-14">
 
-                            <button className="bg-blue-600 hover:bg-blue-700 transition-all px-7 py-3 rounded-xl font-semibold shadow-lg">
-                                Mở bản đồ cứu trợ
-                            </button>
+                        <button
+                            onClick={() => setIsFormOpen(true)}
+                            className="bg-red-600 hover:bg-red-700 transition-all px-8 py-4 rounded-2xl font-bold shadow-[0_0_30px_rgba(239,68,68,0.4)]"
+                        >
+                            Gửi yêu cầu SOS
+                        </button>
 
-                        </div>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-
-                            {[
-                                ["11", "Khu vực hỗ trợ"],
-                                ["120+", "Yêu cầu cứu trợ"],
-                                ["50+", "Tình nguyện viên"],
-                                ["30", "Điểm hỗ trợ"],
-                            ].map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-[#071122] border border-cyan-900 rounded-2xl p-5"
-                                >
-                                    <h3 className="text-2xl font-bold text-cyan-400">
-                                        {item[0]}
-                                    </h3>
-
-                                    <p className="text-sm text-gray-400 mt-2">
-                                        {item[1]}
-                                    </p>
-                                </div>
-                            ))}
-
-                        </div>
+                        <button className="bg-blue-600 hover:bg-blue-700 transition-all px-8 py-4 rounded-2xl font-bold shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+                            Mở bản đồ cứu trợ
+                        </button>
 
                     </div>
 
-                    <div className="relative h-[500px] bg-[#071122] border border-cyan-900 rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
 
-                        <img
-                            src="https://images.unsplash.com/photo-1524661135-423995f22d0b"
-                            alt="map"
-                            className="w-full h-full object-cover opacity-60"
-                        />
+                        {[
+                            ["11", "Khu vực hỗ trợ"],
+                            ["120+", "Yêu cầu cứu trợ"],
+                            ["50+", "Tình nguyện viên"],
+                            ["30", "Điểm hỗ trợ"],
+                        ].map((item, index) => (
 
-                        <div className="absolute top-5 right-5 bg-red-500 px-3 py-1 rounded-full text-xs font-bold">
-                            LIVE
+                            <div
+                                key={index}
+                                className="bg-[#071122] border border-cyan-900 rounded-2xl p-6 hover:border-cyan-500 transition-all"
+                            >
+
+                                <h3 className="text-3xl font-bold text-cyan-400 mb-2">
+                                    {item[0]}
+                                </h3>
+
+                                <p className="text-gray-400 text-sm">
+                                    {item[1]}
+                                </p>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                </div>
+
+                <div className="relative h-[620px] rounded-[30px] overflow-hidden border border-cyan-900 bg-[#071122] shadow-[0_0_80px_rgba(8,145,178,0.2)]">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1400&auto=format&fit=crop"
+                        alt="map"
+                        className="w-full h-full object-cover opacity-50"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020817]/20 to-[#020817]"></div>
+
+                    <div className="absolute top-6 right-6 bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full animate-pulse shadow-lg">
+                        LIVE
+                    </div>
+
+                    <div className="absolute top-8 left-8 bg-[#020817]/90 backdrop-blur-xl border border-cyan-900 rounded-2xl p-5 w-[280px]">
+
+                        <div className="flex items-center gap-2 mb-3">
+
+                            <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+
+                            <span className="text-red-400 text-sm font-bold">
+                                YÊU CẦU KHẨN CẤP
+                            </span>
+
                         </div>
 
-                        <div className="absolute bottom-5 left-5 bg-[#020612]/90 border border-cyan-900 rounded-2xl p-5 w-[260px] backdrop-blur">
+                        <h3 className="text-2xl font-bold mb-2">
+                            Quảng Ngãi
+                        </h3>
 
-                            <h3 className="text-lg font-bold text-white mb-2">
-                                Quảng Ngãi
-                            </h3>
+                        <p className="text-gray-400 leading-7 text-sm">
+                            15 người đang cần cứu trợ khẩn cấp do ngập lụt diện rộng.
+                        </p>
 
-                            <p className="text-sm text-gray-400 mb-3">
-                                15 người cần hỗ trợ khẩn cấp
-                            </p>
+                    </div>
 
-                            <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-bold border border-red-500/40">
-                                KHẨN CẤP
-                            </span>
+                    <div className="absolute bottom-8 right-8 bg-[#020817]/90 backdrop-blur-xl border border-cyan-900 rounded-2xl p-5">
+
+                        <h4 className="text-cyan-400 font-bold mb-4">
+                            CHÚ THÍCH
+                        </h4>
+
+                        <div className="space-y-3">
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                <span className="text-sm text-gray-300">
+                                    Cần hỗ trợ
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                                <span className="text-sm text-gray-300">
+                                    Đang xử lý
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                <span className="text-sm text-gray-300">
+                                    Đã hỗ trợ
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                <span className="text-sm text-gray-300">
+                                    Điểm cứu trợ
+                                </span>
+                            </div>
 
                         </div>
 
@@ -116,150 +167,7 @@ export default function Homepage() {
 
                 </div>
 
-                <section className="mt-24">
-
-                    <h2 className="text-4xl font-bold text-center mb-14">
-                        MỤC TIÊU CỦA CHÚNG TÔI
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-                        {[
-                            [
-                                "Kết nối nhanh chóng",
-                                "Kết nối người dân và lực lượng cứu trợ nhanh nhất."
-                            ],
-                            [
-                                "Điều phối hiệu quả",
-                                "Điều phối nguồn lực đúng nơi đúng lúc."
-                            ],
-                            [
-                                "Minh bạch & chính xác",
-                                "Dữ liệu thời gian thực minh bạch."
-                            ],
-                        ].map((item, index) => (
-                            <div
-                                key={index}
-                                className="bg-[#071122] border border-cyan-900 rounded-3xl p-8"
-                            >
-                                <h3 className="text-2xl font-bold text-cyan-400 mb-4">
-                                    {item[0]}
-                                </h3>
-
-                                <p className="text-gray-400 leading-7">
-                                    {item[1]}
-                                </p>
-                            </div>
-                        ))}
-
-                    </div>
-
-                </section>
-
-                <section className="mt-24">
-
-                    <h2 className="text-4xl font-bold text-center mb-16">
-                        QUY TRÌNH HOẠT ĐỘNG
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-
-                        {[
-                            "Người dân gửi SOS",
-                            "Hệ thống định vị",
-                            "TNV nhận hỗ trợ",
-                            "Điều phối cứu trợ",
-                            "Hoàn thành cập nhật",
-                        ].map((step, index) => (
-                            <div
-                                key={index}
-                                className="bg-[#071122] border border-cyan-900 rounded-3xl p-6 text-center"
-                            >
-
-                                <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
-                                    {index + 1}
-                                </div>
-
-                                <h3 className="mt-5 font-semibold">
-                                    {step}
-                                </h3>
-
-                            </div>
-                        ))}
-
-                    </div>
-
-                </section>
-
-                <footer className="border-t border-cyan-900 mt-24 pt-12 pb-10">
-
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-
-                        <div>
-
-                            <h2 className="text-2xl font-bold text-cyan-400">
-                                SOS MIỀN TRUNG
-                            </h2>
-
-                            <p className="text-gray-400 mt-4 leading-7">
-                                Nền tảng công nghệ hỗ trợ cứu trợ thiên tai miền Trung.
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <h3 className="font-semibold mb-4">
-                                Điều hướng
-                            </h3>
-
-                            <ul className="space-y-2 text-gray-400">
-                                <li>Trang chủ</li>
-                                <li>Bản đồ</li>
-                                <li>Hệ thống</li>
-                                <li>Liên hệ</li>
-                            </ul>
-
-                        </div>
-
-                        <div>
-
-                            <h3 className="font-semibold mb-4">
-                                Khu vực hỗ trợ
-                            </h3>
-
-                            <ul className="space-y-2 text-gray-400">
-                                <li>Đà Nẵng</li>
-                                <li>Huế</li>
-                                <li>Quảng Ngãi</li>
-                                <li>Khánh Hòa</li>
-                            </ul>
-
-                        </div>
-
-                        <div>
-
-                            <h3 className="font-semibold mb-4">
-                                Thông tin liên hệ
-                            </h3>
-
-                            <ul className="space-y-2 text-gray-400">
-                                <li>Hotline: 1900 1234</li>
-                                <li>Email: sosmientrung.vn</li>
-                                <li>Đà Nẵng, Việt Nam</li>
-                            </ul>
-
-                        </div>
-
-                    </div>
-
-                    <p className="text-center text-gray-500 text-sm mt-10">
-                        © 2024 SOS Miền Trung
-                    </p>
-
-                </footer>
-
-            </div>
+            </section>
 
         </div>
     );
