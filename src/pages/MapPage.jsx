@@ -1,9 +1,15 @@
 
 
+
 import FilterPanel from "../components/panels/FilterPanel";
 import MapView from "../components/map/MapView";
 import AIPanel from "../components/panels/AIPanel";
 import LeftPanel from "../components/panels/LeftPanel";
+
+
+import FilterPanel from "../components/panels/FilterPanel";
+import MapView from "../components/map/MapView";
+import AIPanel from "../components/panels/AIPanel";
 
 export default function MapPage() {
     return (
@@ -13,8 +19,13 @@ export default function MapPage() {
                 <LeftPanel />
             </div>
 
+
             {/* Vùng giữa: Chiếm phần lớn diện tích */}
             <div className="map-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100%', padding: 0, margin: 0 }}>
+
+                {/* Khối thống kê - Tách riêng lên đầu */}
+
+
 
                 {/* Khối bộ lọc */}
                 <FilterPanel />
