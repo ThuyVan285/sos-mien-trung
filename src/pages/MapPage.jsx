@@ -3,7 +3,6 @@
 import FilterPanel from "../components/panels/FilterPanel";
 import MapView from "../components/map/MapView";
 import AIPanel from "../components/panels/AIPanel";
-
 export default function MapPage() {
     return (
         <div className="map-page">

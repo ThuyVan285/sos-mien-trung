@@ -4,7 +4,7 @@ import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react
 import { Link, useLocation } from "react-router-dom";
 import { useSOS } from "../store/SOSContext";
 import SOSForm from "../features/sos/SOSForm";
-
+import "./Header.css";
 export default function Header() {
     const { isFormOpen, setIsFormOpen } = useSOS();
     const location = useLocation();
@@ -17,28 +17,27 @@ export default function Header() {
                     <Link to="/" className="logo-wrap" style={{ textDecoration: 'none' }}>
                         <div className="logo-icon">🚨</div>
                         <div>
-                            <h1 className="logo">
+                            <h2 className="logo">
                                 <span>SOS</span> MIỀN TRUNG
-                            </h1>
+                            </h2>
                             <p className="logo-sub">Kết nối nhanh – Cứu trợ kịp thời</p>
                         </div>
                     </Link>
 
                     <nav className="nav-menu">
                         <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-                            <Home size={30} />Trang chủ
+                            <Home size={18} />Trang chủ
+                        </Link><Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
+                            <Map size={18} />Bản đồ
                         </Link>
-                        <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
-                            <Map size={30} />Bản đồ
-                        </Link>
-                        <a href="#lien-he" className="nav-item"><Mail size={30} />Liên hệ</a>
+                        <a href="#lien-he" className="nav-item"><Mail size={18} />Liên hệ</a>
                     </nav>
                 </div>
 
                 {/* RIGHT */}
                 <div className="header-right">
                     <div className="search-box">
-                        <Search size={15} />
+                        <Search size={16} />
                         <input placeholder="Tìm kiếm khu vực, địa điểm..." />
                     </div>
 
@@ -46,7 +45,7 @@ export default function Header() {
                         className="sos-btn"
                         onClick={() => setIsFormOpen(true)}
                     >
-                        <AlertTriangle size={15} />
+                        <AlertTriangle size={16} />
                         SOS
                     </button>
                 </div>
