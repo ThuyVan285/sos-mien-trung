@@ -2010,6 +2010,11 @@ body {
     .adv-filters      { flex-direction: column; align-items: stretch; }
     .adv-search-wrap  { min-width: unset; }
 }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 02a7015d25feb2f5b2ce70e457b5fb30b3a29526
 /* src/assets/styles/global.css */
 
 @import "./variables.css";
