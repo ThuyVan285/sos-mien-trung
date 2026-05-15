@@ -8,6 +8,8 @@ const SOSContext = createContext(null);
 export function SOSProvider({ children }) {
     const [sosRequests, setSosRequests] = useState(mockData.sosRequests);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isDonationOpen, setIsDonationOpen] = useState(false);
+    const [isVolunteerOpen, setIsVolunteerOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
 
     const addSOSRequest = (newRequest) => {
@@ -34,6 +36,10 @@ export function SOSProvider({ children }) {
                 sosRequests,
                 isFormOpen,
                 setIsFormOpen,
+                isDonationOpen,
+                setIsDonationOpen,
+                isVolunteerOpen,
+                setIsVolunteerOpen,
                 selectedRequest,
                 setSelectedRequest,
                 addSOSRequest,

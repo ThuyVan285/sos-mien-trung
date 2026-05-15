@@ -4,7 +4,7 @@ import { ArrowRight, AlertTriangle, Bot } from "lucide-react";
 import { useSOS } from "../../store/SOSContext";
 
 export default function AIPanel() {
-    const { setIsFormOpen } = useSOS();
+    const { setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen } = useSOS();
 
     const suggestions = [
         {
@@ -38,31 +38,31 @@ export default function AIPanel() {
     };
 
     const floatBtns = [
-        { 
-            label: "GỬI SOS", 
-            icon: "🚨", 
-            color: "#FF4D4F", 
+        {
+            label: "GỬI SOS",
+            icon: "🚨",
+            color: "#FF4D4F",
             shadow: "rgba(255,77,79,0.5)",
             onClick: () => setIsFormOpen(true)
         },
-        { 
-            label: "QUYÊN GÓP", 
-            icon: "🎁", 
-            color: "#7C3AED", 
+        {
+            label: "QUYÊN GÓP",
+            icon: "🎁",
+            color: "#7C3AED",
             shadow: "rgba(124,58,237,0.5)",
-            onClick: () => alert("Chức năng quyên góp đang được phát triển!")
+            onClick: () => setIsDonationOpen(true)
         },
-        { 
-            label: "TÌNH NGUYỆN VIÊN", 
-            icon: "👨‍🚒", 
-            color: "#D97706", 
+        {
+            label: "TÌNH NGUYỆN VIÊN",
+            icon: "👨‍🚒",
+            color: "#D97706",
             shadow: "rgba(217,119,6,0.5)",
-            onClick: () => alert("Đăng ký tình nguyện viên đang được xử lý!")
+            onClick: () => setIsVolunteerOpen(true)
         },
-        { 
-            label: "ĐỊNH VỊ TÔI", 
-            icon: "📍", 
-            color: "#22C55E", 
+        {
+            label: "ĐỊNH VỊ TÔI",
+            icon: "📍",
+            color: "#22C55E",
             shadow: "rgba(34,197,94,0.5)",
             onClick: handleLocateMe
         },
@@ -96,8 +96,8 @@ export default function AIPanel() {
             {/* Float Action Buttons */}
             <div className="float-actions">
                 {floatBtns.map((btn, i) => (
-                    <button 
-                        key={i} 
+                    <button
+                        key={i}
                         className="float-action-btn"
                         onClick={btn.onClick}
                     >
