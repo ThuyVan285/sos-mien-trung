@@ -7,7 +7,13 @@ import AIPanel from "../components/panels/AIPanel";
 import LeftPanel from "../components/panels/LeftPanel";
 
 
+<<<<<<< HEAD
 
+=======
+/*import FilterPanel from "../components/panels/FilterPanel";
+import MapView from "../components/map/MapView";
+import AIPanel from "../components/panels/AIPanel";*/
+>>>>>>> e5a720c6cff8899de71fbf847f62d351a7de19b0
 
 export default function MapPage() {
     return (
