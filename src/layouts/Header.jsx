@@ -31,9 +31,7 @@ export default function Header() {
                         <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
                             <Map size={15} />Bản đồ
                         </Link>
-                        <a href="#" className="nav-item"><Gift size={15} />Quyên góp</a>
-                        <a href="#" className="nav-item"><User size={15} />TNV</a>
-                        <a href="#" className="nav-item"><Mail size={15} />Liên hệ</a>
+                        <a href="#lien-he" className="nav-item"><Mail size={15} />Liên hệ</a>
                     </nav>
                 </div>
 

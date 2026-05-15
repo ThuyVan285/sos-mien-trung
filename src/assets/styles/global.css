@@ -2,7 +2,13 @@
 
 @import "./variables.css";
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #020817;
+}
 /* =========================
    RESET
 ========================= */
@@ -18,10 +24,11 @@ html, body, #root {
 }
 
 body {
-    background: #050816;
     color: white;
-    font-family: "Inter", sans-serif;
-    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background-color: #020817;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* =========================
