@@ -50,8 +50,8 @@ export default function MapView() {
             zoomControl={false}
         >
             <TileLayer
-                attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                attribution="&copy; VietMap"
+                url="https://maps.vietmap.vn/api/tm/{z}/{x}/{y}.png?apikey=1581064bec7437481b89c58cd3bfeada9ba10b0dbed1cd4c"
             />
 
             <Polyline
