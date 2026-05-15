@@ -1,18 +1,20 @@
 // src/layouts/Header.jsx
 
 import { Search, AlertTriangle, Home, Map, Gift, User, Mail } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useSOS } from "../store/SOSContext";
 import SOSForm from "../features/sos/SOSForm";
 
 export default function Header() {
     const { isFormOpen, setIsFormOpen } = useSOS();
+    const location = useLocation();
 
     return (
         <>
             <header className="header">
                 {/* LEFT */}
                 <div className="header-left">
-                    <div className="logo-wrap">
+                    <Link to="/" className="logo-wrap" style={{ textDecoration: 'none' }}>
                         <div className="logo-icon">🚨</div>
                         <div>
                             <h1 className="logo">
@@ -20,11 +22,15 @@ export default function Header() {
                             </h1>
                             <p className="logo-sub">Kết nối nhanh – Cứu trợ kịp thời</p>
                         </div>
-                    </div>
+                    </Link>
 
                     <nav className="nav-menu">
-                        <a href="#" className="nav-item"><Home size={15} />Trang chủ</a>
-                        <a href="#" className="nav-item active"><Map size={15} />Bản đồ</a>
+                        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+                            <Home size={15} />Trang chủ
+                        </Link>
+                        <Link to="/map" className={`nav-item ${location.pathname === '/map' ? 'active' : ''}`}>
+                            <Map size={15} />Bản đồ
+                        </Link>
                         <a href="#" className="nav-item"><Gift size={15} />Quyên góp</a>
                         <a href="#" className="nav-item"><User size={15} />TNV</a>
                         <a href="#" className="nav-item"><Mail size={15} />Liên hệ</a>

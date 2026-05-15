@@ -49,7 +49,7 @@ export default function LeftPanel() {
             <div className="sidebar-section">
                 <div className="section-header">
                     <h3>DANH SÁCH SOS GẦN ĐÂY</h3>
-                    <button>Xem tất cả</button>
+                    <button onClick={() => alert("Chuyển đến trang danh sách chi tiết...")}>Xem tất cả</button>
                 </div>
                 <div className="sos-list">
                     {sosList.map((item, i) => (

@@ -49,7 +49,7 @@ export default function FilterPanel() {
                 </select>
             </div>
 
-            <button className="filter-advanced-btn">
+            <button className="filter-advanced-btn" onClick={() => alert("Chức năng bộ lọc nâng cao sẽ được cập nhật sớm!")}>
                 <SlidersHorizontal size={15} />
                 Bộ lọc nâng cao
             </button>

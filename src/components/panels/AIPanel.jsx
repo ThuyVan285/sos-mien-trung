@@ -1,8 +1,11 @@
 // src/components/panels/AIPanel.jsx
 
 import { ArrowRight, AlertTriangle, Bot } from "lucide-react";
+import { useSOS } from "../../store/SOSContext";
 
 export default function AIPanel() {
+    const { setIsFormOpen } = useSOS();
+
     const suggestions = [
         {
             icon: <AlertTriangle size={16} color="#FF4D4F" />,
@@ -18,11 +21,51 @@ export default function AIPanel() {
         },
     ];
 
+    const handleLocateMe = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    alert(`Vị trí của bạn: ${latitude}, ${longitude}. Bản đồ sẽ tự động di chuyển đến đây.`);
+                },
+                (error) => {
+                    alert("Không thể lấy vị trí: " + error.message);
+                }
+            );
+        } else {
+            alert("Trình duyệt không hỗ trợ định vị.");
+        }
+    };
+
     const floatBtns = [
-        { label: "GỬI SOS", icon: "🚨", color: "#FF4D4F", shadow: "rgba(255,77,79,0.5)" },
-        { label: "QUYÊN GÓP", icon: "🎁", color: "#7C3AED", shadow: "rgba(124,58,237,0.5)" },
-        { label: "TÌNH NGUYỆN VIÊN", icon: "👨‍🚒", color: "#D97706", shadow: "rgba(217,119,6,0.5)" },
-        { label: "ĐỊNH VỊ TÔI", icon: "📍", color: "#22C55E", shadow: "rgba(34,197,94,0.5)" },
+        { 
+            label: "GỬI SOS", 
+            icon: "🚨", 
+            color: "#FF4D4F", 
+            shadow: "rgba(255,77,79,0.5)",
+            onClick: () => setIsFormOpen(true)
+        },
+        { 
+            label: "QUYÊN GÓP", 
+            icon: "🎁", 
+            color: "#7C3AED", 
+            shadow: "rgba(124,58,237,0.5)",
+            onClick: () => alert("Chức năng quyên góp đang được phát triển!")
+        },
+        { 
+            label: "TÌNH NGUYỆN VIÊN", 
+            icon: "👨‍🚒", 
+            color: "#D97706", 
+            shadow: "rgba(217,119,6,0.5)",
+            onClick: () => alert("Đăng ký tình nguyện viên đang được xử lý!")
+        },
+        { 
+            label: "ĐỊNH VỊ TÔI", 
+            icon: "📍", 
+            color: "#22C55E", 
+            shadow: "rgba(34,197,94,0.5)",
+            onClick: handleLocateMe
+        },
     ];
 
     return (
@@ -44,7 +87,7 @@ export default function AIPanel() {
                     </div>
                 ))}
 
-                <button className="ai-detail-btn">
+                <button className="ai-detail-btn" onClick={() => alert("Đang phân tích dữ liệu AI...")}>
                     Xem phân tích chi tiết
                     <ArrowRight size={14} />
                 </button>
@@ -53,7 +96,11 @@ export default function AIPanel() {
             {/* Float Action Buttons */}
             <div className="float-actions">
                 {floatBtns.map((btn, i) => (
-                    <button key={i} className="float-action-btn">
+                    <button 
+                        key={i} 
+                        className="float-action-btn"
+                        onClick={btn.onClick}
+                    >
                         <span
                             className="float-action-icon"
                             style={{

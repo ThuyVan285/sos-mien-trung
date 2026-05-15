@@ -1,6 +1,10 @@
+import { Link } from "react-router-dom";
 import Header from "../layouts/Header.jsx";
+import { useSOS } from "../store/SOSContext";
 
 export default function Homepage() {
+    const { setIsFormOpen } = useSOS();
+
     return (
         <div className="Homepage min-h-screen bg-[#020817] text-white">
 
@@ -35,13 +39,20 @@ export default function Homepage() {
 
                         <div className="flex gap-5 mt-8">
 
-                            <button className="bg-red-600 px-6 py-3 rounded-xl font-semibold hover:bg-red-700">
+                            <button 
+                                className="bg-red-600 px-6 py-3 rounded-xl font-semibold hover:bg-red-700"
+                                onClick={() => setIsFormOpen(true)}
+                            >
                                 Gửi yêu cầu SOS
                             </button>
 
-                            <button className="bg-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-700">
+                            <Link 
+                                to="/map"
+                                className="bg-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 flex items-center justify-center"
+                                style={{ textDecoration: 'none' }}
+                            >
                                 Mở bản đồ cứu trợ
-                            </button>
+                            </Link>
 
                         </div>
 

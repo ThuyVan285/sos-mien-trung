@@ -7,6 +7,7 @@ import {
     Popup,
     Polyline,
     Circle,
+    useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -37,6 +38,25 @@ const createCustomIcon = (status) => {
 
 const STATUS_LABEL = { urgent:"URGENT", pending:"PENDING", helping:"HELPING", done:"DONE" };
 const STATUS_COLOR = { urgent:"#FF4D4F", pending:"#FACC15", helping:"#1D9BF0", done:"#22C55E" };
+
+// Component con để truy cập map instance qua useMap
+function MapControls() {
+    const map = useMap();
+
+    const handleZoomIn = () => map.zoomIn();
+    const handleZoomOut = () => map.zoomOut();
+    const handleLocate = () => {
+        map.locate({ setView: true, maxZoom: 16 });
+    };
+
+    return (
+        <div className="map-controls">
+            <button className="map-ctrl-btn" onClick={handleZoomIn} title="Phóng to">＋</button>
+            <button className="map-ctrl-btn" onClick={handleZoomOut} title="Thu nhỏ">－</button>
+            <button className="map-ctrl-btn" onClick={handleLocate} title="Định vị của tôi">⊙</button>
+        </div>
+    );
+}
 
 export default function MapView() {
     const { sosRequests, updateStatus } = useSOS();
@@ -120,11 +140,7 @@ export default function MapView() {
                 </div>
             </div>
 
-            <div className="map-controls">
-                <button className="map-ctrl-btn">＋</button>
-                <button className="map-ctrl-btn">－</button>
-                <button className="map-ctrl-btn">⊙</button>
-            </div>
+            <MapControls />
         </MapContainer>
     );
 }
