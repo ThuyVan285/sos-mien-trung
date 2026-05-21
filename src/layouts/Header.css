@@ -1,18 +1,25 @@
 /* HEADER */
+/* Header.css */
 .header {
-    height: 72px;
-    width: 100%;
+    position: relative;   /* ← đổi từ sticky thành relative */
+    top: 0;               /* ← bỏ top: 18px */
+    z-index: 999;
 
+    width: 100%;          /* ← bỏ calc(100% - 32px) */
+    max-width: none;      /* ← bỏ max-width */
+    margin: 0;            /* ← bỏ margin auto */
+    border-radius: 0;     /* ← bỏ border-radius 28px */
+
+    padding: 14px 22px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
-    padding: 0 24px;
-
-    background: #020617;
-    border-bottom: 1px solid #1e293b;
-
-    box-sizing: border-box;
+    background: rgba(7, 17, 34, 0.95);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    flex-shrink: 0;       /* ← thêm: không bị co lại trong flex */
 }
 
 /* LEFT */
@@ -23,52 +30,92 @@
 }
 
 /* LOGO */
+
 .logo-wrap {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+
+    text-decoration: none;
 }
 
 .logo-icon {
-    width: 42px;
-    height: 42px;
-
-    border-radius: 12px;
+    width: 46px;
+    height: 46px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background: #ef4444;
+    border-radius: 16px;
 
-    font-size: 22px;
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(255,70,70,.18),
+                    rgba(255,120,0,.08)
+            );
+
+    border: 1px solid rgba(255,255,255,.06);
+
+    color: #ff5b5b;
+
+    box-shadow:
+            0 10px 30px rgba(255,70,70,.18);
 }
 
-/* TEXT LOGO */
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .logo {
     margin: 0;
 
-    font-size: 20px;
-    font-weight: 700;
+    font-family: 'Inter', sans-serif;
 
-    color: white;
+    font-size: 1.55rem;   /* nhỏ lại */
+    font-weight: 800;
+
+    letter-spacing: -0.03em; /* giảm bó chữ */
 
     line-height: 1.1;
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+
+    text-transform: uppercase;
 }
 
 .logo span {
-    color: #ef4444;
+    background: linear-gradient(
+            135deg,
+            #3b82f6,
+            #60a5fa
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    margin-right: 8px;
 }
 
 .logo-sub {
-    margin: 0;
+    margin-top: 2px;
 
     font-size: 12px;
-    color: #94a3b8;
+
+    color: rgba(255,255,255,.5);
+
+    font-weight: 500;
+
+    letter-spacing: 0;
 
     line-height: 1.2;
 }
-
 /* NAVBAR */
 .nav-menu {
     display: flex;
@@ -77,29 +124,46 @@
 }
 
 .nav-item {
+    position: relative;
+
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 
-    height: 40px;
+    padding: 12px 18px;
 
-    padding: 0 14px;
+    border-radius: 14px;
 
-    border-radius: 10px;
+    color: rgba(255,255,255,.72);
 
-    color: white;
+    font-size: .92rem;
+    font-weight: 600;
+
     text-decoration: none;
 
-    transition: 0.2s;
+    transition: all .25s ease;
 }
-
 .nav-item:hover {
-    background: #1e293b;
-}
+    color: white;
 
+    background: rgba(255,255,255,.05);
+
+    transform: translateY(-1px);
+}
 .nav-item.active {
-    background: #0f172a;
-    border: 1px solid #334155;
+    color: #67e8f9;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(59,130,246,.14),
+                    rgba(6,182,212,.08)
+            );
+
+    border: 1px solid rgba(103,232,249,.15);
+
+    box-shadow:
+            0 0 20px rgba(6,182,212,.12);
 }
 
 /* RIGHT */
@@ -113,21 +177,22 @@
 .search-box {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 
-    width: 280px;
-    height: 40px;
+    width: 320px;
 
-    padding: 0 14px;
+    padding: 14px 18px;
 
-    border-radius: 12px;
+    border-radius: 18px;
 
-    background: #0f172a;
-    border: 1px solid #1e293b;
+    background: rgba(255,255,255,.03);
+
+    border: 1px solid rgba(255,255,255,.06);
 
     color: #94a3b8;
-}
 
+    transition: all .25s ease;
+}
 .search-box input {
     width: 100%;
     border: none;
@@ -137,30 +202,70 @@
 
     color: white;
 }
+.search-box:focus-within {
+    border-color: rgba(59,130,246,.35);
 
+    box-shadow:
+            0 0 0 4px rgba(59,130,246,.08);
+}
 /* SOS BUTTON */
 .sos-btn {
-    height: 40px;
-
-    padding: 0 18px;
-
-    border: none;
-    border-radius: 12px;
-
-    background: #ef4444;
-
-    color: white;
-    font-weight: 600;
-
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+
+    padding: 14px 22px;
+
+    border-radius: 18px;
+
+    border: none;
+
+    color: white;
+
+    font-weight: 800;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #ff3b3b,
+                    #ff6b00
+            );
+
+    box-shadow:
+            0 10px 30px rgba(255,80,80,.3),
+            0 0 40px rgba(255,80,80,.15);
+
+    transition: all .25s ease;
 
     cursor: pointer;
-
-    transition: 0.2s;
 }
+.sos-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-.sos-btn:hover {
-    background: #dc2626;
+    padding: 14px 22px;
+
+    border-radius: 18px;
+
+    border: none;
+
+    color: white;
+
+    font-weight: 800;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #ff3b3b,
+                    #ff6b00
+            );
+
+    box-shadow:
+            0 10px 30px rgba(255,80,80,.3),
+            0 0 40px rgba(255,80,80,.15);
+
+    transition: all .25s ease;
+
+    cursor: pointer;
 }

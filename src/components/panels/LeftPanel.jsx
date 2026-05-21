@@ -8,9 +8,9 @@ const stats = [
 
 const sosList = [
     { name: "Nguyễn Văn A", time: "2 phút trước", status: "URGENT", className: "danger" },
-    { name: "Trần Thị B", time: "9 Huế", status: "PENDING", className: "warning" },
+    { name: "Trần Thị B", time: "9 phút trước", status: "PENDING", className: "warning" },
     { name: "Lê Văn C", time: "8 phút trước", status: "HELPING", className: "primary" },
-    { name: "Phạm Thị D", time: "Quảng Trị", status: "PENDING", className: "warning" },
+    { name: "Phạm Thị D", time: "2 giờ trước", status: "PENDING", className: "warning" },
     { name: "Hoàng Văn E", time: "15 phút trước", status: "DONE", className: "success" },
 ];
 

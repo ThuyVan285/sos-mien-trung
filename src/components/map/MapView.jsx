@@ -1,5 +1,5 @@
 // src/components/map/MapView.jsx
-
+import { useEffect } from "react";
 import {
     MapContainer,
     TileLayer,
@@ -58,6 +58,20 @@ function MapControls() {
     );
 }
 
+function ResizeMap() {
+    const map = useMap();
+    useEffect(() => {
+        const timers = [
+            setTimeout(() => map.invalidateSize(), 100),
+            setTimeout(() => map.invalidateSize(), 300),
+            setTimeout(() => map.invalidateSize(), 600),
+            setTimeout(() => map.invalidateSize(), 1000),
+        ];
+        return () => timers.forEach(clearTimeout);
+    }, [map]);
+    return null;
+}
+
 export default function MapView() {
     const { sosRequests, updateStatus } = useSOS();
     const center = [16.2, 107.9];
@@ -69,6 +83,9 @@ export default function MapView() {
             style={{ width: "100%", height: "100%" }}
             zoomControl={false}
         >
+            <ResizeMap />
+
+
             <TileLayer
                 attribution="&copy; VietMap"
                 url="https://maps.vietmap.vn/api/tm/{z}/{x}/{y}.png?apikey=1581064bec7437481b89c58cd3bfeada9ba10b0dbed1cd4c"

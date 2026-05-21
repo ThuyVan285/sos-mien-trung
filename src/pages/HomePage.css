@@ -9,9 +9,12 @@
 
 /* Tách biệt các section bằng khoảng cách lớn */
 section {
-    padding: 100px 0;      /* Tăng khoảng cách trên và dưới bên trong mỗi khối */
-    margin-bottom: 40px;   /* Tạo khoảng cách trống giữa khối trên và khối dưới */
-    clear: both;           /* Đảm bảo không có thành phần nào bị tràn/đè lên nhau */
+    padding: 100px 0;
+    /* Tăng khoảng cách trên và dưới bên trong mỗi khối */
+    margin-bottom: 40px;
+    /* Tạo khoảng cách trống giữa khối trên và khối dưới */
+    clear: both;
+    /* Đảm bảo không có thành phần nào bị tràn/đè lên nhau */
     display: block;
     width: 100%;
 }
@@ -24,7 +27,8 @@ section {
     align-items: center;
     justify-content: center;
     background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
-    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    position: relative;
+    /* Chuyển từ absolute về relative nếu có */
     z-index: 1;
     overflow: hidden;
 }
@@ -51,14 +55,17 @@ section {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    background: rgba(255, 255, 255, 0.03); /* Nền hơi xám nhẹ để tách khối */
+    background: rgba(255, 255, 255, 0.03);
+    /* Nền hơi xám nhẹ để tách khối */
     border-radius: 24px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 60px;
-    margin-top: -100px; /* Đẩy lên một chút để gối vào phần Hero */
+    margin-top: -100px;
+    /* Đẩy lên một chút để gối vào phần Hero */
     position: relative;
     z-index: 10;
-    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    position: relative;
+    /* Chuyển từ absolute về relative nếu có */
     z-index: 1;
     overflow: hidden;
 }
@@ -87,7 +94,8 @@ section {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
-    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    position: relative;
+    /* Chuyển từ absolute về relative nếu có */
     z-index: 1;
     overflow: hidden;
 }
@@ -128,7 +136,8 @@ section {
     border-radius: 32px;
     margin-bottom: 80px;
     padding: 100px 40px;
-    position: relative;    /* Chuyển từ absolute về relative nếu có */
+    position: relative;
+    /* Chuyển từ absolute về relative nếu có */
     z-index: 1;
     overflow: hidden;
 }
@@ -156,21 +165,46 @@ section {
     text-decoration: none;
     transition: all 0.2s;
 }
-h1, h2, h3 {
-    margin-bottom: 24px;   /* Khoảng cách từ tiêu đề xuống nội dung bên dưới */
+
+h1,
+h2,
+h3 {
+    margin-bottom: 24px;
+    /* Khoảng cách từ tiêu đề xuống nội dung bên dưới */
 }
 
 p {
-    margin-bottom: 30px;   /* Khoảng cách từ đoạn văn xuống nút bấm hoặc phần tiếp theo */
-    line-height: 1.8;      /* Giúp các dòng chữ cách nhau ra dễ đọc hơn */
+    margin-bottom: 30px;
+    /* Khoảng cách từ đoạn văn xuống nút bấm hoặc phần tiếp theo */
+    line-height: 1.8;
+    /* Giúp các dòng chữ cách nhau ra dễ đọc hơn */
 }
-.stats-container, .features-grid {
-    display: flex;
-    gap: 50px;             /* Tăng khoảng cách giữa các cột lên 50px */
-    flex-wrap: wrap;       /* Đảm bảo nếu màn hình nhỏ nó sẽ tự xuống dòng chứ không ép vào nhau */
-}
-.btn-primary { background: #3b82f6; color: white; }
-.btn-danger { background: #ef4444; color: white; }
-.btn-outline { border: 1px solid #3f3f46; color: white; }
 
-.btn:hover { opacity: 0.9; transform: scale(1.05); }
+.stats-container,
+.features-grid {
+    display: flex;
+    gap: 50px;
+    /* Tăng khoảng cách giữa các cột lên 50px */
+    flex-wrap: wrap;
+    /* Đảm bảo nếu màn hình nhỏ nó sẽ tự xuống dòng chứ không ép vào nhau */
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-outline {
+    border: 1px solid #3f3f46;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
