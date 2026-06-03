@@ -1,21 +1,45 @@
 /* src/assets/styles/variables.css */
 
 :root {
-    --bg: #050816;
-    --card: #101726;
-    --border: rgba(255,255,255,0.08);
+    /* === NỀN === */
+    --bg: #f0f4f8;
+    --bg-secondary: #ffffff;
+    --card: #ffffff;
+    --card-secondary: #f8fafc;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.14);
 
-    --text: #FFFFFF;
-    --secondary: #B8C1D9;
+    /* === CHỮ === */
+    --text: #0f1923;
+    --secondary: #4b5563;
+    --muted: #9ca3af;
 
-    --blue: #1D9BF0;
-    --cyan: #37E2D5;
-    --red: #FF4D4F;
-    --green: #22C55E;
-    --yellow: #FACC15;
+    /* === MÀU CHỦ ĐẠO: XANH LÁ === */
+    --primary: #16a34a;
+    --primary-hover: #15803d;
+    --primary-light: rgba(22, 163, 74, 0.1);
+    --primary-border: rgba(22, 163, 74, 0.3);
 
-    --radius: 18px;
+    /* === MÀU PHỤ === */
+    --blue: #2563eb;
+    --blue-light: rgba(37, 99, 235, 0.1);
+    --cyan: #0891b2;
+    --red: #dc2626;
+    --red-light: rgba(220, 38, 38, 0.1);
+    --green: #16a34a;
+    --green-light: rgba(22, 163, 74, 0.1);
+    --yellow: #d97706;
+    --yellow-light: rgba(217, 119, 6, 0.1);
+    --orange: #ea580c;
 
-    --shadow-blue:
-            0 0 20px rgba(29,155,240,0.35);
+    /* === RADIUS & SHADOW === */
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+    --shadow-green: 0 4px 20px rgba(22, 163, 74, 0.25);
+    --shadow-red: 0 4px 20px rgba(220, 38, 38, 0.25);
 }
