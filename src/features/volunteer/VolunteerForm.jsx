@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, User, Phone, MapPin, Heart, CheckCircle, ChevronDown, Briefcase, Clock } from "lucide-react";
 import { useSOS } from "../../store/SOSContext";
+import { addVolunteer } from "../../services/volunteerService";
 import { validatePhone, required } from "../../utils/validators";
 
 const PROVINCES = [
@@ -76,7 +77,8 @@ export default function VolunteerForm() {
         const errs = validate();
         if (Object.keys(errs).length > 0) { setErrors(errs); return; }
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 900));
+        // ✅ FIX: lưu vào Firestore thay vì setTimeout giả
+        await addVolunteer(form);
         setLoading(false);
         setSubmitted(true);
     };

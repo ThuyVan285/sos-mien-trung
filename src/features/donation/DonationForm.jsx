@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, User, Phone, Heart, CheckCircle, ChevronDown, Copy, Check } from "lucide-react";
 import { useSOS } from "../../store/SOSContext";
+import { addDonation } from "../../services/donationService";
 import { validatePhone, required } from "../../utils/validators";
 
 const DONATION_TYPES = [
@@ -65,7 +66,8 @@ export default function DonationForm() {
         const errs = validate();
         if (Object.keys(errs).length > 0) { setErrors(errs); return; }
         setLoading(true);
-        await new Promise((r) => setTimeout(r, 900));
+        // ✅ FIX: lưu vào Firestore thay vì setTimeout giả
+        await addDonation(form);
         setLoading(false);
         setSubmitted(true);
     };

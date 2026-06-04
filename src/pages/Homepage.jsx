@@ -74,8 +74,8 @@ export default function Homepage() {
                         <div style={{ display: "flex", flexDirection: "column", gap: 20, position: "relative", zIndex: 10 }}>
 
                             {/* Badge */}
-                            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid #e5e7eb", borderRadius: 99, padding: "6px 14px", fontSize: 11, fontWeight: 600, color: "#4b5563", width: "fit-content", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-                                <MapPin size={12} color="#16a34a" /> HỆ THỐNG HỖ TRỢ THIÊN TAI MIỀN TRUNG
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "white", border: "1px solid #e5e7eb", borderRadius: 99, padding: "6px 14px", fontSize: 11, fontWeight: 600, color: "#4b5563", width: "fit-content", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                                <MapPin size={14} color="#16a34a" /> Hệ thống hỗ trợ thiên tai Miền Trung
                             </div>
 
                             {/* Title */}
@@ -459,7 +459,7 @@ export default function Homepage() {
                                         color: "#111827"
                                     }}
                                 >
-                                    HỆ THỐNG BẢN ĐỒ
+                                    Hệ thống bản đồ
                                 </div>
 
                                 <div

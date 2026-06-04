@@ -1,51 +1,50 @@
 // src/store/SOSContext.jsx
-
-import { createContext, useContext, useState } from "react";
-import mockData from "../mock/mockData";
+import { createContext, useContext, useState, useEffect } from "react";
+import { subscribeToSOS, addSOSRequest as saveToDB, updateSOSStatus } from "../services/sosService";
 
 const SOSContext = createContext(null);
 
 export function SOSProvider({ children }) {
-    const [sosRequests, setSosRequests] = useState(mockData.sosRequests);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isDonationOpen, setIsDonationOpen] = useState(false);
+    const [sosRequests, setSosRequests]         = useState([]);
+    const [loading, setLoading]                 = useState(true);
+    const [isFormOpen, setIsFormOpen]           = useState(false);
+    const [isDonationOpen, setIsDonationOpen]   = useState(false);
     const [isVolunteerOpen, setIsVolunteerOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
 
-    const addSOSRequest = (newRequest) => {
-        const request = {
-            ...newRequest,
-            id: Date.now(),
-            status: "urgent",
-            priority: newRequest.level,
-            createdAt: new Date(),
-        };
-        setSosRequests((prev) => [request, ...prev]);
-        return request;
+    useEffect(() => {
+        // LỖI #2 ĐƯỢC FIX: subscribeToSOS trả về unsubscribe function
+        // phải gọi nó khi component unmount để tránh memory leak
+        const unsubscribe = subscribeToSOS((data) => {
+            setSosRequests(data);
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    // LỖI #3 ĐƯỢC FIX: addSOSRequest phải là async và await saveToDB
+    const addSOSRequest = async (newRequest) => {
+        const result = await saveToDB(newRequest);
+        // Không cần setSosRequests — onSnapshot tự cập nhật
+        return result;
     };
 
-    const updateStatus = (id, status) => {
-        setSosRequests((prev) =>
-            prev.map((r) => (r.id === id ? { ...r, status } : r))
-        );
+    // LỖI #4 ĐƯỢC FIX: updateStatus phải await
+    const updateStatus = async (id, status) => {
+        await updateSOSStatus(id, status);
     };
 
     return (
-        <SOSContext.Provider
-            value={{
-                sosRequests,
-                isFormOpen,
-                setIsFormOpen,
-                isDonationOpen,
-                setIsDonationOpen,
-                isVolunteerOpen,
-                setIsVolunteerOpen,
-                selectedRequest,
-                setSelectedRequest,
-                addSOSRequest,
-                updateStatus,
-            }}
-        >
+        <SOSContext.Provider value={{
+            sosRequests,
+            loading,
+            isFormOpen,      setIsFormOpen,
+            isDonationOpen,  setIsDonationOpen,
+            isVolunteerOpen, setIsVolunteerOpen,
+            selectedRequest, setSelectedRequest,
+            addSOSRequest,
+            updateStatus,
+        }}>
             {children}
         </SOSContext.Provider>
     );

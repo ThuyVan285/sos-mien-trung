@@ -72,17 +72,13 @@ export default function SOSForm() {
 
     const handleSubmit = async () => {
         const e = validate();
-        if (Object.keys(e).length > 0) {
-            setErrors(e);
-            return;
-        }
+        if (Object.keys(e).length > 0) { setErrors(e); return; }
 
         setLoading(true);
-        // Giả lập gọi API (thay bằng axios khi có backend)
-        await new Promise((r) => setTimeout(r, 800));
-
         const coords = PROVINCE_COORDS[form.province] || [16.0, 108.0];
-        addSOSRequest({
+
+        // ✅ FIX: await addSOSRequest — giờ nó lưu thẳng vào Firestore
+        await addSOSRequest({
             name:        form.name,
             phone:       form.phone,
             province:    form.province,
