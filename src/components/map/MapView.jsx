@@ -1,59 +1,44 @@
 // src/components/map/MapView.jsx
 import { useEffect } from "react";
 import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    Popup,
-    Polyline,
-    Circle,
-    useMap,
+    MapContainer, TileLayer, Marker,
+    Popup, Polyline, Circle, useMap,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useSOS } from "../../store/SOSContext";
+import { Phone, MapPin, Heart, Zap, FileText, Plus, Minus, LocateFixed } from "lucide-react";
 
 const createCustomIcon = (status) => {
-    const colors = {
-        urgent:  "#FF4D4F",
-        pending: "#FACC15",
-        helping: "#1D9BF0",
-        done:    "#22C55E",
-    };
+    const colors = { urgent:"#FF4D4F", pending:"#FACC15", helping:"#1D9BF0", done:"#22C55E" };
     const color = colors[status] || "#FF4D4F";
     return L.divIcon({
         className: "custom-marker-wrapper",
         html: `
-            <div class="marker-glow" style="
-                background: ${color};
-                box-shadow: 0 0 10px ${color}, 0 0 20px ${color}, 0 0 40px ${color};
-            ">
-                <div class="marker-pulse" style="border-color: ${color};"></div>
+            <div class="marker-glow" style="background:${color};box-shadow:0 0 10px ${color},0 0 20px ${color},0 0 40px ${color};">
+                <div class="marker-pulse" style="border-color:${color};"></div>
             </div>
         `,
-        iconSize:   [20, 20],
-        iconAnchor: [10, 10],
+        iconSize: [20, 20], iconAnchor: [10, 10],
     });
 };
 
 const STATUS_LABEL = { urgent:"URGENT", pending:"PENDING", helping:"HELPING", done:"DONE" };
 const STATUS_COLOR = { urgent:"#FF4D4F", pending:"#FACC15", helping:"#1D9BF0", done:"#22C55E" };
 
-// Component con để truy cập map instance qua useMap
 function MapControls() {
     const map = useMap();
-
-    const handleZoomIn = () => map.zoomIn();
-    const handleZoomOut = () => map.zoomOut();
-    const handleLocate = () => {
-        map.locate({ setView: true, maxZoom: 16 });
-    };
-
     return (
         <div className="map-controls">
-            <button className="map-ctrl-btn" onClick={handleZoomIn} title="Phóng to">＋</button>
-            <button className="map-ctrl-btn" onClick={handleZoomOut} title="Thu nhỏ">－</button>
-            <button className="map-ctrl-btn" onClick={handleLocate} title="Định vị của tôi">⊙</button>
+            <button className="map-ctrl-btn" onClick={() => map.zoomIn()} title="Phóng to">
+                <Plus size={16} />
+            </button>
+            <button className="map-ctrl-btn" onClick={() => map.zoomOut()} title="Thu nhỏ">
+                <Minus size={16} />
+            </button>
+            <button className="map-ctrl-btn" onClick={() => map.locate({ setView: true, maxZoom: 16 })} title="Định vị của tôi">
+                <LocateFixed size={16} />
+            </button>
         </div>
     );
 }
@@ -61,12 +46,7 @@ function MapControls() {
 function ResizeMap() {
     const map = useMap();
     useEffect(() => {
-        const timers = [
-            setTimeout(() => map.invalidateSize(), 100),
-            setTimeout(() => map.invalidateSize(), 300),
-            setTimeout(() => map.invalidateSize(), 600),
-            setTimeout(() => map.invalidateSize(), 1000),
-        ];
+        const timers = [100, 300, 600, 1000].map(d => setTimeout(() => map.invalidateSize(), d));
         return () => timers.forEach(clearTimeout);
     }, [map]);
     return null;
@@ -74,40 +54,21 @@ function ResizeMap() {
 
 export default function MapView() {
     const { sosRequests, updateStatus } = useSOS();
-    const center = [16.2, 107.9];
 
     return (
-        <MapContainer
-            center={center}
-            zoom={6}
-            style={{ width: "100%", height: "100%" }}
-            zoomControl={false}
-        >
+        <MapContainer center={[16.2, 107.9]} zoom={6} style={{ width:"100%", height:"100%" }} zoomControl={false}>
             <ResizeMap />
-
-
             <TileLayer
                 attribution="&copy; VietMap"
                 url="https://maps.vietmap.vn/api/tm/{z}/{x}/{y}.png?apikey=1581064bec7437481b89c58cd3bfeada9ba10b0dbed1cd4c"
             />
-
             <Polyline
-                positions={[[19.8,105.8],[18.7,105.7],[18.3,105.9],[17.5,106.3],
-                    [16.7,107.2],[16.4,107.6],[16.05,108.2],[15.6,108.0],
-                    [15.1,108.8],[14.2,109.0],[13.1,109.3],[12.2,109.2],
-                    [11.9,108.4]]}
-                color="#37E2D5"
-                weight={2}
-                opacity={0.5}
-                dashArray="6,6"
+                positions={[[19.8,105.8],[18.7,105.7],[18.3,105.9],[17.5,106.3],[16.7,107.2],[16.4,107.6],[16.05,108.2],[15.6,108.0],[15.1,108.8],[14.2,109.0],[13.1,109.3],[12.2,109.2],[11.9,108.4]]}
+                color="#37E2D5" weight={2} opacity={0.5} dashArray="6,6"
             />
 
             {sosRequests.map((item) => (
-                <Marker
-                    key={item.id}
-                    position={[item.lat, item.lng]}
-                    icon={createCustomIcon(item.status)}
-                >
+                <Marker key={item.id} position={[item.lat, item.lng]} icon={createCustomIcon(item.status)}>
                     <Popup className="dark-popup" closeButton={false}>
                         <div className="popup-card">
                             <div className="popup-header">
@@ -117,11 +78,26 @@ export default function MapView() {
                                 </span>
                             </div>
                             <div className="popup-body">
-                                <p>📞 {item.phone}</p>
-                                <p>📍 {item.address}</p>
-                                <p>🏠 Hỗ trợ: {item.supportType}</p>
-                                <p>⚡ Mức độ: <span style={{ color: STATUS_COLOR[item.status], fontWeight: 700 }}>{item.priority?.toUpperCase()}</span></p>
-                                {item.note && <p>📝 {item.note}</p>}
+                                <p style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                    <Phone size={11} color="#6b7280" /> {item.phone}
+                                </p>
+                                <p style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                    <MapPin size={11} color="#6b7280" /> {item.address}
+                                </p>
+                                <p style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                    <Heart size={11} color="#6b7280" /> Hỗ trợ: {item.supportType}
+                                </p>
+                                <p style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                    <Zap size={11} color="#6b7280" /> Mức độ:{" "}
+                                    <span style={{ color: STATUS_COLOR[item.status], fontWeight:700 }}>
+                                        {item.priority?.toUpperCase()}
+                                    </span>
+                                </p>
+                                {item.note && (
+                                    <p style={{ display:"flex", alignItems:"center", gap:5 }}>
+                                        <FileText size={11} color="#6b7280" /> {item.note}
+                                    </p>
+                                )}
                             </div>
                             <div className="popup-actions">
                                 <button className="popup-btn accept" onClick={() => updateStatus(item.id, "helping")}>Nhận hỗ trợ</button>
@@ -130,11 +106,8 @@ export default function MapView() {
                             </div>
                         </div>
                     </Popup>
-                    <Circle
-                        center={[item.lat, item.lng]}
-                        radius={5000}
-                        pathOptions={{ color: STATUS_COLOR[item.status], fillColor: STATUS_COLOR[item.status], fillOpacity: 0.1, weight: 1 }}
-                    />
+                    <Circle center={[item.lat, item.lng]} radius={5000}
+                            pathOptions={{ color:STATUS_COLOR[item.status], fillColor:STATUS_COLOR[item.status], fillOpacity:0.1, weight:1 }} />
                 </Marker>
             ))}
 

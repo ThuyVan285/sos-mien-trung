@@ -68,9 +68,10 @@ body {
     padding: 10px 14px;
     background: #ffffff;
     border-bottom: 1px solid rgba(0,0,0,0.08);
-    backdrop-filter: blur(12px);
     flex-shrink: 0;
     z-index: 10;
+    position: relative;
+    isolation: isolate;
 }
 
 .filter-group {
@@ -1356,7 +1357,7 @@ body {
     inset: 0;
     background: rgba(0,0,0,0.35);
     backdrop-filter: blur(8px);
-    z-index: 99999;
+    z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -187,41 +187,41 @@ export default function AdvancedFilterModal({ onClose }) {
                                 <div className="adv-table-wrap">
                                     <table className="adv-table">
                                         <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th><User size={11} style={{ display: "inline", marginRight: 4 }} />Họ tên</th>
-                                                <th><Phone size={11} style={{ display: "inline", marginRight: 4 }} />SĐT</th>
-                                                <th><MapPin size={11} style={{ display: "inline", marginRight: 4 }} />Khu vực</th>
-                                                <th><Heart size={11} style={{ display: "inline", marginRight: 4 }} />Hỗ trợ</th>
-                                                <th>Mức độ</th>
-                                                <th>Trạng thái</th>
-                                            </tr>
+                                        <tr>
+                                            <th>#</th>
+                                            <th><User size={11} style={{ display: "inline", marginRight: 4 }} />Họ tên</th>
+                                            <th><Phone size={11} style={{ display: "inline", marginRight: 4 }} />SĐT</th>
+                                            <th><MapPin size={11} style={{ display: "inline", marginRight: 4 }} />Khu vực</th>
+                                            <th><Heart size={11} style={{ display: "inline", marginRight: 4 }} />Hỗ trợ</th>
+                                            <th>Mức độ</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            {filtered.map((r, i) => {
-                                                const st = STATUS_CONFIG[r.status] || STATUS_CONFIG.pending;
-                                                const pr = PRIORITY_CONFIG[r.priority] || PRIORITY_CONFIG.medium;
-                                                return (
-                                                    <tr key={r.id || i} className="adv-table-row">
-                                                        <td className="adv-td-id">{i + 1}</td>
-                                                        <td className="adv-td-name">{r.name || "—"}</td>
-                                                        <td className="adv-td-phone">{r.phone || "—"}</td>
-                                                        <td className="adv-td-province">
-                                                            <span className="adv-province-badge">{r.province || r.address || "—"}</span>
-                                                        </td>
-                                                        <td className="adv-td-type">{r.supportType || "—"}</td>
-                                                        <td>
-                                                            <span className="adv-priority-dot" style={{ background: pr.color }} />
-                                                            <span style={{ color: pr.color, fontSize: 11, fontWeight: 700 }}>{pr.label}</span>
-                                                        </td>
-                                                        <td>
+                                        {filtered.map((r, i) => {
+                                            const st = STATUS_CONFIG[r.status] || STATUS_CONFIG.pending;
+                                            const pr = PRIORITY_CONFIG[r.priority] || PRIORITY_CONFIG.medium;
+                                            return (
+                                                <tr key={r.id || i} className="adv-table-row">
+                                                    <td className="adv-td-id">{i + 1}</td>
+                                                    <td className="adv-td-name">{r.name || "—"}</td>
+                                                    <td className="adv-td-phone">{r.phone || "—"}</td>
+                                                    <td className="adv-td-province">
+                                                        <span className="adv-province-badge">{r.province || r.address || "—"}</span>
+                                                    </td>
+                                                    <td className="adv-td-type">{r.supportType || "—"}</td>
+                                                    <td>
+                                                        <span className="adv-priority-dot" style={{ background: pr.color }} />
+                                                        <span style={{ color: pr.color, fontSize: 11, fontWeight: 700 }}>{pr.label}</span>
+                                                    </td>
+                                                    <td>
                                                             <span className="adv-status-badge" style={{ color: st.color, background: st.bg }}>
                                                                 {st.icon}&nbsp;{st.label}
                                                             </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                         </tbody>
                                     </table>
                                 </div>
