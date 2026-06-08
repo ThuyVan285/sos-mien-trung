@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../layouts/Header.jsx";
 import { useSOS } from "../store/SOSContext";
 import MiniMap from "../components/map/MiniMap";
+import { addContact } from "../services/firestoreService";
 import {
     TriangleAlert,
     Clock3,
@@ -25,7 +26,10 @@ import {
     CheckCircle2,
     Siren,
     Gift,
-    ArrowRight
+    ArrowRight,
+    Loader2,
+    CheckCircle,
+    AlertCircle,
 } from "lucide-react";
 
 // Plus Jakarta Sans: hỗ trợ tiếng Việt, hiện đại, chuyên nghiệp
@@ -56,9 +60,68 @@ const MAP_MARKERS = [
 ];
 
 export default function Homepage() {
-    const { setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen } = useSOS();
+    const { setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen, sosRequests } = useSOS();
     const navigate = useNavigate();
     usePlusJakartaSans();
+
+    /* ── Firebase-driven live stats ── */
+    const liveStats = useMemo(() => {
+        const last24h = (fn) => sosRequests.filter(r => {
+            const h = (Date.now() - new Date(r.createdAt)) / 3_600_000;
+            return h < 24 && fn(r);
+        }).length;
+
+        const urgent  = sosRequests.filter(r => r.status === "urgent").length;
+        const helping = sosRequests.filter(r => r.status === "helping" || r.status === "pending").length;
+        const done    = sosRequests.filter(r => r.status === "done").length;
+        const total   = sosRequests.length;
+        const provinces = new Set(sosRequests.filter(r => r.status !== "done").map(r => r.province)).size;
+
+        return {
+            urgent,  helping, done, total, provinces,
+            todayUrgent:  last24h(r => r.status === "urgent"),
+            todayHelping: last24h(r => r.status === "helping" || r.status === "pending"),
+            todayDone:    last24h(r => r.status === "done"),
+        };
+    }, [sosRequests]);
+
+    /* ── Contact form state ── */
+    const [contactForm, setContactForm] = useState({ name: "", phone: "", email: "", message: "" });
+    const [contactState, setContactState] = useState("idle"); // idle | loading | success | error
+    const formRef = useRef(null);
+
+    const handleContactChange = (field, val) =>
+        setContactForm(prev => ({ ...prev, [field]: val }));
+
+    const handleContactSubmit = async (e) => {
+        e.preventDefault();
+        if (!contactForm.name || !contactForm.message) return;
+        setContactState("loading");
+        try {
+            await addContact(contactForm);
+            setContactState("success");
+            setContactForm({ name: "", phone: "", email: "", message: "" });
+            setTimeout(() => setContactState("idle"), 4000);
+        } catch (err) {
+            console.error(err);
+            setContactState("error");
+            setTimeout(() => setContactState("idle"), 3000);
+        }
+    };
+
+    /* ── Footer scroll helper ── */
+    const scrollTo = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const footerNavItems = [
+        { label: "Trang chủ",      action: () => scrollTo("home")      },
+        { label: "Bản đồ cứu trợ", action: () => navigate("/map")      },
+        { label: "Quy trình",      action: () => scrollTo("quy-trinh") },
+        { label: "Thống kê",       action: () => scrollTo("thong-ke")  },
+        { label: "Liên hệ",        action: () => scrollTo("lien-he")   },
+    ];
 
     return (
         <div className="Homepage min-h-screen bg-[#f0f4f8] text-[#0f1923] font-sans">
@@ -160,50 +223,40 @@ export default function Homepage() {
                         margin: "0 auto"
                     }}
                 >
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(4, 1fr)",
-                            gap: 24
-                        }}
-                    >
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
                         {[
                             {
                                 label: "CẦN GIÚP",
-                                count: "128",
-                                color: "#dc2626",
-                                iconBg: "#fee2e2",
-                                change: "+12",
+                                count: liveStats.urgent,
+                                color: "#dc2626", iconBg: "#fee2e2",
+                                change: `+${liveStats.todayUrgent}`,
                                 icon: <TriangleAlert size={34} />,
                                 watermark: <HeartHandshake size={40} />
                             },
                             {
                                 label: "ĐANG XỬ LÝ",
-                                count: "56",
-                                color: "#ea580c",
-                                iconBg: "#ffedd5",
-                                change: "+5",
+                                count: liveStats.helping,
+                                color: "#ea580c", iconBg: "#ffedd5",
+                                change: `+${liveStats.todayHelping}`,
                                 icon: <Clock3 size={34} />,
                                 watermark: <ClipboardList size={90} />
                             },
                             {
                                 label: "ĐÃ HỖ TRỢ",
-                                count: "320",
-                                color: "#16a34a",
-                                iconBg: "#dcfce7",
-                                change: "+25",
+                                count: liveStats.done,
+                                color: "#16a34a", iconBg: "#dcfce7",
+                                change: `+${liveStats.todayDone}`,
                                 icon: <ShieldCheck size={34} />,
                                 watermark: <HandHelping size={90} />
                             },
                             {
-                                label: "ĐIỂM CỨU TRỢ",
-                                count: "24",
-                                color: "#2563eb",
-                                iconBg: "#dbeafe",
-                                change: "+2",
+                                label: "TỔNG SOS",
+                                count: liveStats.total,
+                                color: "#2563eb", iconBg: "#dbeafe",
+                                change: `${liveStats.provinces} tỉnh`,
                                 icon: <MapPinned size={34} />,
                                 watermark: <House size={90} />
-                            }
+                            },
                         ].map((s, i) => (
                             <div
                                 key={i}
@@ -1116,15 +1169,7 @@ export default function Homepage() {
                     <div style={{ width: "100%", maxWidth: 640, background: "white", borderRadius: 28, padding: "48px 40px", border: "1px solid #f1f5f9", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
                         <div style={{ textAlign: "center", marginBottom: 32 }}>
                             <h2 style={{ fontFamily: H, fontSize: 36, fontWeight: 800, color: "#111827", marginBottom: 8 }}>Hỗ trợ thêm thông tin</h2>
-                            <p
-                                style={{
-                                    color: "#6b7280",
-                                    fontSize: 15,
-                                    lineHeight: 1.8,
-                                    maxWidth: 500,
-                                    margin: "0 auto"
-                                }}
-                            >
+                            <p style={{ color: "#6b7280", fontSize: 15, lineHeight: 1.8, maxWidth: 500, margin: "0 auto" }}>
                                 Chúng tôi luôn sẵn sàng lắng nghe mọi ý kiến đóng góp,
                                 phản ánh hoặc yêu cầu hỗ trợ từ cộng đồng.
                                 Mỗi thông tin bạn gửi đều góp phần giúp hệ thống cứu trợ
@@ -1132,58 +1177,106 @@ export default function Homepage() {
                             </p>
                         </div>
                         <div style={{ height: 1, background: "#f1f5f9", marginBottom: 28 }} />
-                        <form style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={(e) => { e.preventDefault(); alert('Cảm ơn bạn đã liên hệ!'); e.target.reset(); }}>
+
+                        {/* ── Success banner ── */}
+                        {contactState === "success" && (
+                            <div style={{
+                                display: "flex", alignItems: "center", gap: 10,
+                                background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.25)",
+                                borderRadius: 12, padding: "12px 16px", marginBottom: 20,
+                            }}>
+                                <CheckCircle size={18} color="#16a34a" />
+                                <div>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: "#15803d" }}>Gửi thành công!</div>
+                                    <div style={{ fontSize: 12, color: "#6b7280" }}>Phản hồi đã được lưu vào Firebase. Chúng tôi sẽ liên hệ sớm nhất có thể.</div>
+                                </div>
+                            </div>
+                        )}
+                        {contactState === "error" && (
+                            <div style={{
+                                display: "flex", alignItems: "center", gap: 10,
+                                background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
+                                borderRadius: 12, padding: "12px 16px", marginBottom: 20,
+                            }}>
+                                <AlertCircle size={18} color="#dc2626" />
+                                <div style={{ fontSize: 13, color: "#dc2626", fontWeight: 600 }}>Có lỗi xảy ra. Vui lòng thử lại.</div>
+                            </div>
+                        )}
+
+                        <form ref={formRef} style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleContactSubmit}>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                    <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Họ và tên</label>
-                                    <input type="text" placeholder="Nhập họ và tên" style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }} />
+                                    <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+                                        Họ và tên <span style={{ color: "#dc2626" }}>*</span>
+                                    </label>
+                                    <input
+                                        type="text" placeholder="Nhập họ và tên"
+                                        value={contactForm.name}
+                                        onChange={e => handleContactChange("name", e.target.value)}
+                                        required
+                                        style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                    />
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                     <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Số điện thoại</label>
-                                    <input type="tel" placeholder="Nhập số điện thoại" style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }} />
+                                    <input
+                                        type="tel" placeholder="Nhập số điện thoại"
+                                        value={contactForm.phone}
+                                        onChange={e => handleContactChange("phone", e.target.value)}
+                                        style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                    />
                                 </div>
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                 <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Email</label>
-                                <input type="email" placeholder="Nhập địa chỉ email" style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }} />
+                                <input
+                                    type="email" placeholder="Nhập địa chỉ email"
+                                    value={contactForm.email}
+                                    onChange={e => handleContactChange("email", e.target.value)}
+                                    style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                />
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Nội dung</label>
-                                <textarea rows={4} placeholder="Nhập nội dung tin nhắn" style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", resize: "none", fontFamily: "inherit", color: "#111827" }} />
+                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
+                                    Nội dung <span style={{ color: "#dc2626" }}>*</span>
+                                </label>
+                                <textarea
+                                    rows={4} placeholder="Nhập nội dung tin nhắn"
+                                    value={contactForm.message}
+                                    onChange={e => handleContactChange("message", e.target.value)}
+                                    required
+                                    style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", resize: "none", fontFamily: "inherit", color: "#111827" }}
+                                />
                             </div>
                             <div style={{ textAlign: "center", paddingTop: 8 }}>
                                 <button
                                     type="submit"
+                                    disabled={contactState === "loading" || contactState === "success"}
                                     style={{
-                                        background: "#16a34a",
-                                        color: "white",
-                                        border: "none",
-                                        borderRadius: 12,
-                                        padding: "13px 36px",
-                                        fontWeight: 700,
-                                        fontSize: 14,
-                                        cursor: "pointer",
+                                        background: contactState === "success" ? "#16a34a" : "#16a34a",
+                                        color: "white", border: "none", borderRadius: 12,
+                                        padding: "13px 36px", fontWeight: 700, fontSize: 14,
+                                        cursor: contactState === "loading" ? "not-allowed" : "pointer",
                                         boxShadow: "0 4px 14px rgba(22,163,74,0.25)",
-                                        display: "inline-flex",
-                                        alignItems: "center",
-                                        gap: 8,
-                                        fontFamily: "inherit"
+                                        display: "inline-flex", alignItems: "center", gap: 8,
+                                        fontFamily: "inherit", opacity: contactState === "loading" ? 0.8 : 1,
+                                        transition: "0.2s",
                                     }}
                                 >
-                                    <MessageCircle size={18} />
-                                    Gửi phản hồi
+                                    {contactState === "loading" ? (
+                                        <><Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> Đang gửi...</>
+                                    ) : contactState === "success" ? (
+                                        <><CheckCircle size={18} /> Đã gửi thành công</>
+                                    ) : (
+                                        <><MessageCircle size={18} /> Gửi phản hồi</>
+                                    )}
                                 </button>
+                                <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 10 }}>
+                                    Phản hồi sẽ được lưu vào hệ thống Firebase và đội admin sẽ xem xét sớm nhất.
+                                </p>
                             </div>
                         </form>
-                        <div
-                            style={{
-                                marginTop: 28,
-                                textAlign: "center",
-                                color: "#6b7280",
-                                fontSize: 13,
-                                lineHeight: 1.7
-                            }}
-                        >
+                        <div style={{ marginTop: 28, textAlign: "center", color: "#6b7280", fontSize: 13, lineHeight: 1.7 }}>
                             SOS Miền Trung tin rằng công nghệ không chỉ để kết nối dữ liệu,
                             mà còn để kết nối những tấm lòng và mang sự hỗ trợ đến đúng người,
                             đúng thời điểm.
@@ -1280,40 +1373,24 @@ export default function Homepage() {
 
                         {/* ĐIỀU HƯỚNG */}
                         <div>
-                            <h4
-                                style={{
-                                    color: "white",
-                                    fontWeight: 700,
-                                    fontSize: 12,
-                                    textTransform: "uppercase",
-                                    letterSpacing: 2,
-                                    marginBottom: 20
-                                }}
-                            >
+                            <h4 style={{ color: "white", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: 2, marginBottom: 20 }}>
                                 Điều hướng
                             </h4>
-
-                            {[
-                                "Trang chủ",
-                                "Bản đồ cứu trợ",
-                                "Quy trình",
-                                "Thống kê",
-                                "Liên hệ"
-                            ].map((item, i) => (
+                            {footerNavItems.map((item, i) => (
                                 <div
                                     key={i}
+                                    onClick={item.action}
                                     style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 8,
-                                        color: "#9ca3af",
-                                        marginBottom: 14,
-                                        cursor: "pointer",
-                                        fontSize: 14
+                                        display: "flex", alignItems: "center", gap: 8,
+                                        color: "#9ca3af", marginBottom: 14,
+                                        cursor: "pointer", fontSize: 14,
+                                        transition: "color 0.18s",
                                     }}
+                                    onMouseEnter={e => e.currentTarget.style.color = "#4ade80"}
+                                    onMouseLeave={e => e.currentTarget.style.color = "#9ca3af"}
                                 >
                                     <ChevronRight size={14} />
-                                    {item}
+                                    {item.label}
                                 </div>
                             ))}
                         </div>
@@ -1466,6 +1543,7 @@ export default function Homepage() {
                         }}
                     >
                         © 2026 SOS Miền Trung. All rights reserved.
+                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                     </div>
                 </footer>
             </div>

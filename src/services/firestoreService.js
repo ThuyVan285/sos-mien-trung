@@ -252,3 +252,21 @@ export async function updateDonationStatus(id, status) {
     const ref = doc(db, "donations", id);
     await updateDoc(ref, { status, updatedAt: serverTimestamp() });
 }
+/* ═══════════════════════════════════════
+   CONTACTS (form liên hệ trang chủ)
+═══════════════════════════════════════ */
+
+/**
+ * Lưu phản hồi liên hệ từ trang chủ
+ */
+export async function addContact(data) {
+    const docRef = await addDoc(collection(db, "contacts"), {
+        name:      data.name      || "",
+        phone:     data.phone     || "",
+        email:     data.email     || "",
+        message:   data.message   || "",
+        status:    "unread",           // unread | read | replied
+        createdAt: serverTimestamp(),
+    });
+    return docRef.id;
+}
