@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../layouts/Header.jsx";
 import { useSOS } from "../store/SOSContext";
 import MiniMap from "../components/map/MiniMap";
 import { addContact } from "../services/firestoreService";
+import { useLiveStats } from "../hooks/useLiveStats";
 import {
     TriangleAlert,
     Clock3,
@@ -59,39 +60,116 @@ const MAP_MARKERS = [
     { top: "82%", left: "66%", color: "#22c55e", size: 11 },
 ];
 
-export default function Homepage() {
-    const { setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen, sosRequests } = useSOS();
+function MapSOSPanel({ sosRequests = [] }) {
+    const byProvince = {};
+    sosRequests.forEach(r => {
+        if (!r.province) return;
+        if (!byProvince[r.province]) byProvince[r.province] = { urgent:0, helping:0, done:0, pending:0 };
+        byProvince[r.province][r.status] = (byProvince[r.province][r.status] || 0) + 1;
+    });
+
+    const top4 = Object.entries(byProvince)
+        .map(([province, counts]) => ({
+            province,
+            active: (counts.urgent||0) + (counts.helping||0) + (counts.pending||0),
+            done: counts.done || 0,
+            urgent: counts.urgent || 0,
+        }))
+        .sort((a, b) => b.active - a.active)
+        .slice(0, 4);
+
+    const items = top4.length > 0 ? top4 : [
+        { province: "Quảng Ngãi", active: 15, done: 0, urgent: 15 },
+        { province: "TP. Đà Nẵng", active: 8,  done: 0, urgent: 5  },
+        { province: "TP. Huế",     active: 12, done: 0, urgent: 8  },
+        { province: "Nghệ An",     active: 0,  done: 5, urgent: 0  },
+    ];
+
+    const getColor = (item) => {
+        if (item.done > 0 && item.active === 0) return "#22c55e";
+        if (item.urgent > 5) return "#ef4444";
+        return "#f59e0b";
+    };
+
+    const getLabel = (item) => {
+        if (item.done > 0 && item.active === 0) return "Đã hỗ trợ";
+        return `${item.active} người cần hỗ trợ`;
+    };
+
+    return (
+        <div style={{
+            position: "absolute", left: 20, top: 20, width: 240,
+            background: "rgba(255,255,255,0.92)", backdropFilter: "blur(18px)",
+            borderRadius: 20, padding: 18, zIndex: 50,
+            border: "1px solid rgba(255,255,255,0.4)",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.10)"
+        }}>
+            <div style={{ color:"#22c55e", fontSize:11, fontWeight:800,
+                letterSpacing:1.5, marginBottom:14, textTransform:"uppercase" }}>
+                YÊU CẦU GẦN ĐÂY
+            </div>
+            {items.map((item, i) => (
+                <div key={i} style={{ display:"flex", gap:10, alignItems:"center",
+                    marginBottom: i < items.length - 1 ? 12 : 0 }}>
+                    <div style={{ width:10, height:10, borderRadius:"50%",
+                        background: getColor(item), flexShrink:0 }} />
+                    <div>
+                        <div style={{ fontSize:13, fontWeight:700, color:"#111827" }}>
+                            {item.province}
+                        </div>
+                        <div style={{ fontSize:11, color:"#6b7280" }}>
+                            {getLabel(item)}
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+function Homepage() {
+    const {setIsFormOpen, setIsDonationOpen, setIsVolunteerOpen, sosRequests} = useSOS();
     const navigate = useNavigate();
     usePlusJakartaSans();
 
-    /* ── Firebase-driven live stats ── */
-    const liveStats = useMemo(() => {
-        const last24h = (fn) => sosRequests.filter(r => {
-            const h = (Date.now() - new Date(r.createdAt)) / 3_600_000;
-            return h < 24 && fn(r);
-        }).length;
+    /* ── Firebase live stats từ hook ── */
+    let firebaseRequests, heroStats, statCards, aiSuggestions, volunteerCount, donationCount;
+    ({
+        sosRequests: firebaseRequests,
+        heroStats,
+        statCards,
+        aiSuggestions,
+        volunteers: volunteerCount,
+        donations: donationCount,
+        // Tính trực tiếp từ sosRequests của useSOS (đã có sẵn)
+    } = useLiveStats());
 
-        const urgent  = sosRequests.filter(r => r.status === "urgent").length;
-        const helping = sosRequests.filter(r => r.status === "helping" || r.status === "pending").length;
-        const done    = sosRequests.filter(r => r.status === "done").length;
-        const total   = sosRequests.length;
-        const provinces = new Set(sosRequests.filter(r => r.status !== "done").map(r => r.province)).size;
+    // Tính liveStats trực tiếp từ sosRequests (đã có từ useSOS context)
+    const urgent = sosRequests.filter(r => r.status === "urgent").length;
+    const helping = sosRequests.filter(r => r.status === "helping" || r.status === "pending").length;
+    const done = sosRequests.filter(r => r.status === "done").length;
 
-        return {
-            urgent,  helping, done, total, provinces,
-            todayUrgent:  last24h(r => r.status === "urgent"),
-            todayHelping: last24h(r => r.status === "helping" || r.status === "pending"),
-            todayDone:    last24h(r => r.status === "done"),
-        };
-    }, [sosRequests]);
+    const todayCount = (filterFn) => sosRequests.filter(r => {
+        const h = (Date.now() - new Date(r.createdAt)) / 3_600_000;
+        return h < 24 && filterFn(r);
+    }).length;
 
+    const liveStats = {
+        urgent,
+        helping,
+        done,
+        total: urgent + helping + done,
+        provinces: new Set(sosRequests.filter(r => r.status !== "done").map(r => r.province).filter(Boolean)).size,
+        todayUrgent: todayCount(r => r.status === "urgent"),
+        todayHelping: todayCount(r => r.status === "helping" || r.status === "pending"),
+        todayDone: todayCount(r => r.status === "done"),
+    };
     /* ── Contact form state ── */
-    const [contactForm, setContactForm] = useState({ name: "", phone: "", email: "", message: "" });
+    const [contactForm, setContactForm] = useState({name: "", phone: "", email: "", message: ""});
     const [contactState, setContactState] = useState("idle"); // idle | loading | success | error
     const formRef = useRef(null);
 
     const handleContactChange = (field, val) =>
-        setContactForm(prev => ({ ...prev, [field]: val }));
+        setContactForm(prev => ({...prev, [field]: val}));
 
     const handleContactSubmit = async (e) => {
         e.preventDefault();
@@ -100,7 +178,7 @@ export default function Homepage() {
         try {
             await addContact(contactForm);
             setContactState("success");
-            setContactForm({ name: "", phone: "", email: "", message: "" });
+            setContactForm({name: "", phone: "", email: "", message: ""});
             setTimeout(() => setContactState("idle"), 4000);
         } catch (err) {
             console.error(err);
@@ -109,91 +187,225 @@ export default function Homepage() {
         }
     };
 
-    /* ── Footer scroll helper ── */
+    /* ── Footer / header scroll helper ── */
     const scrollTo = (id) => {
+        if (id === "home") {
+            window.scrollTo({top: 0, behavior: "smooth"});
+            return;
+        }
         const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
+        if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
     };
 
     const footerNavItems = [
-        { label: "Trang chủ",      action: () => scrollTo("home")      },
-        { label: "Bản đồ cứu trợ", action: () => navigate("/map")      },
-        { label: "Quy trình",      action: () => scrollTo("quy-trinh") },
-        { label: "Thống kê",       action: () => scrollTo("thong-ke")  },
-        { label: "Liên hệ",        action: () => scrollTo("lien-he")   },
+        {label: "Trang chủ", action: () => scrollTo("home")},
+        {label: "Bản đồ cứu trợ", action: () => navigate("/map")},
+        {label: "Quy trình", action: () => scrollTo("quy-trinh")},
+        {label: "Thống kê", action: () => scrollTo("thong-ke")},
+        {label: "Liên hệ", action: () => scrollTo("lien-he")},
     ];
 
     return (
         <div className="Homepage min-h-screen bg-[#f0f4f8] text-[#0f1923] font-sans">
-            <Header />
+            <Header/>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+            <div style={{display: "flex", flexDirection: "column", alignItems: "center", width: "100%"}}>
 
                 {/* ══════ HERO ══════ */}
-                <section id="home" style={{ width: "100%", maxWidth: 1500, padding: "48px 32px 24px", margin: "0 auto" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, alignItems: "center", position: "relative" }}>
+                <section id="home" style={{width: "100%", maxWidth: 1500, padding: "48px 32px 24px", margin: "0 auto"}}>
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 0,
+                        alignItems: "center",
+                        position: "relative"
+                    }}>
 
                         {/* LEFT */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: 20, position: "relative", zIndex: 10 }}>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 20,
+                            position: "relative",
+                            zIndex: 10
+                        }}>
 
                             {/* Badge */}
-                            <div style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "white", border: "1px solid #e5e7eb", borderRadius: 99, padding: "6px 14px", fontSize: 11, fontWeight: 600, color: "#4b5563", width: "fit-content", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-                                <MapPin size={14} color="#16a34a" /> Hệ thống hỗ trợ thiên tai Miền Trung
+                            <div style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 12,
+                                background: "white",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: 99,
+                                padding: "6px 14px",
+                                fontSize: 11,
+                                fontWeight: 600,
+                                color: "#4b5563",
+                                width: "fit-content",
+                                boxShadow: "0 1px 4px rgba(0,0,0,0.06)"
+                            }}>
+                                <MapPin size={14} color="#16a34a"/> Hệ thống hỗ trợ thiên tai Miền Trung
                             </div>
 
                             {/* Title */}
-                            <div style={{ lineHeight: 1.05 }}>
-                                <div style={{ fontFamily: H, fontSize: 88, fontWeight: 900, letterSpacing: "-2px", lineHeight: 1 }}>
-                                    <span style={{ color: "#16a34a" }}>SOS </span>
-                                    <span style={{ color: "#0f1923" }}>MIỀN</span>
+                            <div style={{lineHeight: 1.05}}>
+                                <div style={{
+                                    fontFamily: H,
+                                    fontSize: 88,
+                                    fontWeight: 900,
+                                    letterSpacing: "-2px",
+                                    lineHeight: 1
+                                }}>
+                                    <span style={{color: "#16a34a"}}>SOS </span>
+                                    <span style={{color: "#0f1923"}}>MIỀN</span>
                                 </div>
-                                <div style={{ fontFamily: H, fontSize: 88, fontWeight: 900, letterSpacing: "-2px", lineHeight: 1, color: "#0f1923" }}>
+                                <div style={{
+                                    fontFamily: H,
+                                    fontSize: 88,
+                                    fontWeight: 900,
+                                    letterSpacing: "-2px",
+                                    lineHeight: 1,
+                                    color: "#0f1923"
+                                }}>
                                     TRUNG
                                 </div>
-                                <div style={{ fontFamily: H, fontSize: 36, fontWeight: 700, color: "#1f2937", marginTop: 8 }}>
+                                <div style={{
+                                    fontFamily: H,
+                                    fontSize: 36,
+                                    fontWeight: 700,
+                                    color: "#1f2937",
+                                    marginTop: 8
+                                }}>
                                     Bản đồ cứu trợ
                                 </div>
-                                <div style={{ fontFamily: H, fontSize: 36, fontWeight: 700, color: "#16a34a", marginTop: 0 }}>
+                                <div style={{
+                                    fontFamily: H,
+                                    fontSize: 36,
+                                    fontWeight: 700,
+                                    color: "#16a34a",
+                                    marginTop: 0
+                                }}>
                                     thời gian thực
                                 </div>
                             </div>
 
                             {/* Subtitle */}
-                            <p style={{ fontSize: 15, color: "#6b7280", lineHeight: 1.7, maxWidth: 400, margin: 0 }}>
-                                Nền tảng hỗ trợ kết nối người dân, tình nguyện viên và lực lượng cứu trợ trong các tình huống thiên tai tại miền Trung Việt Nam.
+                            <p style={{fontSize: 15, color: "#6b7280", lineHeight: 1.7, maxWidth: 400, margin: 0}}>
+                                Nền tảng hỗ trợ kết nối người dân, tình nguyện viên và lực lượng cứu trợ trong các tình
+                                huống thiên tai tại miền Trung Việt Nam.
                             </p>
 
                             {/* Buttons */}
-                            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                            <div style={{display: "flex", gap: 12, flexWrap: "wrap"}}>
                                 <button
                                     onClick={() => setIsFormOpen(true)}
-                                    style={{ display: "flex", alignItems: "center", gap: 8, background: "#16a34a", color: "white", border: "none", borderRadius: 12, padding: "13px 24px", fontWeight: 700, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 14px rgba(22,163,74,0.3)", fontFamily: "inherit" }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        background: "#16a34a",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: 12,
+                                        padding: "13px 24px",
+                                        fontWeight: 700,
+                                        fontSize: 14,
+                                        cursor: "pointer",
+                                        boxShadow: "0 4px 14px rgba(22,163,74,0.3)",
+                                        fontFamily: "inherit"
+                                    }}
                                 >
-                                    <Users size={16} strokeWidth={2} /> Gửi yêu cầu SOS
+                                    <Users size={16} strokeWidth={2}/> Gửi yêu cầu SOS
                                 </button>
                                 <Link
                                     to="/map"
-                                    style={{ display: "flex", alignItems: "center", gap: 8, background: "white", color: "#374151", border: "2px solid #e5e7eb", borderRadius: 12, padding: "13px 24px", fontWeight: 700, fontSize: 14, textDecoration: "none" }}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        background: "white",
+                                        color: "#374151",
+                                        border: "2px solid #e5e7eb",
+                                        borderRadius: 12,
+                                        padding: "13px 24px",
+                                        fontWeight: 700,
+                                        fontSize: 14,
+                                        textDecoration: "none"
+                                    }}
                                 >
-                                    <BookOpen size={16} strokeWidth={2} /> Mở bản đồ cứu trợ
+                                    <BookOpen size={16} strokeWidth={2}/> Mở bản đồ cứu trợ
                                 </Link>
                             </div>
 
                             {/* Mini stats */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+                            <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10}}>
                                 {[
-                                    { value: "11",   label: "Khu vực hỗ trợ",   icon: <HeartHandshake size={18} />, bg: "#ecfdf5", color: "#16a34a" },
-                                    { value: "120+", label: "Yêu cầu cứu trợ",  icon: <ClipboardList size={18} />,  bg: "#eff6ff", color: "#2563eb" },
-                                    { value: "50+",  label: "Tình nguyện viên",  icon: <Users size={18} />,          bg: "#ecfdf5", color: "#16a34a" },
-                                    { value: "30",   label: "Điểm hỗ trợ",       icon: <Building2 size={18} />,      bg: "#eff6ff", color: "#2563eb" },
+                                    {
+                                        value: heroStats[0]?.value ?? "11",
+                                        label: "Khu vực hỗ trợ",
+                                        icon: <HeartHandshake size={18}/>,
+                                        bg: "#ecfdf5",
+                                        color: "#16a34a"
+                                    },
+                                    {
+                                        value: heroStats[1]?.value ?? "120+",
+                                        label: "Yêu cầu cứu trợ",
+                                        icon: <ClipboardList size={18}/>,
+                                        bg: "#eff6ff",
+                                        color: "#2563eb"
+                                    },
+                                    {
+                                        value: heroStats[2]?.value ?? "50+",
+                                        label: "Tình nguyện viên",
+                                        icon: <Users size={18}/>,
+                                        bg: "#ecfdf5",
+                                        color: "#16a34a"
+                                    },
+                                    {
+                                        value: heroStats[3]?.value ?? "30",
+                                        label: "Điểm hỗ trợ",
+                                        icon: <Building2 size={18}/>,
+                                        bg: "#eff6ff",
+                                        color: "#2563eb"
+                                    },
                                 ].map((s, i) => (
-                                    <div key={i} style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10, boxShadow: "0 2px 6px rgba(0,0,0,0.05)" }}>
-                                        <div style={{ width: 38, height: 38, borderRadius: 10, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", color: s.color, flexShrink: 0 }}>
+                                    <div key={i} style={{
+                                        background: "white",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: 16,
+                                        padding: "12px 14px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 10,
+                                        boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+                                    }}>
+                                        <div style={{
+                                            width: 38,
+                                            height: 38,
+                                            borderRadius: 10,
+                                            background: s.bg,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            color: s.color,
+                                            flexShrink: 0
+                                        }}>
                                             {s.icon}
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: 18, fontWeight: 800, color: "#111827", lineHeight: 1 }}>{s.value}</div>
-                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3, lineHeight: 1.3 }}>{s.label}</div>
+                                            <div style={{
+                                                fontSize: 18,
+                                                fontWeight: 800,
+                                                color: "#111827",
+                                                lineHeight: 1
+                                            }}>{s.value}</div>
+                                            <div style={{
+                                                fontSize: 11,
+                                                color: "#6b7280",
+                                                marginTop: 3,
+                                                lineHeight: 1.3
+                                            }}>{s.label}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -201,13 +413,19 @@ export default function Homepage() {
                         </div>
 
                         {/* RIGHT — Rescue image với fade trái */}
-                        <div style={{ position: "relative", height: 580, marginRight: -32 }}>
+                        <div style={{position: "relative", height: 580, marginRight: -32}}>
 
                             {/* Ảnh nền cứu hộ */}
                             <img
                                 src="/hero-bg.png"
                                 alt="Cứu hộ miền Trung"
-                                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", borderRadius: "0 24px 24px 0" }}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                    objectPosition: "center",
+                                    borderRadius: "0 24px 24px 0"
+                                }}
                             />
 
 
@@ -223,39 +441,39 @@ export default function Homepage() {
                         margin: "0 auto"
                     }}
                 >
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+                    <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24}}>
                         {[
                             {
                                 label: "CẦN GIÚP",
                                 count: liveStats.urgent,
                                 color: "#dc2626", iconBg: "#fee2e2",
                                 change: `+${liveStats.todayUrgent}`,
-                                icon: <TriangleAlert size={34} />,
-                                watermark: <HeartHandshake size={40} />
+                                icon: <TriangleAlert size={34}/>,
+                                watermark: <HeartHandshake size={40}/>
                             },
                             {
                                 label: "ĐANG XỬ LÝ",
                                 count: liveStats.helping,
                                 color: "#ea580c", iconBg: "#ffedd5",
                                 change: `+${liveStats.todayHelping}`,
-                                icon: <Clock3 size={34} />,
-                                watermark: <ClipboardList size={90} />
+                                icon: <Clock3 size={34}/>,
+                                watermark: <ClipboardList size={90}/>
                             },
                             {
                                 label: "ĐÃ HỖ TRỢ",
                                 count: liveStats.done,
                                 color: "#16a34a", iconBg: "#dcfce7",
                                 change: `+${liveStats.todayDone}`,
-                                icon: <ShieldCheck size={34} />,
-                                watermark: <HandHelping size={90} />
+                                icon: <ShieldCheck size={34}/>,
+                                watermark: <HandHelping size={90}/>
                             },
                             {
                                 label: "TỔNG SOS",
                                 count: liveStats.total,
                                 color: "#2563eb", iconBg: "#dbeafe",
                                 change: `${liveStats.provinces} tỉnh`,
-                                icon: <MapPinned size={34} />,
-                                watermark: <House size={90} />
+                                icon: <MapPinned size={34}/>,
+                                watermark: <House size={90}/>
                             },
                         ].map((s, i) => (
                             <div
@@ -342,11 +560,11 @@ export default function Homepage() {
                                                 fontWeight: 600
                                             }}
                                         >
-                                        <span style={{ color: s.color }}>
+                                        <span style={{color: s.color}}>
                                             ↑ {s.change}
                                         </span>
 
-                                            <span style={{ color: "#374151" }}>
+                                            <span style={{color: "#374151"}}>
                                                 {" "}hôm nay
                                             </span>
                                         </div>
@@ -404,17 +622,17 @@ export default function Homepage() {
                             {
                                 title: "Kết nối nhanh chóng",
                                 desc: "Kết nối người dân, tình nguyện viên và lực lượng cứu trợ một cách nhanh nhất trong mọi tình huống.",
-                                icon: <Users size={34} />
+                                icon: <Users size={34}/>
                             },
                             {
                                 title: "Điều phối hiệu quả",
                                 desc: "Điều phối nguồn lực cứu trợ thông minh, đúng nơi - đúng thời điểm - đúng nhu cầu.",
-                                icon: <Target size={34} />
+                                icon: <Target size={34}/>
                             },
                             {
                                 title: "Minh bạch & chính xác",
                                 desc: "Cung cấp dữ liệu thời gian thực, minh bạch, giúp ra quyết định nhanh chóng và chính xác.",
-                                icon: <ChartNoAxesColumnIncreasing size={34} />
+                                icon: <ChartNoAxesColumnIncreasing size={34}/>
                             }
                         ].map((g, i) => (
                             <div
@@ -480,7 +698,8 @@ export default function Homepage() {
                     style={{
                         width: "100%",
                         background: "#f8fafc",
-                        padding: "80px 0"
+                        padding: "80px 0",
+                        scrollMarginTop: "80px"
                     }}
                 >
                     <div
@@ -596,7 +815,7 @@ export default function Homepage() {
                                 }}
                             >
                                 Trải nghiệm bản đồ ngay
-                                <ArrowRight size={18} />
+                                <ArrowRight size={18}/>
                             </button>
                         </div>
 
@@ -612,7 +831,7 @@ export default function Homepage() {
                                 border: "1px solid #e5e7eb"
                             }}
                         >
-                            <MiniMap interactive={false} />
+                            <MiniMap interactive={false}/>
 
                             {/* LIVE */}
                             <div
@@ -652,96 +871,8 @@ export default function Homepage() {
         LIVE
     </span>
                             </div>
-                            {/* SOS PANEL */}
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    left: 20,
-                                    top: 20,
-                                    width: 260,
-                                    background: "rgba(255,255,255,0.92)",
-                                    backdropFilter: "blur(18px)",
-                                    borderRadius: 20,
-                                    padding: 18,
-                                    zIndex: 50,
-                                    border: "1px solid rgba(255,255,255,0.4)"
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        color: "#22c55e",
-                                        fontSize: 12,
-                                        fontWeight: 800,
-                                        letterSpacing: 1.5,
-                                        marginBottom: 16
-                                    }}
-                                >
-                                    YÊU CẦU GẦN ĐÂY
-                                </div>
-
-                                {[
-                                    {
-                                        city: "Quảng Ngãi",
-                                        people: "15 người cần hỗ trợ",
-                                        color: "#ef4444"
-                                    },
-                                    {
-                                        city: "Đà Nẵng",
-                                        people: "8 người cần hỗ trợ",
-                                        color: "#f59e0b"
-                                    },
-                                    {
-                                        city: "Huế",
-                                        people: "12 người cần hỗ trợ",
-                                        color: "#f59e0b"
-                                    },
-                                    {
-                                        city: "Nghệ An",
-                                        people: "Đã hỗ trợ",
-                                        color: "#22c55e"
-                                    }
-                                ].map((item, i) => (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            display: "flex",
-                                            gap: 10,
-                                            alignItems: "center",
-                                            marginBottom: 14
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                width: 10,
-                                                height: 10,
-                                                borderRadius: "50%",
-                                                background: item.color
-                                            }}
-                                        />
-
-                                        <div>
-                                            <div
-                                                style={{
-                                                    fontSize: 13,
-                                                    fontWeight: 700,
-                                                    color: "#111827"
-                                                }}
-                                            >
-                                                {item.city}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: 11,
-                                                    color: "#6b7280"
-                                                }}
-                                            >
-                                                {item.people}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            {/* SOS PANEL — Firebase realtime */}
+                            <MapSOSPanel sosRequests={sosRequests}/>
 
                             {/* ACTION BUTTONS */}
                             <div
@@ -773,7 +904,7 @@ export default function Homepage() {
                                         gap: 10
                                     }}
                                 >
-                                    <Siren size={18} />
+                                    <Siren size={18}/>
                                     SOS
                                 </button>
 
@@ -794,7 +925,7 @@ export default function Homepage() {
                                         gap: 10
                                     }}
                                 >
-                                    <Gift size={18} />
+                                    <Gift size={18}/>
                                     Quyên góp
                                 </button>
 
@@ -815,7 +946,7 @@ export default function Homepage() {
                                         gap: 10
                                     }}
                                 >
-                                    <Users size={18} />
+                                    <Users size={18}/>
                                     T.N.V
                                 </button>
 
@@ -836,7 +967,7 @@ export default function Homepage() {
                                         gap: 10
                                     }}
                                 >
-                                    <MapPinned size={18} />
+                                    <MapPinned size={18}/>
                                     Định vị
                                 </button>
                             </div>
@@ -844,8 +975,14 @@ export default function Homepage() {
                     </div>
                 </section>
                 {/* ══════ QUY TRÌNH ══════ */}
-                <section id="quy-trinh" style={{ width: "100%", borderTop: "1px solid #f1f5f9", background: "white", padding: "64px 0" }}>
-                    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px" }}>
+                <section id="quy-trinh" style={{
+                    width: "100%",
+                    borderTop: "1px solid #f1f5f9",
+                    background: "white",
+                    padding: "64px 0",
+                    scrollMarginTop: "80px"
+                }}>
+                    <div style={{maxWidth: 1400, margin: "0 auto", padding: "0 32px"}}>
                         <h2
                             style={{
                                 fontFamily: H,
@@ -860,221 +997,586 @@ export default function Homepage() {
                         </h2>
 
                         {/* Grid: step – arrow – step – arrow – step – arrow – step – arrow – step */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 48px 1fr 48px 1fr 48px 1fr 48px 1fr", alignItems: "start", gap: 0 }}>
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 48px 1fr 48px 1fr 48px 1fr 48px 1fr",
+                            alignItems: "start",
+                            gap: 0
+                        }}>
 
                             {/* ── STEP 1 ── */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                <div style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(145deg,#fecaca,#fca5a5)", border: "2px solid #dc2626", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                padding: "0 4px"
+                            }}>
+                                <div style={{
+                                    width: 76,
+                                    height: 76,
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(145deg,#fecaca,#fca5a5)",
+                                    border: "2px solid #dc2626",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
+                                    flexShrink: 0
+                                }}>
                                     <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
                                         <circle cx="12" cy="10" r="4" fill="#dc2626"/>
-                                        <path d="M4 26c0-4 3.6-7 8-7" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                        <path d="M4 26c0-4 3.6-7 8-7" stroke="#dc2626" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
                                         <circle cx="24" cy="10" r="4" fill="#dc2626"/>
-                                        <path d="M24 19c4.4 0 8 3 8 7" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
-                                        <path d="M12 19c1.8-.6 3.8-1 6-1s4.2.4 6 1" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
-                                        <path d="M8 33c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                        <path d="M24 19c4.4 0 8 3 8 7" stroke="#dc2626" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
+                                        <path d="M12 19c1.8-.6 3.8-1 6-1s4.2.4 6 1" stroke="#dc2626" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
+                                        <path d="M8 33c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#dc2626"
+                                              strokeWidth="2.2" strokeLinecap="round"/>
                                     </svg>
-                                    <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#dc2626", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>1</div>
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: -10,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: "50%",
+                                        background: "#dc2626",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: "#fff"
+                                    }}>1
+                                    </div>
                                 </div>
-                                <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Người dân gửi SOS</h3>
-                                <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>Người dân gửi yêu cầu cứu trợ bằng form SOS. Thông tin được ghi nhận ngay và chuyển đến trung tâm điều phối.</p>
+                                <h3 style={{
+                                    marginTop: 22,
+                                    marginBottom: 6,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                    lineHeight: 1.3
+                                }}>Người dân gửi SOS</h3>
+                                <p style={{fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0}}>Người dân gửi
+                                    yêu cầu cứu trợ bằng form SOS. Thông tin được ghi nhận ngay và chuyển đến trung tâm
+                                    điều phối.</p>
                             </div>
 
                             {/* Arrow 1 */}
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 28 }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                paddingTop: 28
+                            }}>
                                 <svg width="48" height="20" viewBox="0 0 48 20">
-                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2" strokeDasharray="6,4"/>
+                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2"
+                                          strokeDasharray="6,4"/>
                                     <polygon points="34,4 46,10 34,16" fill="#16a34a"/>
                                 </svg>
                             </div>
 
                             {/* ── STEP 2 ── */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                <div style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(145deg,#dcfce7,#bbf7d0)", border: "2px solid #16a34a", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                padding: "0 4px"
+                            }}>
+                                <div style={{
+                                    width: 76,
+                                    height: 76,
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    border: "2px solid #16a34a",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
+                                    flexShrink: 0
+                                }}>
                                     <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
                                         <circle cx="18" cy="10" r="5" fill="#16a34a"/>
-                                        <path d="M8 32c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                        <path d="M8 32c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#16a34a"
+                                              strokeWidth="2.2" strokeLinecap="round"/>
                                         <circle cx="28" cy="14" r="4" fill="#16a34a" opacity=".7"/>
-                                        <path d="M24 28c0-3.5 3.5-6 6-6" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round" opacity=".7"/>
-                                        <line x1="28" y1="6" x2="28" y2="9" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
-                                        <line x1="33" y1="9" x2="31" y2="11" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
-                                        <line x1="35" y1="14" x2="32" y2="14" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
+                                        <path d="M24 28c0-3.5 3.5-6 6-6" stroke="#16a34a" strokeWidth="1.8"
+                                              strokeLinecap="round" opacity=".7"/>
+                                        <line x1="28" y1="6" x2="28" y2="9" stroke="#16a34a" strokeWidth="1.8"
+                                              strokeLinecap="round"/>
+                                        <line x1="33" y1="9" x2="31" y2="11" stroke="#16a34a" strokeWidth="1.8"
+                                              strokeLinecap="round"/>
+                                        <line x1="35" y1="14" x2="32" y2="14" stroke="#16a34a" strokeWidth="1.8"
+                                              strokeLinecap="round"/>
                                     </svg>
-                                    <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>2</div>
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: -10,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: "50%",
+                                        background: "#16a34a",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: "#fff"
+                                    }}>2
+                                    </div>
                                 </div>
-                                <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Hệ thống định vị</h3>
-                                <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>Hệ thống xác định vị trí chính xác và phân loại mức độ khẩn cấp. GPS được xử lý tự động trong vài giây.</p>
+                                <h3 style={{
+                                    marginTop: 22,
+                                    marginBottom: 6,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                    lineHeight: 1.3
+                                }}>Hệ thống định vị</h3>
+                                <p style={{fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0}}>Hệ thống xác
+                                    định vị trí chính xác và phân loại mức độ khẩn cấp. GPS được xử lý tự động trong vài
+                                    giây.</p>
                             </div>
 
                             {/* Arrow 2 */}
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 28 }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                paddingTop: 28
+                            }}>
                                 <svg width="48" height="20" viewBox="0 0 48 20">
-                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2" strokeDasharray="6,4"/>
+                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2"
+                                          strokeDasharray="6,4"/>
                                     <polygon points="34,4 46,10 34,16" fill="#16a34a"/>
                                 </svg>
                             </div>
 
                             {/* ── STEP 3 ── */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                <div style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(145deg,#dcfce7,#bbf7d0)", border: "2px solid #16a34a", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                padding: "0 4px"
+                            }}>
+                                <div style={{
+                                    width: 76,
+                                    height: 76,
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    border: "2px solid #16a34a",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
+                                    flexShrink: 0
+                                }}>
                                     <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
                                         <circle cx="18" cy="9" r="4" fill="#16a34a"/>
                                         <circle cx="9" cy="12" r="3.5" fill="#16a34a" opacity=".8"/>
                                         <circle cx="27" cy="12" r="3.5" fill="#16a34a" opacity=".8"/>
-                                        <path d="M5 28c0-4.5 3.8-8 8-8" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" opacity=".8"/>
-                                        <path d="M23 20c4.2 0 8 3.5 8 8" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" opacity=".8"/>
-                                        <path d="M11 20c1.9-.7 4.2-1 7-1s5.1.3 7 1" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
-                                        <path d="M9 33c0-5.5 4.5-9 9-9s9 3.5 9 9" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                        <path d="M5 28c0-4.5 3.8-8 8-8" stroke="#16a34a" strokeWidth="2"
+                                              strokeLinecap="round" opacity=".8"/>
+                                        <path d="M23 20c4.2 0 8 3.5 8 8" stroke="#16a34a" strokeWidth="2"
+                                              strokeLinecap="round" opacity=".8"/>
+                                        <path d="M11 20c1.9-.7 4.2-1 7-1s5.1.3 7 1" stroke="#16a34a" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
+                                        <path d="M9 33c0-5.5 4.5-9 9-9s9 3.5 9 9" stroke="#16a34a" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
                                     </svg>
-                                    <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>3</div>
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: -10,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: "50%",
+                                        background: "#16a34a",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: "#fff"
+                                    }}>3
+                                    </div>
                                 </div>
-                                <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>TNV nhanh hỗ trợ</h3>
-                                <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>Tình nguyện viên gần nhất nhận thông báo và xác nhận. Thời gian phản hồi tối ưu theo khoảng cách địa lý.</p>
+                                <h3 style={{
+                                    marginTop: 22,
+                                    marginBottom: 6,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                    lineHeight: 1.3
+                                }}>TNV nhanh hỗ trợ</h3>
+                                <p style={{fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0}}>Tình nguyện
+                                    viên gần nhất nhận thông báo và xác nhận. Thời gian phản hồi tối ưu theo khoảng cách
+                                    địa lý.</p>
                             </div>
 
                             {/* Arrow 3 */}
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 28 }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                paddingTop: 28
+                            }}>
                                 <svg width="48" height="20" viewBox="0 0 48 20">
-                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2" strokeDasharray="6,4"/>
+                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2"
+                                          strokeDasharray="6,4"/>
                                     <polygon points="34,4 46,10 34,16" fill="#16a34a"/>
                                 </svg>
                             </div>
 
                             {/* ── STEP 4 ── */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                <div style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(145deg,#dcfce7,#bbf7d0)", border: "2px solid #16a34a", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                padding: "0 4px"
+                            }}>
+                                <div style={{
+                                    width: 76,
+                                    height: 76,
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    border: "2px solid #16a34a",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
+                                    flexShrink: 0
+                                }}>
                                     <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
                                         <circle cx="11" cy="10" r="3.5" fill="#16a34a"/>
                                         <circle cx="25" cy="10" r="3.5" fill="#16a34a"/>
-                                        <path d="M4 28c0-5 4-8.5 7-8.5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/>
-                                        <path d="M25 19.5c3 0 7 3.5 7 8.5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/>
-                                        <path d="M10 19.5c2-.7 4-1 8-1s6 .3 8 1" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/>
-                                        <path d="M8 33c0-5.5 4-9 10-9s10 3.5 10 9" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
-                                        <path d="M18 20v-5M15 17l3-3 3 3" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M4 28c0-5 4-8.5 7-8.5" stroke="#16a34a" strokeWidth="2"
+                                              strokeLinecap="round"/>
+                                        <path d="M25 19.5c3 0 7 3.5 7 8.5" stroke="#16a34a" strokeWidth="2"
+                                              strokeLinecap="round"/>
+                                        <path d="M10 19.5c2-.7 4-1 8-1s6 .3 8 1" stroke="#16a34a" strokeWidth="2"
+                                              strokeLinecap="round"/>
+                                        <path d="M8 33c0-5.5 4-9 10-9s10 3.5 10 9" stroke="#16a34a" strokeWidth="2.2"
+                                              strokeLinecap="round"/>
+                                        <path d="M18 20v-5M15 17l3-3 3 3" stroke="#16a34a" strokeWidth="1.8"
+                                              strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
-                                    <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>4</div>
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: -10,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: "50%",
+                                        background: "#16a34a",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: "#fff"
+                                    }}>4
+                                    </div>
                                 </div>
-                                <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Điều phối cứu trợ</h3>
-                                <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>Lực lượng được điều phối đến đúng vị trí. Nguồn lực phân bổ hợp lý, tránh chồng chéo và lãng phí.</p>
+                                <h3 style={{
+                                    marginTop: 22,
+                                    marginBottom: 6,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                    lineHeight: 1.3
+                                }}>Điều phối cứu trợ</h3>
+                                <p style={{fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0}}>Lực lượng được
+                                    điều phối đến đúng vị trí. Nguồn lực phân bổ hợp lý, tránh chồng chéo và lãng
+                                    phí.</p>
                             </div>
 
                             {/* Arrow 4 */}
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 28 }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                paddingTop: 28
+                            }}>
                                 <svg width="48" height="20" viewBox="0 0 48 20">
-                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2" strokeDasharray="6,4"/>
+                                    <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2"
+                                          strokeDasharray="6,4"/>
                                     <polygon points="34,4 46,10 34,16" fill="#16a34a"/>
                                 </svg>
                             </div>
 
                             {/* ── STEP 5 ── */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                <div style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(145deg,#dcfce7,#bbf7d0)", border: "2px solid #16a34a", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                textAlign: "center",
+                                padding: "0 4px"
+                            }}>
+                                <div style={{
+                                    width: 76,
+                                    height: 76,
+                                    borderRadius: "50%",
+                                    background: "linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    border: "2px solid #16a34a",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    position: "relative",
+                                    flexShrink: 0
+                                }}>
                                     <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                                        <path d="M18 4C10.3 4 4 10.3 4 18s6.3 14 14 14 14-6.3 14-14S25.7 4 18 4z" stroke="#16a34a" strokeWidth="2" fill="none"/>
-                                        <path d="M11 18l5 5 9-10" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                        <path d="M18 2v4M18 30v4M2 18h4M30 18h4" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" opacity=".4"/>
+                                        <path d="M18 4C10.3 4 4 10.3 4 18s6.3 14 14 14 14-6.3 14-14S25.7 4 18 4z"
+                                              stroke="#16a34a" strokeWidth="2" fill="none"/>
+                                        <path d="M11 18l5 5 9-10" stroke="#16a34a" strokeWidth="2.5"
+                                              strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M18 2v4M18 30v4M2 18h4M30 18h4" stroke="#16a34a" strokeWidth="1.5"
+                                              strokeLinecap="round" opacity=".4"/>
                                     </svg>
-                                    <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>5</div>
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: -10,
+                                        left: "50%",
+                                        transform: "translateX(-50%)",
+                                        width: 22,
+                                        height: 22,
+                                        borderRadius: "50%",
+                                        background: "#16a34a",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: "#fff"
+                                    }}>5
+                                    </div>
                                 </div>
-                                <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Hoàn thành & cập nhật</h3>
-                                <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>Cập nhật trạng thái và báo cáo minh bạch. Dữ liệu lưu trữ để phân tích và cải thiện quy trình về sau.</p>
+                                <h3 style={{
+                                    marginTop: 22,
+                                    marginBottom: 6,
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                    lineHeight: 1.3
+                                }}>Hoàn thành & cập nhật</h3>
+                                <p style={{fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0}}>Cập nhật trạng
+                                    thái và báo cáo minh bạch. Dữ liệu lưu trữ để phân tích và cải thiện quy trình về
+                                    sau.</p>
                             </div>
 
                         </div>
                     </div>
                 </section>
                 {/* ══════ THỐNG KÊ NỔI BẬT ══════ */}
-                <section id="thong-ke" style={{ width: "100%", borderTop: "1px solid #f1f5f9", padding: "64px 0" }}>
-                    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px" }}>
-                        <h2 style={{ fontFamily: H, fontSize: 40, fontWeight: 800, textAlign: "center", color: "#111827", marginBottom: 16 }}>
+                <section id="thong-ke" style={{
+                    width: "100%",
+                    borderTop: "1px solid #f1f5f9",
+                    padding: "64px 0",
+                    scrollMarginTop: "80px"
+                }}>
+                    <div style={{maxWidth: 1400, margin: "0 auto", padding: "0 32px"}}>
+                        <h2 style={{
+                            fontFamily: H,
+                            fontSize: 40,
+                            fontWeight: 800,
+                            textAlign: "center",
+                            color: "#111827",
+                            marginBottom: 16
+                        }}>
                             Thống kê nổi bật
                         </h2>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
+                        <div style={{display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16}}>
 
-                            {/* 4 STAT CARDS */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, background: "white", border: "1px solid #f1f5f9", borderRadius: 20, padding: 16, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+                            {/* 4 STAT CARDS — Firebase realtime */}
+                            <div style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(4, 1fr)",
+                                gap: 12,
+                                background: "white",
+                                border: "1px solid #f1f5f9",
+                                borderRadius: 20,
+                                padding: 16,
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
+                            }}>
                                 {[
                                     {
-                                        label: "Tổng SOS", count: "120+", sub: "+18 hôm nay",
+                                        label: statCards[0]?.label ?? "Tổng SOS",
+                                        count: statCards[0]?.count ?? "0",
+                                        sub: statCards[0]?.sub ?? "+0 hôm nay",
                                         color: "#2563eb", bg: "#eff6ff",
                                         icon: (
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                 <circle cx="6" cy="5" r="2.2" fill="#2563eb"/>
-                                                <path d="M1 13c0-2.5 2.2-4 5-4" stroke="#2563eb" strokeWidth="1.4" strokeLinecap="round"/>
+                                                <path d="M1 13c0-2.5 2.2-4 5-4" stroke="#2563eb" strokeWidth="1.4"
+                                                      strokeLinecap="round"/>
                                                 <circle cx="11" cy="5" r="2.2" fill="#2563eb" opacity=".6"/>
-                                                <path d="M8.5 9.2c.8-.2 1.6-.2 2.5-.2 2.8 0 5 1.5 5 4" stroke="#2563eb" strokeWidth="1.4" strokeLinecap="round" opacity=".6"/>
+                                                <path d="M8.5 9.2c.8-.2 1.6-.2 2.5-.2 2.8 0 5 1.5 5 4" stroke="#2563eb"
+                                                      strokeWidth="1.4" strokeLinecap="round" opacity=".6"/>
                                             </svg>
                                         ),
                                     },
                                     {
-                                        label: "Đang xử lý", count: "50+", sub: "+6 hôm nay",
+                                        label: statCards[1]?.label ?? "Đang xử lý",
+                                        count: statCards[1]?.count ?? "0",
+                                        sub: statCards[1]?.sub ?? "+0 hôm nay",
                                         color: "#ea580c", bg: "#fff7ed",
                                         icon: (
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                 <circle cx="8" cy="8" r="6.5" stroke="#ea580c" strokeWidth="1.4"/>
-                                                <path d="M8 4.5v3.8l2.5 1.5" stroke="#ea580c" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                                                <path d="M8 4.5v3.8l2.5 1.5" stroke="#ea580c" strokeWidth="1.4"
+                                                      strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                         ),
                                     },
                                     {
-                                        label: "Đã hỗ trợ", count: "500+", sub: "+35 hôm nay",
+                                        label: statCards[2]?.label ?? "Đã hỗ trợ",
+                                        count: statCards[2]?.count ?? "0",
+                                        sub: statCards[2]?.sub ?? "+0 hôm nay",
                                         color: "#16a34a", bg: "#f0fdf4",
                                         icon: (
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                <path d="M14 7.5A6.5 6.5 0 1 1 7.5 1" stroke="#16a34a" strokeWidth="1.4" strokeLinecap="round"/>
-                                                <path d="M5 7.5l3 3 6-6" stroke="#16a34a" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                                                <path d="M14 7.5A6.5 6.5 0 1 1 7.5 1" stroke="#16a34a" strokeWidth="1.4"
+                                                      strokeLinecap="round"/>
+                                                <path d="M5 7.5l3 3 6-6" stroke="#16a34a" strokeWidth="1.4"
+                                                      strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                         ),
                                     },
                                     {
-                                        label: "Điểm cứu trợ", count: "30+", sub: "+4 hôm nay",
+                                        label: statCards[3]?.label ?? "Điểm cứu trợ",
+                                        count: statCards[3]?.count ?? "30+",
+                                        sub: statCards[3]?.sub ?? "+4 hôm nay",
                                         color: "#0891b2", bg: "#ecfeff",
                                         icon: (
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                <path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z" stroke="#0891b2" strokeWidth="1.4" fill="none"/>
+                                                <path
+                                                    d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z"
+                                                    stroke="#0891b2" strokeWidth="1.4" fill="none"/>
                                                 <circle cx="8" cy="6" r="1.6" fill="#0891b2"/>
                                             </svg>
                                         ),
                                     },
                                 ].map((item, i) => (
-                                    <div key={i} style={{ background: "#f8fafc", border: "1px solid #f1f5f9", borderRadius: 14, padding: "16px 12px" }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                    <div key={i} style={{
+                                        background: "#f8fafc",
+                                        border: "1px solid #f1f5f9",
+                                        borderRadius: 14,
+                                        padding: "16px 12px"
+                                    }}>
+                                        <div style={{display: "flex", alignItems: "center", gap: 6, marginBottom: 10}}>
+                                            <div style={{
+                                                width: 28,
+                                                height: 28,
+                                                borderRadius: "50%",
+                                                background: item.bg,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                flexShrink: 0
+                                            }}>
                                                 {item.icon}
                                             </div>
-                                            <span style={{ fontSize: 12, fontWeight: 600, color: item.color }}>{item.label}</span>
+                                            <span style={{
+                                                fontSize: 12,
+                                                fontWeight: 600,
+                                                color: item.color
+                                            }}>{item.label}</span>
                                         </div>
-                                        <div style={{ fontSize: 28, fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.count}</div>
-                                        <div style={{ fontSize: 11, color: item.color, marginTop: 6, fontWeight: 600 }}>▲ {item.sub}</div>
+                                        <div style={{
+                                            fontSize: 28,
+                                            fontWeight: 900,
+                                            color: item.color,
+                                            lineHeight: 1
+                                        }}>{item.count}</div>
+                                        <div style={{
+                                            fontSize: 11,
+                                            color: item.color,
+                                            marginTop: 6,
+                                            fontWeight: 600
+                                        }}>▲ {item.sub}</div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* AI-LITE */}
-                            <div style={{ background: "white", border: "1.5px solid #bbf7d0", borderRadius: 20, padding: 20 }}>
-                                <div style={{ fontSize: 11, fontWeight: 800, color: "#16a34a", letterSpacing: 2, textTransform: "uppercase", marginBottom: 14 }}>AI-LITE GỢI Ý</div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12, padding: 12 }}>
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-                                            <path d="M9 2L1.5 15h15L9 2z" stroke="#dc2626" strokeWidth="1.5" strokeLinejoin="round" fill="#fef2f2"/>
-                                            <line x1="9" y1="7" x2="9" y2="11" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round"/>
+                            {/* AI-LITE — Firebase realtime */}
+                            <div style={{
+                                background: "white",
+                                border: "1.5px solid #bbf7d0",
+                                borderRadius: 20,
+                                padding: 20
+                            }}>
+                                <div style={{
+                                    fontSize: 11,
+                                    fontWeight: 800,
+                                    color: "#16a34a",
+                                    letterSpacing: 2,
+                                    textTransform: "uppercase",
+                                    marginBottom: 14
+                                }}>AI-LITE GỢI Ý
+                                </div>
+                                <div style={{display: "flex", flexDirection: "column", gap: 10}}>
+                                    <div style={{
+                                        display: "flex",
+                                        gap: 10,
+                                        alignItems: "flex-start",
+                                        background: "#fef2f2",
+                                        border: "1px solid #fecaca",
+                                        borderRadius: 12,
+                                        padding: 12
+                                    }}>
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                             style={{flexShrink: 0, marginTop: 1}}>
+                                            <path d="M9 2L1.5 15h15L9 2z" stroke="#dc2626" strokeWidth="1.5"
+                                                  strokeLinejoin="round" fill="#fef2f2"/>
+                                            <line x1="9" y1="7" x2="9" y2="11" stroke="#dc2626" strokeWidth="1.5"
+                                                  strokeLinecap="round"/>
                                             <circle cx="9" cy="13" r="0.8" fill="#dc2626"/>
                                         </svg>
-                                        <p style={{ fontSize: 12, color: "#4b5563", margin: 0, lineHeight: 1.5 }}>
-                                            <b style={{ color: "#111827" }}>Quảng Ngãi</b> có 15 yêu cầu chưa được xử lý
+                                        <p style={{fontSize: 12, color: "#4b5563", margin: 0, lineHeight: 1.5}}>
+                                            <b style={{color: "#111827"}}>{aiSuggestions.overloadProv}</b> có {aiSuggestions.overloadCount} yêu
+                                            cầu chưa được xử lý
                                         </p>
                                     </div>
-                                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 12, padding: 12 }}>
-                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-                                            <circle cx="9" cy="9" r="7" stroke="#2563eb" strokeWidth="1.5" fill="#eff6ff"/>
-                                            <path d="M6 9a3 3 0 1 0 6 0 3 3 0 0 0-6 0z" stroke="#2563eb" strokeWidth="1.2" fill="none"/>
-                                            <line x1="9" y1="2" x2="9" y2="4" stroke="#2563eb" strokeWidth="1.2" strokeLinecap="round"/>
-                                            <line x1="9" y1="14" x2="9" y2="16" stroke="#2563eb" strokeWidth="1.2" strokeLinecap="round"/>
-                                            <line x1="2" y1="9" x2="4" y2="9" stroke="#2563eb" strokeWidth="1.2" strokeLinecap="round"/>
-                                            <line x1="14" y1="9" x2="16" y2="9" stroke="#2563eb" strokeWidth="1.2" strokeLinecap="round"/>
+                                    <div style={{
+                                        display: "flex",
+                                        gap: 10,
+                                        alignItems: "flex-start",
+                                        background: "#eff6ff",
+                                        border: "1px solid #bfdbfe",
+                                        borderRadius: 12,
+                                        padding: 12
+                                    }}>
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                             style={{flexShrink: 0, marginTop: 1}}>
+                                            <circle cx="9" cy="9" r="7" stroke="#2563eb" strokeWidth="1.5"
+                                                    fill="#eff6ff"/>
+                                            <path d="M6 9a3 3 0 1 0 6 0 3 3 0 0 0-6 0z" stroke="#2563eb"
+                                                  strokeWidth="1.2" fill="none"/>
+                                            <line x1="9" y1="2" x2="9" y2="4" stroke="#2563eb" strokeWidth="1.2"
+                                                  strokeLinecap="round"/>
+                                            <line x1="9" y1="14" x2="9" y2="16" stroke="#2563eb" strokeWidth="1.2"
+                                                  strokeLinecap="round"/>
+                                            <line x1="2" y1="9" x2="4" y2="9" stroke="#2563eb" strokeWidth="1.2"
+                                                  strokeLinecap="round"/>
+                                            <line x1="14" y1="9" x2="16" y2="9" stroke="#2563eb" strokeWidth="1.2"
+                                                  strokeLinecap="round"/>
                                         </svg>
-                                        <p style={{ fontSize: 12, color: "#4b5563", margin: 0, lineHeight: 1.5 }}>
-                                            Đề xuất điều thêm <b style={{ color: "#111827" }}>2 TNV</b> từ Đà Nẵng
+                                        <p style={{fontSize: 12, color: "#4b5563", margin: 0, lineHeight: 1.5}}>
+                                            Đề xuất điều thêm <b
+                                            style={{color: "#111827"}}>{aiSuggestions.suggestTNV} TNV</b> từ {aiSuggestions.nearbyProv}
                                         </p>
                                     </div>
                                 </div>
@@ -1111,7 +1613,7 @@ export default function Homepage() {
                     />
 
                     {/* Nội dung đè lên ảnh */}
-                    <div style={{ position: "relative", zIndex: 10 }}>
+                    <div style={{position: "relative", zIndex: 10}}>
                         <h2 style={{
                             fontFamily: H,
                             fontSize: 40,
@@ -1132,7 +1634,7 @@ export default function Homepage() {
                         }}>
                             Hãy cùng chung tay xây dựng hệ thống cứu trợ hiệu quả cho miền Trung.
                         </p>
-                        <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+                        <div style={{display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap"}}>
                             <button
                                 onClick={() => setIsFormOpen(true)}
                                 style={{
@@ -1144,7 +1646,7 @@ export default function Homepage() {
                                     boxShadow: "0 4px 14px rgba(22,163,74,0.35)",
                                 }}
                             >
-                                <Users size={18} strokeWidth={2} />
+                                <Users size={18} strokeWidth={2}/>
                                 Gửi SOS ngay
                             </button>
                             <Link
@@ -1158,25 +1660,53 @@ export default function Homepage() {
                                     boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                                 }}
                             >
-                                <BookOpen size={18} strokeWidth={2} />
+                                <BookOpen size={18} strokeWidth={2}/>
                                 Truy cập bản đồ
                             </Link>
                         </div>
                     </div>
                 </section>
                 {/* ══════ CONTACT ══════ */}
-                <section id="lien-he" style={{ width: "100%", background: "white", borderTop: "1px solid #f1f5f9", padding: "56px 32px", display: "flex", justifyContent: "center", scrollMarginTop: 80 }}>
-                    <div style={{ width: "100%", maxWidth: 640, background: "white", borderRadius: 28, padding: "48px 40px", border: "1px solid #f1f5f9", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
-                        <div style={{ textAlign: "center", marginBottom: 32 }}>
-                            <h2 style={{ fontFamily: H, fontSize: 36, fontWeight: 800, color: "#111827", marginBottom: 8 }}>Hỗ trợ thêm thông tin</h2>
-                            <p style={{ color: "#6b7280", fontSize: 15, lineHeight: 1.8, maxWidth: 500, margin: "0 auto" }}>
+                <section id="lien-he" style={{
+                    width: "100%",
+                    background: "white",
+                    borderTop: "1px solid #f1f5f9",
+                    padding: "56px 32px",
+                    display: "flex",
+                    justifyContent: "center",
+                    scrollMarginTop: 80
+                }}>
+                    <div style={{
+                        width: "100%",
+                        maxWidth: 640,
+                        background: "white",
+                        borderRadius: 28,
+                        padding: "48px 40px",
+                        border: "1px solid #f1f5f9",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.08)"
+                    }}>
+                        <div style={{textAlign: "center", marginBottom: 32}}>
+                            <h2 style={{
+                                fontFamily: H,
+                                fontSize: 36,
+                                fontWeight: 800,
+                                color: "#111827",
+                                marginBottom: 8
+                            }}>Hỗ trợ thêm thông tin</h2>
+                            <p style={{
+                                color: "#6b7280",
+                                fontSize: 15,
+                                lineHeight: 1.8,
+                                maxWidth: 500,
+                                margin: "0 auto"
+                            }}>
                                 Chúng tôi luôn sẵn sàng lắng nghe mọi ý kiến đóng góp,
                                 phản ánh hoặc yêu cầu hỗ trợ từ cộng đồng.
                                 Mỗi thông tin bạn gửi đều góp phần giúp hệ thống cứu trợ
                                 hoạt động hiệu quả hơn và đến đúng nơi cần giúp đỡ.
                             </p>
                         </div>
-                        <div style={{ height: 1, background: "#f1f5f9", marginBottom: 28 }} />
+                        <div style={{height: 1, background: "#f1f5f9", marginBottom: 28}}/>
 
                         {/* ── Success banner ── */}
                         {contactState === "success" && (
@@ -1185,10 +1715,12 @@ export default function Homepage() {
                                 background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.25)",
                                 borderRadius: 12, padding: "12px 16px", marginBottom: 20,
                             }}>
-                                <CheckCircle size={18} color="#16a34a" />
+                                <CheckCircle size={18} color="#16a34a"/>
                                 <div>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: "#15803d" }}>Gửi thành công!</div>
-                                    <div style={{ fontSize: 12, color: "#6b7280" }}>Phản hồi đã được lưu vào Firebase. Chúng tôi sẽ liên hệ sớm nhất có thể.</div>
+                                    <div style={{fontSize: 13, fontWeight: 700, color: "#15803d"}}>Gửi thành công!</div>
+                                    <div style={{fontSize: 12, color: "#6b7280"}}>Phản hồi đã được lưu vào Firebase.
+                                        Chúng tôi sẽ liên hệ sớm nhất có thể.
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -1198,57 +1730,98 @@ export default function Homepage() {
                                 background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
                                 borderRadius: 12, padding: "12px 16px", marginBottom: 20,
                             }}>
-                                <AlertCircle size={18} color="#dc2626" />
-                                <div style={{ fontSize: 13, color: "#dc2626", fontWeight: 600 }}>Có lỗi xảy ra. Vui lòng thử lại.</div>
+                                <AlertCircle size={18} color="#dc2626"/>
+                                <div style={{fontSize: 13, color: "#dc2626", fontWeight: 600}}>Có lỗi xảy ra. Vui lòng
+                                    thử lại.
+                                </div>
                             </div>
                         )}
 
-                        <form ref={formRef} style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleContactSubmit}>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                    <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
-                                        Họ và tên <span style={{ color: "#dc2626" }}>*</span>
+                        <form ref={formRef} style={{display: "flex", flexDirection: "column", gap: 18}}
+                              onSubmit={handleContactSubmit}>
+                            <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16}}>
+                                <div style={{display: "flex", flexDirection: "column", gap: 6}}>
+                                    <label style={{fontSize: 13, fontWeight: 600, color: "#374151"}}>
+                                        Họ và tên <span style={{color: "#dc2626"}}>*</span>
                                     </label>
                                     <input
                                         type="text" placeholder="Nhập họ và tên"
                                         value={contactForm.name}
                                         onChange={e => handleContactChange("name", e.target.value)}
                                         required
-                                        style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                        style={{
+                                            background: "#f8fafc",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: 12,
+                                            padding: "12px 14px",
+                                            fontSize: 13,
+                                            outline: "none",
+                                            fontFamily: "inherit",
+                                            color: "#111827"
+                                        }}
                                     />
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                    <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Số điện thoại</label>
+                                <div style={{display: "flex", flexDirection: "column", gap: 6}}>
+                                    <label style={{fontSize: 13, fontWeight: 600, color: "#374151"}}>Số điện
+                                        thoại</label>
                                     <input
                                         type="tel" placeholder="Nhập số điện thoại"
                                         value={contactForm.phone}
                                         onChange={e => handleContactChange("phone", e.target.value)}
-                                        style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                        style={{
+                                            background: "#f8fafc",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: 12,
+                                            padding: "12px 14px",
+                                            fontSize: 13,
+                                            outline: "none",
+                                            fontFamily: "inherit",
+                                            color: "#111827"
+                                        }}
                                     />
                                 </div>
                             </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Email</label>
+                            <div style={{display: "flex", flexDirection: "column", gap: 6}}>
+                                <label style={{fontSize: 13, fontWeight: 600, color: "#374151"}}>Email</label>
                                 <input
                                     type="email" placeholder="Nhập địa chỉ email"
                                     value={contactForm.email}
                                     onChange={e => handleContactChange("email", e.target.value)}
-                                    style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }}
+                                    style={{
+                                        background: "#f8fafc",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: 12,
+                                        padding: "12px 14px",
+                                        fontSize: 13,
+                                        outline: "none",
+                                        fontFamily: "inherit",
+                                        color: "#111827"
+                                    }}
                                 />
                             </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>
-                                    Nội dung <span style={{ color: "#dc2626" }}>*</span>
+                            <div style={{display: "flex", flexDirection: "column", gap: 6}}>
+                                <label style={{fontSize: 13, fontWeight: 600, color: "#374151"}}>
+                                    Nội dung <span style={{color: "#dc2626"}}>*</span>
                                 </label>
                                 <textarea
                                     rows={4} placeholder="Nhập nội dung tin nhắn"
                                     value={contactForm.message}
                                     onChange={e => handleContactChange("message", e.target.value)}
                                     required
-                                    style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", resize: "none", fontFamily: "inherit", color: "#111827" }}
+                                    style={{
+                                        background: "#f8fafc",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: 12,
+                                        padding: "12px 14px",
+                                        fontSize: 13,
+                                        outline: "none",
+                                        resize: "none",
+                                        fontFamily: "inherit",
+                                        color: "#111827"
+                                    }}
                                 />
                             </div>
-                            <div style={{ textAlign: "center", paddingTop: 8 }}>
+                            <div style={{textAlign: "center", paddingTop: 8}}>
                                 <button
                                     type="submit"
                                     disabled={contactState === "loading" || contactState === "success"}
@@ -1264,19 +1837,26 @@ export default function Homepage() {
                                     }}
                                 >
                                     {contactState === "loading" ? (
-                                        <><Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> Đang gửi...</>
+                                        <><Loader2 size={18} style={{animation: "spin 1s linear infinite"}}/> Đang
+                                            gửi...</>
                                     ) : contactState === "success" ? (
-                                        <><CheckCircle size={18} /> Đã gửi thành công</>
+                                        <><CheckCircle size={18}/> Đã gửi thành công</>
                                     ) : (
-                                        <><MessageCircle size={18} /> Gửi phản hồi</>
+                                        <><MessageCircle size={18}/> Gửi phản hồi</>
                                     )}
                                 </button>
-                                <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 10 }}>
+                                <p style={{fontSize: 11, color: "#9ca3af", marginTop: 10}}>
                                     Phản hồi sẽ được lưu vào hệ thống Firebase và đội admin sẽ xem xét sớm nhất.
                                 </p>
                             </div>
                         </form>
-                        <div style={{ marginTop: 28, textAlign: "center", color: "#6b7280", fontSize: 13, lineHeight: 1.7 }}>
+                        <div style={{
+                            marginTop: 28,
+                            textAlign: "center",
+                            color: "#6b7280",
+                            fontSize: 13,
+                            lineHeight: 1.7
+                        }}>
                             SOS Miền Trung tin rằng công nghệ không chỉ để kết nối dữ liệu,
                             mà còn để kết nối những tấm lòng và mang sự hỗ trợ đến đúng người,
                             đúng thời điểm.
@@ -1373,25 +1953,35 @@ export default function Homepage() {
 
                         {/* ĐIỀU HƯỚNG */}
                         <div>
-                            <h4 style={{ color: "white", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: 2, marginBottom: 20 }}>
+                            <h4 style={{
+                                color: "white",
+                                fontWeight: 700,
+                                fontSize: 12,
+                                textTransform: "uppercase",
+                                letterSpacing: 2,
+                                marginBottom: 20
+                            }}>
                                 Điều hướng
                             </h4>
                             {footerNavItems.map((item, i) => (
-                                <div
+                                <button
                                     key={i}
                                     onClick={item.action}
                                     style={{
                                         display: "flex", alignItems: "center", gap: 8,
                                         color: "#9ca3af", marginBottom: 14,
                                         cursor: "pointer", fontSize: 14,
+                                        background: "none", border: "none",
+                                        padding: 0, fontFamily: "inherit",
+                                        textAlign: "left", width: "100%",
                                         transition: "color 0.18s",
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.color = "#4ade80"}
                                     onMouseLeave={e => e.currentTarget.style.color = "#9ca3af"}
                                 >
-                                    <ChevronRight size={14} />
+                                    <ChevronRight size={14}/>
                                     {item.label}
-                                </div>
+                                </button>
                             ))}
                         </div>
 
@@ -1475,7 +2065,7 @@ export default function Homepage() {
                                         fontSize: 14
                                     }}
                                 >
-                                    <Phone size={16} color="#4ade80" />
+                                    <Phone size={16} color="#4ade80"/>
                                     <span>
                         Hotline:
                         <strong
@@ -1498,7 +2088,7 @@ export default function Homepage() {
                                         fontSize: 14
                                     }}
                                 >
-                                    <Mail size={16} color="#60a5fa" />
+                                    <Mail size={16} color="#60a5fa"/>
                                     contact@sosmientrung.vn
                                 </div>
 
@@ -1511,7 +2101,7 @@ export default function Homepage() {
                                         fontSize: 14
                                     }}
                                 >
-                                    <MapPin size={16} color="#f97316" />
+                                    <MapPin size={16} color="#f97316"/>
                                     TP. Đà Nẵng, Việt Nam
                                 </div>
 
@@ -1524,7 +2114,7 @@ export default function Homepage() {
                                         fontSize: 14
                                     }}
                                 >
-                                    <Clock3 size={16} color="#a78bfa" />
+                                    <Clock3 size={16} color="#a78bfa"/>
                                     Hỗ trợ 24/7
                                 </div>
                             </div>
@@ -1550,3 +2140,5 @@ export default function Homepage() {
         </div>
     );
 }
+
+export default Homepage

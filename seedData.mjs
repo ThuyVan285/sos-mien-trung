@@ -297,9 +297,9 @@ async function main() {
 
     // Tính số lượng theo số ngày thực tế
     // ~1.2 SOS/ngày, ~0.4 TNV/ngày, ~0.6 donation/ngày
-    const sosCount  = Math.floor(days * 1.2) + rand(10, 30);
-    const volCount  = Math.floor(days * 0.4) + rand(5, 15);
-    const donCount  = Math.floor(days * 0.6) + rand(8, 20);
+    const sosCount  = Math.floor(days * 1) + rand(10, 12);
+    const volCount  = Math.floor(days * 0.2) + rand(5, 10);
+    const donCount  = Math.floor(days * 0.3) + rand(8, 12);
 
     console.log(`📊 Sẽ tạo: ${sosCount} SOS | ${volCount} TNV | ${donCount} Donations\n`);
 
