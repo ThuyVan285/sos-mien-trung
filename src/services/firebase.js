@@ -1,4 +1,4 @@
-// src/services/firebase.js  (hoặc src/firebase.js tùy cấu trúc)
+// src/services/firebase.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
@@ -12,5 +12,5 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);  // ← THIẾU CÁI NÀY
+export const db = getFirestore(app);
 export default app;
