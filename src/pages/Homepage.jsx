@@ -158,11 +158,31 @@ export default function Homepage() {
                                 <MapPin size={14} color="#16a34a" /> Hệ thống hỗ trợ thiên tai Miền Trung
                             </div>
                             <div style={{ lineHeight: 1.05 }}>
-                                <div style={{ fontFamily: H, fontSize: 88, fontWeight: 900, letterSpacing: "-2px", lineHeight: 1 }}>
+                                <div
+                                    style={{
+                                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                                        fontSize: 88,
+                                        fontWeight: 900,
+                                        letterSpacing: "-4px",
+                                        lineHeight: 0.95
+                                    }}
+                                >
                                     <span style={{ color: "#16a34a" }}>SOS </span>
                                     <span style={{ color: "#0f1923" }}>MIỀN</span>
                                 </div>
-                                <div style={{ fontFamily: H, fontSize: 88, fontWeight: 900, letterSpacing: "-2px", lineHeight: 1, color: "#0f1923" }}>TRUNG</div>
+
+                                <div
+                                    style={{
+                                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                                        fontSize: 88,
+                                        fontWeight: 900,
+                                        letterSpacing: "-4px",
+                                        lineHeight: 0.95,
+                                        color: "#0f1923"
+                                    }}
+                                >
+                                    TRUNG
+                                </div>
                                 <div style={{ fontFamily: H, fontSize: 36, fontWeight: 700, color: "#1f2937", marginTop: 8 }}>Bản đồ cứu trợ</div>
                                 <div style={{ fontFamily: H, fontSize: 36, fontWeight: 700, color: "#16a34a" }}>thời gian thực</div>
                             </div>
@@ -179,16 +199,62 @@ export default function Homepage() {
                             </div>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
                                 {[
-                                    { value: heroStats[0]?.value ?? "11",   label: "Khu vực hỗ trợ",  icon: <HeartHandshake size={18} />, bg: "#ecfdf5", color: "#16a34a" },
-                                    { value: heroStats[1]?.value ?? "120+", label: "Yêu cầu cứu trợ", icon: <ClipboardList size={18} />,  bg: "#eff6ff", color: "#2563eb" },
-                                    { value: heroStats[2]?.value ?? "50+",  label: "Tình nguyện viên",icon: <Users size={18} />,          bg: "#ecfdf5", color: "#16a34a" },
-                                    { value: heroStats[3]?.value ?? "30",   label: "Điểm hỗ trợ",     icon: <Building2 size={18} />,      bg: "#eff6ff", color: "#2563eb" },
+                                    { value: "11",   label: "Khu vực hỗ trợ",  icon: <HeartHandshake size={18} />, bg: "#ecfdf5", color: "#16a34a" },
+                                    { value: "150+", label: "Yêu cầu cứu trợ", icon: <ClipboardList size={18} />,  bg: "#eff6ff", color: "#2563eb" },
+                                    { value: "100+", label: "Tình nguyện viên",icon: <Users size={18} />,          bg: "#ecfdf5", color: "#16a34a" },
+                                    { value: "30+",  label: "Điểm hỗ trợ",     icon: <Building2 size={18} />,      bg: "#eff6ff", color: "#2563eb" },
                                 ].map((s, i) => (
-                                    <div key={i} style={{ background: "white", border: "1px solid #e5e7eb", borderRadius: 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10, boxShadow: "0 2px 6px rgba(0,0,0,0.05)" }}>
-                                        <div style={{ width: 38, height: 38, borderRadius: 10, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", color: s.color, flexShrink: 0 }}>{s.icon}</div>
+                                    <div
+                                        key={i}
+                                        style={{
+                                            background: "white",
+                                            border: "1px solid #e5e7eb",
+                                            borderRadius: 16,
+                                            padding: "12px 14px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 10,
+                                            boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                width: 38,
+                                                height: 38,
+                                                borderRadius: 10,
+                                                background: s.bg,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                color: s.color,
+                                                flexShrink: 0
+                                            }}
+                                        >
+                                            {s.icon}
+                                        </div>
+
                                         <div>
-                                            <div style={{ fontSize: 18, fontWeight: 800, color: "#111827", lineHeight: 1 }}>{s.value}</div>
-                                            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3, lineHeight: 1.3 }}>{s.label}</div>
+                                            <div
+                                                style={{
+                                                    fontSize: 18,
+                                                    fontWeight: 800,
+                                                    color: "#111827",
+                                                    lineHeight: 1
+                                                }}
+                                            >
+                                                {s.value}
+                                            </div>
+
+                                            <div
+                                                style={{
+                                                    fontSize: 11,
+                                                    color: "#6b7280",
+                                                    marginTop: 3,
+                                                    lineHeight: 1.3
+                                                }}
+                                            >
+                                                {s.label}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -308,24 +374,107 @@ export default function Homepage() {
                     </div>
                 </section>
 
+
                 {/* ══ QUY TRÌNH ══ */}
-                <section id="quy-trinh" style={{ width: "100%", borderTop: "1px solid #f1f5f9", background: "white", padding: "64px 0", scrollMarginTop: "80px" }}>
-                    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px" }}>
-                        <h2 style={{ fontFamily: H, fontSize: 40, fontWeight: 800, textAlign: "center", marginBottom: 40, color: "#111827" }}>Quy trình hoạt động</h2>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 48px 1fr 48px 1fr 48px 1fr 48px 1fr", alignItems: "start", gap: 0 }}>
+                <section id="quy-trinh" style={{ width:"100%", borderTop:"1px solid #f1f5f9", background:"white", padding:"64px 0", scrollMarginTop:"80px" }}>
+                    <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 32px" }}>
+                        <h2 style={{ fontFamily:H, fontSize:40, fontWeight:800, textAlign:"center", marginBottom:48, color:"#111827" }}>
+                            Quy trình hoạt động
+                        </h2>
+                        <div style={{ display:"grid", gridTemplateColumns:"1fr 48px 1fr 48px 1fr 48px 1fr 48px 1fr", alignItems:"start", gap:0 }}>
                             {[
-                                { title: "Người dân gửi SOS",    desc: "Người dân gửi yêu cầu cứu trợ bằng form SOS. Thông tin được ghi nhận ngay và chuyển đến trung tâm điều phối.", color: "#dc2626", bg: "linear-gradient(145deg,#fecaca,#fca5a5)" },
+                                {
+                                    title:"Người dân gửi SOS",
+                                    desc:"Người dân gửi yêu cầu cứu trợ bằng form SOS. Thông tin được ghi nhận ngay và chuyển đến trung tâm điều phối.",
+                                    color:"#dc2626", border:"#dc2626",
+                                    bg:"linear-gradient(145deg,#fecaca,#fca5a5)",
+                                    icon:(
+                                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                            <circle cx="12" cy="9"  r="4" fill="#dc2626"/>
+                                            <circle cx="24" cy="9"  r="4" fill="#dc2626"/>
+                                            <path d="M4 27c0-4.5 3.6-7.5 8-7.5" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                            <path d="M24 19.5c4.4 0 8 3 8 7.5" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                            <path d="M12 19.5c1.8-.6 3.8-1 6-1s4.2.4 6 1" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                            <path d="M8 34c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round"/>
+                                            {/* Sad expression */}
+                                            <path d="M14 26.5c1-.8 2.5-1.2 4-1.2s3 .4 4 1.2" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                    ),
+                                },
                                 null,
-                                { title: "Hệ thống định vị",     desc: "Hệ thống xác định vị trí chính xác và phân loại mức độ khẩn cấp. GPS được xử lý tự động trong vài giây.", color: "#16a34a", bg: "linear-gradient(145deg,#dcfce7,#bbf7d0)" },
+                                {
+                                    title:"Hệ thống định vị",
+                                    desc:"Hệ thống xác định vị trí chính xác và phân loại mức độ khẩn cấp. GPS được xử lý tự động trong vài giây.",
+                                    color:"#16a34a", border:"#16a34a",
+                                    bg:"linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    icon:(
+                                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                            <circle cx="18" cy="11" r="5" fill="#16a34a"/>
+                                            <path d="M8 32c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                            {/* GPS signal rays */}
+                                            <line x1="28" y1="5"  x2="28" y2="9"  stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
+                                            <line x1="33" y1="8"  x2="31" y2="10" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
+                                            <line x1="35" y1="13" x2="32" y2="13" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round"/>
+                                            <circle cx="28" cy="14" r="3.5" fill="#16a34a" opacity=".7"/>
+                                        </svg>
+                                    ),
+                                },
                                 null,
-                                { title: "TNV nhanh hỗ trợ",     desc: "Tình nguyện viên gần nhất nhận thông báo và xác nhận. Thời gian phản hồi tối ưu theo khoảng cách địa lý.", color: "#16a34a", bg: "linear-gradient(145deg,#dcfce7,#bbf7d0)" },
+                                {
+                                    title:"TNV nhanh hỗ trợ",
+                                    desc:"Tình nguyện viên gần nhất nhận thông báo và xác nhận. Thời gian phản hồi tối ưu theo khoảng cách địa lý.",
+                                    color:"#16a34a", border:"#16a34a",
+                                    bg:"linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    icon:(
+                                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                            <circle cx="18" cy="8"  r="4"   fill="#16a34a"/>
+                                            <circle cx="9"  cy="11" r="3.5" fill="#16a34a" opacity=".8"/>
+                                            <circle cx="27" cy="11" r="3.5" fill="#16a34a" opacity=".8"/>
+                                            <path d="M5 28c0-4.5 3.8-8 8-8"        stroke="#16a34a" strokeWidth="2"   strokeLinecap="round" opacity=".8"/>
+                                            <path d="M23 20c4.2 0 8 3.5 8 8"        stroke="#16a34a" strokeWidth="2"   strokeLinecap="round" opacity=".8"/>
+                                            <path d="M11 20c1.9-.7 4.2-1 7-1s5.1.3 7 1" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                            <path d="M9 33c0-5.5 4.5-9 9-9s9 3.5 9 9" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                        </svg>
+                                    ),
+                                },
                                 null,
-                                { title: "Điều phối cứu trợ",    desc: "Lực lượng được điều phối đến đúng vị trí. Nguồn lực phân bổ hợp lý, tránh chồng chéo và lãng phí.", color: "#16a34a", bg: "linear-gradient(145deg,#dcfce7,#bbf7d0)" },
+                                {
+                                    title:"Điều phối cứu trợ",
+                                    desc:"Lực lượng được điều phối đến đúng vị trí. Nguồn lực phân bổ hợp lý, tránh chồng chéo và lãng phí.",
+                                    color:"#16a34a", border:"#16a34a",
+                                    bg:"linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    icon:(
+                                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                            <circle cx="11" cy="9"  r="3.5" fill="#16a34a"/>
+                                            <circle cx="25" cy="9"  r="3.5" fill="#16a34a"/>
+                                            <path d="M4 28c0-5 4-8.5 7-8.5"  stroke="#16a34a" strokeWidth="2"   strokeLinecap="round"/>
+                                            <path d="M25 19.5c3 0 7 3.5 7 8.5" stroke="#16a34a" strokeWidth="2"   strokeLinecap="round"/>
+                                            <path d="M10 19.5c2-.7 4-1 8-1s6 .3 8 1" stroke="#16a34a" strokeWidth="2"   strokeLinecap="round"/>
+                                            <path d="M8 33c0-5.5 4-9 10-9s10 3.5 10 9" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round"/>
+                                            {/* Up arrow */}
+                                            <path d="M18 20v-6M15 16l3-3 3 3" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    ),
+                                },
                                 null,
-                                { title: "Hoàn thành & cập nhật",desc: "Cập nhật trạng thái và báo cáo minh bạch. Dữ liệu lưu trữ để phân tích và cải thiện quy trình về sau.", color: "#16a34a", bg: "linear-gradient(145deg,#dcfce7,#bbf7d0)" },
+                                {
+                                    title:"Hoàn thành & cập nhật",
+                                    desc:"Cập nhật trạng thái và báo cáo minh bạch. Dữ liệu lưu trữ để phân tích và cải thiện quy trình về sau.",
+                                    color:"#16a34a", border:"#16a34a",
+                                    bg:"linear-gradient(145deg,#dcfce7,#bbf7d0)",
+                                    icon:(
+                                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                                            <path d="M18 4C10.3 4 4 10.3 4 18s6.3 14 14 14 14-6.3 14-14S25.7 4 18 4z"
+                                                  stroke="#16a34a" strokeWidth="2" fill="none"/>
+                                            <path d="M11 18l5 5 9-10"
+                                                  stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                    ),
+                                },
                             ].map((item, i) => {
+                                // Arrow dividers
                                 if (item === null) return (
-                                    <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 28 }}>
+                                    <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"center", paddingTop:28 }}>
                                         <svg width="48" height="20" viewBox="0 0 48 20">
                                             <line x1="0" y1="10" x2="36" y2="10" stroke="#16a34a" strokeWidth="2.2" strokeDasharray="6,4"/>
                                             <polygon points="34,4 46,10 34,16" fill="#16a34a"/>
@@ -334,20 +483,34 @@ export default function Homepage() {
                                 );
                                 const stepNum = [0,2,4,6,8].indexOf(i) + 1;
                                 return (
-                                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "0 4px" }}>
-                                        <div style={{ width: 76, height: 76, borderRadius: "50%", background: item.bg, border: `2px solid ${item.color}`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", flexShrink: 0 }}>
-                                            <span style={{ fontSize: 24, fontWeight: 900, color: item.color }}>{stepNum}</span>
-                                            <div style={{ position: "absolute", bottom: -10, left: "50%", transform: "translateX(-50%)", width: 22, height: 22, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff" }}>{stepNum}</div>
+                                    <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", padding:"0 4px" }}>
+                                        <div style={{
+                                            width:76, height:76, borderRadius:"50%",
+                                            background:item.bg, border:`2px solid ${item.border}`,
+                                            display:"flex", alignItems:"center", justifyContent:"center",
+                                            position:"relative", flexShrink:0
+                                        }}>
+                                            {item.icon}
+                                            {/* Step number badge */}
+                                            <div style={{
+                                                position:"absolute", bottom:-10, left:"50%", transform:"translateX(-50%)",
+                                                width:22, height:22, borderRadius:"50%", background:item.color,
+                                                display:"flex", alignItems:"center", justifyContent:"center",
+                                                fontSize:11, fontWeight:700, color:"#fff"
+                                            }}>{stepNum}</div>
                                         </div>
-                                        <h3 style={{ marginTop: 22, marginBottom: 6, fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>{item.title}</h3>
-                                        <p style={{ fontSize: 11.5, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                                        <h3 style={{ marginTop:22, marginBottom:6, fontSize:13, fontWeight:700, color:"#111827", lineHeight:1.3 }}>
+                                            {item.title}
+                                        </h3>
+                                        <p style={{ fontSize:11.5, color:"#6b7280", lineHeight:1.6, margin:0 }}>
+                                            {item.desc}
+                                        </p>
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
                 </section>
-
                 {/* ══ THỐNG KÊ NỔI BẬT ══ */}
                 <section id="thong-ke" style={{ width: "100%", borderTop: "1px solid #f1f5f9", padding: "64px 0", scrollMarginTop: "80px" }}>
                     <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px" }}>
@@ -411,60 +574,120 @@ export default function Homepage() {
                 </section>
 
                 {/* ══ CONTACT ══ */}
-                <section id="lien-he" style={{ width: "100%", background: "white", borderTop: "1px solid #f1f5f9", padding: "56px 32px", display: "flex", justifyContent: "center", scrollMarginTop: 80 }}>
-                    <div style={{ width: "100%", maxWidth: 640, background: "white", borderRadius: 28, padding: "48px 40px", border: "1px solid #f1f5f9", boxShadow: "0 8px 32px rgba(0,0,0,0.08)" }}>
-                        <div style={{ textAlign: "center", marginBottom: 32 }}>
-                            <h2 style={{ fontFamily: H, fontSize: 36, fontWeight: 800, color: "#111827", marginBottom: 8 }}>Hỗ trợ thêm thông tin</h2>
-                            <p style={{ color: "#6b7280", fontSize: 15, lineHeight: 1.8, maxWidth: 500, margin: "0 auto" }}>Chúng tôi luôn sẵn sàng lắng nghe mọi ý kiến đóng góp, phản ánh hoặc yêu cầu hỗ trợ từ cộng đồng.</p>
+                <section id="lien-he" style={{
+                    width:"100%", background:"white", borderTop:"1px solid #f1f5f9",
+                    padding:"56px 32px", display:"flex", justifyContent:"center", scrollMarginTop:80
+                }}>
+                    <div style={{
+                        width:"100%", maxWidth:640, background:"white", borderRadius:28,
+                        padding:"48px 40px", border:"1px solid #f1f5f9",
+                        boxShadow:"0 8px 32px rgba(0,0,0,0.08)"
+                    }}>
+                        {/* Header */}
+                        <div style={{ textAlign:"center", marginBottom:32 }}>
+                            <h2 style={{ fontFamily:H, fontSize:36, fontWeight:800, color:"#111827", marginBottom:12 }}>
+                                Hỗ trợ thêm thông tin
+                            </h2>
+                            <p style={{ color:"#6b7280", fontSize:15, lineHeight:1.8, maxWidth:500, margin:"0 auto" }}>
+                                Chúng tôi luôn sẵn sàng lắng nghe mọi ý kiến đóng góp,
+                                phản ánh hoặc yêu cầu hỗ trợ từ cộng đồng.
+                                Mỗi thông tin bạn gửi đều góp phần giúp hệ thống cứu trợ
+                                hoạt động hiệu quả hơn và đến đúng nơi cần giúp đỡ.
+                            </p>
                         </div>
-                        <div style={{ height: 1, background: "#f1f5f9", marginBottom: 28 }} />
+
+                        {/* Divider */}
+                        <div style={{ height:1, background:"#f1f5f9", marginBottom:28 }} />
+
+                        {/* Feedback banners */}
                         {contactState === "success" && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.25)", borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:10, background:"rgba(22,163,74,0.08)", border:"1px solid rgba(22,163,74,0.25)", borderRadius:12, padding:"12px 16px", marginBottom:20 }}>
                                 <CheckCircle size={18} color="#16a34a" />
-                                <div><div style={{ fontSize: 13, fontWeight: 700, color: "#15803d" }}>Gửi thành công!</div><div style={{ fontSize: 12, color: "#6b7280" }}>Phản hồi đã được lưu vào Firebase.</div></div>
+                                <div>
+                                    <div style={{ fontSize:13, fontWeight:700, color:"#15803d" }}>Gửi thành công!</div>
+                                    <div style={{ fontSize:12, color:"#6b7280" }}>Phản hồi đã được lưu vào Firebase. Chúng tôi sẽ liên hệ sớm nhất có thể.</div>
+                                </div>
                             </div>
                         )}
                         {contactState === "error" && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:10, background:"rgba(220,38,38,0.07)", border:"1px solid rgba(220,38,38,0.2)", borderRadius:12, padding:"12px 16px", marginBottom:20 }}>
                                 <AlertCircle size={18} color="#dc2626" />
-                                <div style={{ fontSize: 13, color: "#dc2626", fontWeight: 600 }}>Có lỗi xảy ra. Vui lòng thử lại.</div>
+                                <div style={{ fontSize:13, color:"#dc2626", fontWeight:600 }}>Có lỗi xảy ra. Vui lòng thử lại.</div>
                             </div>
                         )}
-                        <form ref={formRef} style={{ display: "flex", flexDirection: "column", gap: 18 }} onSubmit={handleContactSubmit}>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                {[
-                                    { label: "Họ và tên *", field: "name", type: "text", placeholder: "Nhập họ và tên", required: true },
-                                    { label: "Số điện thoại", field: "phone", type: "tel", placeholder: "Nhập số điện thoại", required: false },
-                                ].map(inp => (
-                                    <div key={inp.field} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                        <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>{inp.label}</label>
-                                        <input type={inp.type} placeholder={inp.placeholder} value={contactForm[inp.field]} onChange={e => handleContactChange(inp.field, e.target.value)} required={inp.required}
-                                               style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }} />
-                                    </div>
-                                ))}
+
+                        {/* Form */}
+                        <form ref={formRef} style={{ display:"flex", flexDirection:"column", gap:18 }} onSubmit={handleContactSubmit}>
+                            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+                                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                    <label style={{ fontSize:13, fontWeight:600, color:"#374151" }}>
+                                        Họ và tên <span style={{ color:"#dc2626" }}>*</span>
+                                    </label>
+                                    <input type="text" placeholder="Nhập họ và tên"
+                                           value={contactForm.name}
+                                           onChange={e => handleContactChange("name", e.target.value)} required
+                                           style={{ background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:12, padding:"12px 14px", fontSize:13, outline:"none", fontFamily:"inherit", color:"#111827" }} />
+                                </div>
+                                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                    <label style={{ fontSize:13, fontWeight:600, color:"#374151" }}>Số điện thoại</label>
+                                    <input type="tel" placeholder="Nhập số điện thoại"
+                                           value={contactForm.phone}
+                                           onChange={e => handleContactChange("phone", e.target.value)}
+                                           style={{ background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:12, padding:"12px 14px", fontSize:13, outline:"none", fontFamily:"inherit", color:"#111827" }} />
+                                </div>
                             </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Email</label>
-                                <input type="email" placeholder="Nhập địa chỉ email" value={contactForm.email} onChange={e => handleContactChange("email", e.target.value)}
-                                       style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", fontFamily: "inherit", color: "#111827" }} />
+
+                            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                <label style={{ fontSize:13, fontWeight:600, color:"#374151" }}>Email</label>
+                                <input type="email" placeholder="Nhập địa chỉ email"
+                                       value={contactForm.email}
+                                       onChange={e => handleContactChange("email", e.target.value)}
+                                       style={{ background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:12, padding:"12px 14px", fontSize:13, outline:"none", fontFamily:"inherit", color:"#111827" }} />
                             </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                <label style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Nội dung *</label>
-                                <textarea rows={4} placeholder="Nhập nội dung tin nhắn" value={contactForm.message} onChange={e => handleContactChange("message", e.target.value)} required
-                                          style={{ background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 12, padding: "12px 14px", fontSize: 13, outline: "none", resize: "none", fontFamily: "inherit", color: "#111827" }} />
+
+                            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                                <label style={{ fontSize:13, fontWeight:600, color:"#374151" }}>
+                                    Nội dung <span style={{ color:"#dc2626" }}>*</span>
+                                </label>
+                                <textarea rows={4} placeholder="Nhập nội dung tin nhắn"
+                                          value={contactForm.message}
+                                          onChange={e => handleContactChange("message", e.target.value)} required
+                                          style={{ background:"#f8fafc", border:"1px solid #e5e7eb", borderRadius:12, padding:"12px 14px", fontSize:13, outline:"none", resize:"none", fontFamily:"inherit", color:"#111827" }} />
                             </div>
-                            <div style={{ textAlign: "center", paddingTop: 8 }}>
-                                <button type="submit" disabled={contactState === "loading" || contactState === "success"}
-                                        style={{ background: "#16a34a", color: "white", border: "none", borderRadius: 12, padding: "13px 36px", fontWeight: 700, fontSize: 14, cursor: contactState === "loading" ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(22,163,74,0.25)", display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "inherit", opacity: contactState === "loading" ? 0.8 : 1 }}>
-                                    {contactState === "loading" ? <><Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> Đang gửi...</>
-                                        : contactState === "success" ? <><CheckCircle size={18} /> Đã gửi thành công</>
-                                            : <><MessageCircle size={18} /> Gửi phản hồi</>}
+
+                            <div style={{ textAlign:"center", paddingTop:8 }}>
+                                <button type="submit"
+                                        disabled={contactState === "loading" || contactState === "success"}
+                                        style={{
+                                            background:"#16a34a", color:"white", border:"none", borderRadius:12,
+                                            padding:"13px 36px", fontWeight:700, fontSize:14,
+                                            cursor: contactState === "loading" ? "not-allowed" : "pointer",
+                                            boxShadow:"0 4px 14px rgba(22,163,74,0.25)",
+                                            display:"inline-flex", alignItems:"center", gap:8,
+                                            fontFamily:"inherit", opacity: contactState === "loading" ? 0.8 : 1,
+                                        }}>
+                                    {contactState === "loading" ? (
+                                        <><Loader2 size={18} style={{ animation:"spin 1s linear infinite" }} /> Đang gửi...</>
+                                    ) : contactState === "success" ? (
+                                        <><CheckCircle size={18} /> Đã gửi thành công</>
+                                    ) : (
+                                        <><MessageCircle size={18} /> Gửi phản hồi</>
+                                    )}
                                 </button>
+                                <p style={{ fontSize:11, color:"#9ca3af", marginTop:10, margin:"10px 0 0" }}>
+                                    Phản hồi sẽ được lưu vào hệ thống Firebase và đội admin sẽ xem xét sớm nhất.
+                                </p>
                             </div>
                         </form>
+
+                        {/* Bottom text */}
+                        <div style={{ marginTop:28, paddingTop:20, borderTop:"1px solid #f1f5f9", textAlign:"center", color:"#6b7280", fontSize:13, lineHeight:1.7 }}>
+                            SOS Miền Trung tin rằng công nghệ không chỉ để kết nối dữ liệu,
+                            mà còn để kết nối những tấm lòng và mang sự hỗ trợ đến đúng người,
+                            đúng thời điểm.
+                        </div>
                     </div>
                 </section>
-
                 {/* ══ FOOTER ══ */}
                 <footer style={{ width: "100%", background: "#1f2937", color: "white", borderTop: "1px solid #374151", padding: "48px 0 24px" }}>
                     <div style={{ maxWidth: 1500, margin: "0 auto", padding: "0 32px", display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr 1fr", gap: 50 }}>
