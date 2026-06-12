@@ -1,0 +1,269 @@
+/* MapPage.css — Map-first mobile layout */
+
+.map-page {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    background-color: #f0f4f8;
+}
+
+.map-page-sidebar {
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    background: #ffffff;
+    overscroll-behavior: contain;
+}
+
+.map-page-sidebar--left {
+    width: min(320px, 28vw);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.map-page-sidebar--right {
+    width: min(350px, 30vw);
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.map-page-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+}
+
+.map-page-map-area {
+    flex: 1;
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.map-page-map-inner {
+    position: absolute;
+    inset: 0;
+}
+
+/* ── Mobile dock: collapsible stats + AI ── */
+.map-mobile-dock {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 450;
+    flex-direction: column;
+    pointer-events: none;
+}
+
+.map-mobile-dock > * {
+    pointer-events: auto;
+}
+
+.map-mobile-sheet {
+    display: flex;
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.28s ease, opacity 0.28s ease, max-height 0.28s ease;
+    overscroll-behavior: contain;
+}
+
+.map-mobile-dock--expanded .map-mobile-sheet {
+    max-height: min(72dvh, calc(100% - 52px));
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.map-mobile-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 16px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    background: rgba(22, 163, 74, 0.04);
+    flex-shrink: 0;
+}
+
+.map-mobile-sheet-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: clamp(13px, 3.5vw, 14px);
+    font-weight: 700;
+    color: #16a34a;
+    letter-spacing: 0.4px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.map-mobile-sheet-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #f8fafc;
+    color: #374151;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.map-mobile-sheet-close:active {
+    transform: scale(0.97);
+    background: rgba(220, 38, 38, 0.08);
+    color: #dc2626;
+}
+
+.map-mobile-sheet-close:focus-visible {
+    outline: 2px solid rgba(22, 163, 74, 0.45);
+    outline-offset: 2px;
+}
+
+.map-mobile-sheet-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.map-mobile-tab-bar {
+    display: flex;
+    gap: 8px;
+    padding: 8px clamp(10px, 2.5vw, 14px);
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.map-mobile-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #f8fafc;
+    color: #374151;
+    font-size: clamp(12px, 3.2vw, 14px);
+    font-weight: 700;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    line-height: 1.4;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    overflow-wrap: anywhere;
+}
+
+.map-mobile-tab:active {
+    transform: scale(0.98);
+}
+
+.map-mobile-tab:focus-visible {
+    outline: 2px solid rgba(22, 163, 74, 0.45);
+    outline-offset: 2px;
+}
+
+.map-mobile-tab--active {
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.1);
+    border-color: rgba(22, 163, 74, 0.35);
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.08);
+}
+
+.map-mobile-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* ── Tablet & Mobile: map-first, sidebars hidden ── */
+@media (max-width: 1024px) {
+    .map-page-sidebar {
+        display: none;
+    }
+
+    .map-page-center {
+        width: 100%;
+    }
+
+    .map-mobile-dock {
+        display: flex;
+    }
+
+    /* Offset map overlays so they don't sit under the tab bar */
+    .map-page-map-area .map-legend {
+        bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        left: clamp(8px, 2vw, 14px);
+        max-width: min(220px, calc(100% - 56px));
+    }
+
+    .map-page-map-area .map-controls {
+        bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        right: clamp(8px, 2vw, 14px);
+    }
+
+    .map-page-map-area .map-ctrl-btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* When sheet expanded, tuck legend higher if space allows */
+    .map-page--mobile-panel-open .map-page-map-area .map-legend {
+        bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        opacity: 0.85;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-mobile-tab-bar {
+        gap: 6px;
+    }
+
+    .map-mobile-tab {
+        flex-direction: column;
+        gap: 4px;
+        min-height: 52px;
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+
+    .map-mobile-dock--expanded .map-mobile-sheet {
+        max-height: min(78dvh, calc(100% - 60px));
+    }
+}

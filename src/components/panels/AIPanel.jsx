@@ -544,10 +544,7 @@ export default function AIPanel() {
     }, [sosRequests]);
 
     const handleLocateMe = () => {
-        navigator.geolocation?.getCurrentPosition(
-            pos => alert(`Vị trí: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`),
-            err => alert("Không thể lấy vị trí: " + err.message)
-        );
+        window.dispatchEvent(new Event('trigger-locate-me'));
     };
 
     const floatBtns = [

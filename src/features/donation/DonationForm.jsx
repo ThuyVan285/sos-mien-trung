@@ -133,159 +133,161 @@ export default function DonationForm() {
                     </button>
                 </div>
 
-                {/* Body */}
-                <div className="sos-modal-body donation-body">
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", minHeight: 0, flex: 1 }}>
+                    {/* Body */}
+                    <div className="sos-modal-body donation-body">
 
-                    {/* ===== THÔNG TIN NGÂN HÀNG ===== */}
-                    <div className="bank-info-card">
-                        <div className="bank-info-header">
-                            <span className="bank-info-badge">🏦 Thông tin chuyển khoản</span>
-                        </div>
+                        {/* ===== THÔNG TIN NGÂN HÀNG ===== */}
+                        <div className="bank-info-card">
+                            <div className="bank-info-header">
+                                <span className="bank-info-badge">🏦 Thông tin chuyển khoản</span>
+                            </div>
 
-                        <div className="bank-qr-layout">
-                            {/* QR Code */}
-                            <div className="qr-section">
-                                <img
-                                    src={QR_URL}
-                                    alt="QR Chuyển khoản"
-                                    className="qr-image"
-                                    onError={(e) => {
-                                        e.target.style.display = "none";
-                                        e.target.nextSibling.style.display = "flex";
-                                    }}
-                                />
-                                {/* Fallback QR placeholder */}
-                                <div className="qr-placeholder" style={{ display: "none" }}>
-                                    <div className="qr-placeholder-inner">
-                                        <div style={{ fontSize: 40 }}>📱</div>
-                                        <p>Quét QR để chuyển khoản</p>
+                            <div className="bank-qr-layout">
+                                {/* QR Code */}
+                                <div className="qr-section">
+                                    <img
+                                        src={QR_URL}
+                                        alt="QR Chuyển khoản"
+                                        className="qr-image"
+                                        onError={(e) => {
+                                            e.target.style.display = "none";
+                                            e.target.nextSibling.style.display = "flex";
+                                        }}
+                                    />
+                                    {/* Fallback QR placeholder */}
+                                    <div className="qr-placeholder" style={{ display: "none" }}>
+                                        <div className="qr-placeholder-inner">
+                                            <div style={{ fontSize: 40 }}>📱</div>
+                                            <p>Quét QR để chuyển khoản</p>
+                                        </div>
                                     </div>
+                                    <p className="qr-hint">Quét mã để chuyển khoản nhanh</p>
                                 </div>
-                                <p className="qr-hint">Quét mã để chuyển khoản nhanh</p>
+
+                                {/* Bank details */}
+                                <div className="bank-details">
+                                    <BankRow
+                                        label="Ngân hàng"
+                                        value={BANK_INFO.bankName}
+                                        field="bankName"
+                                        copied={copied}
+                                        onCopy={copyToClipboard}
+                                    />
+                                    <BankRow
+                                        label="Số tài khoản"
+                                        value={BANK_INFO.accountNo}
+                                        field="accountNo"
+                                        copied={copied}
+                                        onCopy={copyToClipboard}
+                                        highlight
+                                    />
+                                    <BankRow
+                                        label="Chủ tài khoản"
+                                        value={BANK_INFO.accountName}
+                                        field="accountName"
+                                        copied={copied}
+                                        onCopy={copyToClipboard}
+                                    />
+                                    <BankRow
+                                        label="Nội dung CK"
+                                        value={BANK_INFO.content}
+                                        field="content"
+                                        copied={copied}
+                                        onCopy={copyToClipboard}
+                                        highlight
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ===== FORM ĐĂNG KÝ ===== */}
+                        <div className="donation-divider">
+                            <span>Hoặc đăng ký quyên góp trực tiếp</span>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+
+                            {/* Họ tên + SĐT */}
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label"><User size={13} /> Họ và tên *</label>
+                                    <input
+                                        className={`form-input ${errors.name ? "error" : ""}`}
+                                        placeholder="Nguyễn Văn A"
+                                        value={form.name}
+                                        onChange={(e) => set("name", e.target.value)}
+                                    />
+                                    {errors.name && <p className="form-error">{errors.name}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label"><Phone size={13} /> Số điện thoại *</label>
+                                    <input
+                                        className={`form-input ${errors.phone ? "error" : ""}`}
+                                        placeholder="0901 234 567"
+                                        value={form.phone}
+                                        onChange={(e) => set("phone", e.target.value)}
+                                    />
+                                    {errors.phone && <p className="form-error">{errors.phone}</p>}
+                                </div>
                             </div>
 
-                            {/* Bank details */}
-                            <div className="bank-details">
-                                <BankRow
-                                    label="Ngân hàng"
-                                    value={BANK_INFO.bankName}
-                                    field="bankName"
-                                    copied={copied}
-                                    onCopy={copyToClipboard}
-                                />
-                                <BankRow
-                                    label="Số tài khoản"
-                                    value={BANK_INFO.accountNo}
-                                    field="accountNo"
-                                    copied={copied}
-                                    onCopy={copyToClipboard}
-                                    highlight
-                                />
-                                <BankRow
-                                    label="Chủ tài khoản"
-                                    value={BANK_INFO.accountName}
-                                    field="accountName"
-                                    copied={copied}
-                                    onCopy={copyToClipboard}
-                                />
-                                <BankRow
-                                    label="Nội dung CK"
-                                    value={BANK_INFO.content}
-                                    field="content"
-                                    copied={copied}
-                                    onCopy={copyToClipboard}
-                                    highlight
+                            {/* Hình thức quyên góp */}
+                            <div className="form-group">
+                                <label className="form-label"><Heart size={13} /> Hình thức quyên góp *</label>
+                                <div className="form-select-wrap">
+                                    <select
+                                        className={`form-input form-select ${errors.donationType ? "error" : ""}`}
+                                        value={form.donationType}
+                                        onChange={(e) => set("donationType", e.target.value)}
+                                    >
+                                        <option value="">-- Chọn hình thức --</option>
+                                        {DONATION_TYPES.map((d) => (
+                                            <option key={d.value} value={d.value}>{d.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown size={14} className="select-arrow" />
+                                </div>
+                                {errors.donationType && <p className="form-error">{errors.donationType}</p>}
+                            </div>
+
+                            {/* Số tiền (chỉ hiện khi chọn tiền) */}
+                            {form.donationType === "money" && (
+                                <div className="form-group">
+                                    <label className="form-label">💰 Số tiền dự kiến (đ)</label>
+                                    <input
+                                        className="form-input"
+                                        placeholder="VD: 500000"
+                                        type="number"
+                                        min="0"
+                                        value={form.amount}
+                                        onChange={(e) => set("amount", e.target.value)}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Ghi chú */}
+                            <div className="form-group">
+                                <label className="form-label">Ghi chú (tuỳ chọn)</label>
+                                <textarea
+                                    className="form-input form-textarea"
+                                    placeholder="Thông tin thêm về quyên góp của bạn..."
+                                    value={form.note}
+                                    onChange={(e) => set("note", e.target.value)}
+                                    rows={2}
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {/* ===== FORM ĐĂNG KÝ ===== */}
-                    <div className="donation-divider">
-                        <span>Hoặc đăng ký quyên góp trực tiếp</span>
+                    {/* Footer */}
+                    <div className="sos-modal-footer">
+                        <button type="button" className="sos-cancel-btn" onClick={handleClose}>Huỷ</button>
+                        <button type="submit" className="sos-submit-btn donation-submit-btn" disabled={loading}>
+                            {loading ? <span className="loading-spinner"></span> : "💝 Gửi đăng ký"}
+                        </button>
                     </div>
-
-                    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-
-                        {/* Họ tên + SĐT */}
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label className="form-label"><User size={13} /> Họ và tên *</label>
-                                <input
-                                    className={`form-input ${errors.name ? "error" : ""}`}
-                                    placeholder="Nguyễn Văn A"
-                                    value={form.name}
-                                    onChange={(e) => set("name", e.target.value)}
-                                />
-                                {errors.name && <p className="form-error">{errors.name}</p>}
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label"><Phone size={13} /> Số điện thoại *</label>
-                                <input
-                                    className={`form-input ${errors.phone ? "error" : ""}`}
-                                    placeholder="0901 234 567"
-                                    value={form.phone}
-                                    onChange={(e) => set("phone", e.target.value)}
-                                />
-                                {errors.phone && <p className="form-error">{errors.phone}</p>}
-                            </div>
-                        </div>
-
-                        {/* Hình thức quyên góp */}
-                        <div className="form-group">
-                            <label className="form-label"><Heart size={13} /> Hình thức quyên góp *</label>
-                            <div className="form-select-wrap">
-                                <select
-                                    className={`form-input form-select ${errors.donationType ? "error" : ""}`}
-                                    value={form.donationType}
-                                    onChange={(e) => set("donationType", e.target.value)}
-                                >
-                                    <option value="">-- Chọn hình thức --</option>
-                                    {DONATION_TYPES.map((d) => (
-                                        <option key={d.value} value={d.value}>{d.label}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown size={14} className="select-arrow" />
-                            </div>
-                            {errors.donationType && <p className="form-error">{errors.donationType}</p>}
-                        </div>
-
-                        {/* Số tiền (chỉ hiện khi chọn tiền) */}
-                        {form.donationType === "money" && (
-                            <div className="form-group">
-                                <label className="form-label">💰 Số tiền dự kiến (đ)</label>
-                                <input
-                                    className="form-input"
-                                    placeholder="VD: 500000"
-                                    type="number"
-                                    min="0"
-                                    value={form.amount}
-                                    onChange={(e) => set("amount", e.target.value)}
-                                />
-                            </div>
-                        )}
-
-                        {/* Ghi chú */}
-                        <div className="form-group">
-                            <label className="form-label">Ghi chú (tuỳ chọn)</label>
-                            <textarea
-                                className="form-input form-textarea"
-                                placeholder="Thông tin thêm về quyên góp của bạn..."
-                                value={form.note}
-                                onChange={(e) => set("note", e.target.value)}
-                                rows={2}
-                            />
-                        </div>
-
-                        {/* Footer */}
-                        <div className="sos-modal-footer" style={{ marginTop: "4px" }}>
-                            <button type="button" className="sos-cancel-btn" onClick={handleClose}>Huỷ</button>
-                            <button type="submit" className="sos-submit-btn donation-submit-btn" disabled={loading}>
-                                {loading ? <span className="loading-spinner"></span> : "💝 Gửi đăng ký"}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     );
