@@ -21,6 +21,7 @@ function usePlusJakartaSans() {
             link.id = id;
             link.rel = "stylesheet";
             link.href = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,600;0,700;0,800;0,900;1,700&display=swap";
+
             document.head.appendChild(link);
         }
     }, []);
@@ -160,10 +161,10 @@ export default function Homepage() {
                             <div style={{ lineHeight: 1.05 }}>
                                 <div
                                     style={{
-                                        fontFamily: "'Be Vietnam Pro', sans-serif",
-                                        fontSize: 88,
-                                        fontWeight: 900,
-                                        letterSpacing: "-4px",
+                                        fontFamily: "'Montserrat', sans-serif",
+                                        fontSize: 92,
+                                        fontWeight: 800,
+                                        letterSpacing: "-2px",
                                         lineHeight: 0.95
                                     }}
                                 >
@@ -173,10 +174,10 @@ export default function Homepage() {
 
                                 <div
                                     style={{
-                                        fontFamily: "'Be Vietnam Pro', sans-serif",
-                                        fontSize: 88,
-                                        fontWeight: 900,
-                                        letterSpacing: "-4px",
+                                        fontFamily: "'Montserrat', sans-serif",
+                                        fontSize: 92,
+                                        fontWeight: 800,
+                                        letterSpacing: "-2px",
                                         lineHeight: 0.95,
                                         color: "#0f1923"
                                     }}
